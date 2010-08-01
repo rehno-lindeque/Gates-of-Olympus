@@ -1,5 +1,12 @@
 (function(){
   var canvas, dragging, gameScene, lastX, lastY, mouseDown, mouseMove, mouseUp, pitch, yaw;
+  /*
+  Olympus Tower defence
+  Copyright (C) 2010, Rehno Lindeque.
+  */
+  /*
+  The main scene definition
+  */
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
   }, SceneJS.lookAt({
@@ -96,6 +103,9 @@
     y: 1.0,
     z: 1.0
   }, SceneJS.objects.teapot()))))))));
+  /*
+  Initialization and rendering loop
+  */
   yaw = 0;
   pitch = 0;
   lastX = 0;
