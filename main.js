@@ -1,42 +1,27 @@
 (function(){
-  var canvas, dragging, gameScene, lastX, lastY, mouseDown, mouseMove, mouseUp, pitch, yaw;
+  var BillboardPlane, canvas, dragging, gameScene, lastX, lastY, mouseDown, mouseMove, mouseUp, pitch, yaw;
   /*
   Olympus Tower defence
   Copyright (C) 2010, Rehno Lindeque.
   */
+  BillboardPlane = function() {
+    SceneJS.Geometry.apply(this, arguments);
+    this._nodeType = "BillboardPlane";
+    return this._fixedParams ? this._init(this._getParams()) : null;
+  };
   /*
   The main scene definition
   */
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
-  }, SceneJS.lookAt({
-    eye: {
-      x: 0.0,
-      y: 10.0,
-      z: -15
-    },
-    look: {
-      y: 1.0
-    },
-    up: {
-      y: 1.0
-    }
-  }, SceneJS.camera({
-    optics: {
-      type: "perspective",
-      fovy: 25.0,
-      aspect: 1.0,
-      near: 0.10,
-      far: 300.0
-    }
   }, SceneJS.lights({
     sources: [
       {
         type: "dir",
         color: {
           r: 1.0,
-          g: 0.5,
-          b: 0.5
+          g: 1.0,
+          b: 1.0
         },
         diffuse: true,
         specular: true,
@@ -45,36 +30,37 @@
           y: 1.0,
           z: -1.0
         }
-      }, {
-        type: "dir",
-        color: {
-          r: 0.5,
-          g: 1.0,
-          b: 0.5
-        },
-        diffuse: true,
-        specular: true,
-        dir: {
-          x: 0.0,
-          y: 1.0,
-          z: -1.0
-        }
-      }, {
-        type: "dir",
-        color: {
-          r: 0.2,
-          g: 0.2,
-          b: 1.0
-        },
-        diffuse: true,
-        specular: true,
-        dir: {
-          x: -1.0,
-          y: 0.0,
-          z: -1.0
-        }
       }
     ]
+  }, SceneJS.lookAt({
+    eye: {
+      x: 0.0,
+      y: 10.0,
+      z: 10.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0
+    },
+    up: {
+      z: 1.0
+    }
+  }, SceneJS.stationary({}, SceneJS.renderer({
+    enableTexture2D: true
+  }, SceneJS.scale({
+    x: 100.0,
+    y: 100.0,
+    z: 100.0
+  }, SceneJS.objects.cube))), SceneJS.camera({
+    optics: {
+      type: "ortho",
+      left: -1.0,
+      right: 1.0,
+      bottom: -1.0,
+      top: 1.0,
+      near: 0.1,
+      far: 300.0
+    }
   }, SceneJS.rotate(function(data) {
     return {
       angle: data.get('pitch'),
@@ -83,7 +69,7 @@
   }, SceneJS.rotate(function(data) {
     return {
       angle: data.get('yaw'),
-      y: 1.0
+      z: 1.0
     };
   }, SceneJS.material({
     baseColor: {
@@ -99,10 +85,29 @@
     specular: 0.9,
     shine: 6.0
   }, SceneJS.scale({
-    x: 1.0,
-    y: 1.0,
-    z: 1.0
-  }, SceneJS.objects.teapot()))))))));
+    x: 0.4,
+    y: 0.4,
+    z: 0.4
+  }, SceneJS.geometry({
+    type: "plane0",
+    primitive: "triangles",
+    positions: [-1, 1, 2.5, 1, 1, 2.5, 1, -1, 2.5, -1, -1, 2.5],
+    indices: [0, 1, 2, 0, 2, 3]
+  }), SceneJS.geometry({
+    type: "plane1",
+    primitive: "triangles",
+    positions: [-1, 1, 0, 1, 1, 0, 1, -1, 0, -1, -1, 0],
+    indices: [0, 1, 2, 0, 2, 3]
+  }), SceneJS.geometry({
+    type: "plane2",
+    primitive: "triangles",
+    positions: [-1, 1, -2.5, 1, 1, -2.5, 1, -1, -2.5, -1, -1, -2.5],
+    indices: [0, 1, 2, 0, 2, 3]
+  }), BlenderExport.ArcherTower(), SceneJS.symbol({
+    sid: "archerTower"
+  }, SceneJS.objects.cube(), SceneJS.instance({
+    uri: "archerTower"
+  }))))))))));
   /*
   Initialization and rendering loop
   */
