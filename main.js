@@ -1,34 +1,22 @@
 (function(){
-  var BillboardPlane, archerTower, c, canvas, createTowers, dragging, gameScene, lastX, lastY, mouseDown, mouseMove, mouseUp, pitch, towers, towersNode, yaw;
+  var c, canvas, createTowers, dragging, gameScene, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
   /*
-  Olympus Tower defence
+  Olympus Tower Defence
   Copyright (C) 2010, Rehno Lindeque.
   */
-  BillboardPlane = function() {
-    SceneJS.Geometry.apply(this, arguments);
-    this._nodeType = "BillboardPlane";
-    return this._fixedParams ? this._init(this._getParams()) : null;
-  };
   /*
   The main scene definition
   */
-  towersNode = SceneJS.node({
-    sid: "towers"
+  levels = new Array(3);
+  levels[0] = SceneJS.node({
+    sid: "level0"
   });
-  archerTower = new SceneJS.Material({
-    baseColor: {
-      r: 0.37,
-      g: 0.26,
-      b: 0.115
-    },
-    specularColor: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, BlenderExport.ArcherTower());
+  levels[1] = SceneJS.node({
+    sid: "level1"
+  });
+  levels[2] = SceneJS.node({
+    sid: "level2"
+  });
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
   }, SceneJS.lights({
@@ -82,7 +70,37 @@
       angle: data.get('yaw'),
       z: 1.0
     };
-  }, SceneJS.scale({
+  }, SceneJS.symbol({
+    sid: "ArcherTower"
+  }, SceneJS.material({
+    baseColor: {
+      r: 0.37,
+      g: 0.26,
+      b: 0.115
+    },
+    specularColor: {
+      r: 0.9,
+      g: 0.9,
+      b: 0.9
+    },
+    specular: 0.0,
+    shine: 0.0
+  }, BlenderExport.ArcherTower())), SceneJS.symbol({
+    sid: "CatapultTower"
+  }, SceneJS.material({
+    baseColor: {
+      r: 0.2,
+      g: 0.2,
+      b: 0.2
+    },
+    specularColor: {
+      r: 0.9,
+      g: 0.9,
+      b: 0.9
+    },
+    specular: 0.0,
+    shine: 0.0
+  }, BlenderExport.CatapultTower())), SceneJS.scale({
     x: 0.4,
     y: 0.4,
     z: 0.4
@@ -108,7 +126,7 @@
     primitive: "triangles",
     positions: [-15, 15, 15, 15, 15, 15, 15, -15, 15, -15, -15, 15],
     indices: [0, 1, 2, 0, 2, 3]
-  })), SceneJS.scale({
+  }), levels[0]), SceneJS.scale({
     x: 0.9,
     y: 0.9,
     z: 0.9
@@ -117,27 +135,12 @@
     primitive: "triangles",
     positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  })), SceneJS.geometry({
+  }), levels[1]), SceneJS.geometry({
     type: "plane2",
     primitive: "triangles",
     positions: [-15, 15, -15, 15, 15, -15, 15, -15, -15, -15, -15, -15],
     indices: [0, 1, 2, 0, 2, 3]
-  })), SceneJS.symbol({
-    sid: "ArcherTower"
-  }, SceneJS.material({
-    baseColor: {
-      r: 0.37,
-      g: 0.26,
-      b: 0.115
-    },
-    specularColor: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, BlenderExport.ArcherTower())), towersNode)))))));
+  }), levels[2]))))))));
   /*
   Initialization and rendering loop
   */
@@ -187,32 +190,32 @@
   towers[0] = 1;
   towers[1] = 1;
   towers[2] = 1;
-  towers[3] = 1;
-  towers[4] = 1;
-  towers[5] = 1;
+  towers[3] = 2;
+  towers[4] = 2;
+  towers[5] = 2;
   towers[6] = 1;
-  towers[7] = 1;
+  towers[7] = 2;
   towers[8] = 1;
   towers[9] = 1;
   towers[190] = 1;
-  towers[191] = 1;
+  towers[191] = 2;
   towers[192] = 1;
   towers[193] = 1;
   towers[194] = 1;
-  towers[195] = 1;
+  towers[195] = 2;
   towers[196] = 1;
-  towers[197] = 1;
+  towers[197] = 2;
   towers[198] = 1;
   towers[199] = 1;
   towers[290] = 1;
   towers[291] = 1;
-  towers[292] = 1;
+  towers[292] = 2;
   towers[293] = 1;
   towers[294] = 1;
   towers[295] = 1;
   towers[296] = 1;
-  towers[297] = 1;
-  towers[298] = 1;
+  towers[297] = 2;
+  towers[298] = 2;
   towers[299] = 1;
   createTowers = function(towers) {
     var ix, iy, iz, t, towerNode;
@@ -225,10 +228,14 @@
               towerNode = new SceneJS.Instance({
                 uri: "../ArcherTower"
               });
+            } else if (t === 2) {
+              towerNode = new SceneJS.Instance({
+                uri: "../CatapultTower"
+              });
             } else {
               alert("" + (iz * 100 + iy * 10 + ix) + " : " + t);
             }
-            towersNode.addNode(new SceneJS.Translate({
+            levels[iz].addNode(new SceneJS.Translate({
               x: 3.0 * (ix - 5),
               y: 3.0 * (iy - 5),
               z: 15.0 * (1 - iz)

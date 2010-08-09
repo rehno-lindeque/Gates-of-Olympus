@@ -1,13 +1,13 @@
 ###
-Olympus Tower defence
+Olympus Tower Defence
 Copyright (C) 2010, Rehno Lindeque.
 ###
 
-BillboardPlane: ->
-  SceneJS.Geometry.apply(this, arguments)
-  this._nodeType = "BillboardPlane"
-  if this._fixedParams
-    this._init(this._getParams())
+#BillboardPlane: ->
+#  SceneJS.Geometry.apply(this, arguments)
+#  this._nodeType = "BillboardPlane"
+#  if this._fixedParams
+#    this._init(this._getParams())
 
 ###
 The main scene definition
@@ -16,17 +16,20 @@ The main scene definition
 #SceneJS.symbol({ sid: "ArcherTower" }, BlenderExport.ArcherTower())
 
 #towersNode: new SceneJS.Node {sid: "towers"}
-towersNode: SceneJS.node {sid: "towers"}
+levels = new Array 3
+levels[0] = SceneJS.node {sid: "level0"}
+levels[1] = SceneJS.node {sid: "level1"}
+levels[2] = SceneJS.node {sid: "level2"}
 
-archerTower: new SceneJS.Material(
-  {
-    baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
-    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-    specular:       0.0
-    shine:          0.0
-  }
-  BlenderExport.ArcherTower()
-) # material (Archer tower)
+#archerTower: new SceneJS.Material(
+#  {
+#    baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
+#    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+#    specular:       0.0
+#    shine:          0.0
+#  }
+#  BlenderExport.ArcherTower()
+#) # material (Archer tower)
 
 gameScene: SceneJS.scene(
   {canvasId: "gameCanvas"}
@@ -77,6 +80,30 @@ gameScene: SceneJS.scene(
   SceneJS.rotate((data) -> {
     angle: data.get('yaw'), z: 1.0
   },
+  SceneJS.symbol(
+    {sid:"ArcherTower"}
+    SceneJS.material(
+      {
+        baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
+        specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+        specular:       0.0
+        shine:          0.0
+      }
+      BlenderExport.ArcherTower()
+    ) # material (Archer tower)
+  ) # symbol
+  SceneJS.symbol(
+    {sid:"CatapultTower"}
+    SceneJS.material(
+      {
+        baseColor:      { r: 0.2, g: 0.2, b: 0.2 }
+        specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+        specular:       0.0
+        shine:          0.0
+      }
+      BlenderExport.CatapultTower()
+    ) # material (Catapult tower)
+  ) # symbol  
   SceneJS.scale({x:0.4,y:0.4,z:0.4}
   SceneJS.material({
     baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
@@ -98,6 +125,7 @@ gameScene: SceneJS.scene(
         ]
       indices: [0,  1,  2, 0, 2, 3]
     })
+    levels[0]
   )
   SceneJS.scale(
     {x:0.9,y:0.9,z:0.9}
@@ -113,7 +141,8 @@ gameScene: SceneJS.scene(
         ]
       indices: [0,  1,  2, 0, 2, 3]
     })
-  )
+    levels[1]
+  )  
   SceneJS.geometry({
     type: "plane2"
     primitive: "triangles"
@@ -126,32 +155,8 @@ gameScene: SceneJS.scene(
       ]
     indices: [0,  1,  2, 0, 2, 3]
   })
+  levels[2]
   ) # material  (planes)
-  
-  SceneJS.symbol(
-    {sid:"ArcherTower"}
-    SceneJS.material(
-      {
-        baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
-        specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-        specular:       0.0
-        shine:          0.0
-      }
-      BlenderExport.ArcherTower()
-    ) # material (Archer tower)
-  ) # symbol  
-  towersNode
-  #SceneJS.node({},
-  #  new SceneJS.Instance { uri: "ArcherTower" }
-  #)
-  #archerTower
-  #SceneJS.symbol(
-  #  { sid: "archerTower" }
-  #  SceneJS.objects.cube()
-  #  SceneJS.instance { uri: "archerTower" }
-  #)
-  
-  #SceneJS.objects.teapot()
   ) # scale
   ) # rotate
   ) # rotate
@@ -210,34 +215,34 @@ for c in [0...300]
 towers[0] = 1
 towers[1] = 1
 towers[2] = 1
-towers[3] = 1
-towers[4] = 1
-towers[5] = 1
+towers[3] = 2
+towers[4] = 2
+towers[5] = 2
 towers[6] = 1
-towers[7] = 1
+towers[7] = 2
 towers[8] = 1
 towers[9] = 1
 
 towers[190] = 1
-towers[191] = 1
+towers[191] = 2
 towers[192] = 1
 towers[193] = 1
 towers[194] = 1
-towers[195] = 1
+towers[195] = 2
 towers[196] = 1
-towers[197] = 1
+towers[197] = 2
 towers[198] = 1
 towers[199] = 1
 
 towers[290] = 1
 towers[291] = 1
-towers[292] = 1
+towers[292] = 2
 towers[293] = 1
 towers[294] = 1
 towers[295] = 1
 towers[296] = 1
-towers[297] = 1
-towers[298] = 1
+towers[297] = 2
+towers[298] = 2
 towers[299] = 1
 
 
@@ -249,9 +254,10 @@ createTowers: (towers) ->
         if t != 0
           switch t
             when 1 then towerNode: new SceneJS.Instance  { uri: "../ArcherTower" }
+            when 2 then towerNode: new SceneJS.Instance  { uri: "../CatapultTower" }
             else 
               alert "" + (iz * 100 + iy * 10 + ix) + " : " + t
-          towersNode.addNode(
+          levels[iz].addNode(
             new SceneJS.Translate(
               {x: 3.0 * (ix-5), y: 3.0 * (iy-5), z: 15.0 * (1-iz)}
               towerNode
