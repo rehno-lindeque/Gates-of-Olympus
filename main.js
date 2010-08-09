@@ -28,20 +28,26 @@
   catapultTowersNode = function(sid) {
     return SceneJS.material({
       baseColor: {
-        r: 0.2,
-        g: 0.2,
-        b: 0.2
+        r: 1.0,
+        g: 1.0,
+        b: 1.0
       },
       specularColor: {
-        r: 0.9,
-        g: 0.9,
-        b: 0.9
+        r: 1.0,
+        g: 1.0,
+        b: 1.0
       },
       specular: 0.0,
       shine: 0.0
+    }, SceneJS.texture({
+      layers: [
+        {
+          uri: "http://scenejs.org/library/textures/stone/BrickWall.jpg"
+        }
+      ]
     }, SceneJS.node({
       sid: sid
-    }));
+    })));
   };
   /*
   Level definitions
@@ -74,7 +80,7 @@
           b: 1.0
         },
         diffuse: true,
-        specular: true,
+        specular: false,
         dir: {
           x: 1.0,
           y: 1.0,
@@ -245,19 +251,19 @@
           t = towers[iz * 100 + iy * 10 + ix];
           if (t !== 0) {
             if (t === 1) {
-              towerNode = new SceneJS.Instance({
+              towerNode = SceneJS.instance({
                 uri: "../ArcherTower"
               });
               parentNode = levels[iz].archerTowers;
             } else if (t === 2) {
-              towerNode = new SceneJS.Instance({
+              towerNode = SceneJS.instance({
                 uri: "../CatapultTower"
               });
               parentNode = levels[iz].catapultTowers;
             } else {
               alert("" + (iz * 100 + iy * 10 + ix) + " : " + t);
             }
-            parentNode.addNode(new SceneJS.Translate({
+            parentNode.addNode(SceneJS.translate({
               x: 3.0 * (ix - 5),
               y: 3.0 * (iy - 5)
             }, towerNode));

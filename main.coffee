@@ -1,6 +1,10 @@
 ###
-Olympus Tower Defence
-Copyright (C) 2010, Rehno Lindeque.
+Gates of Olympus
+A Tower Defense game
+Copyright 2010, Rehno Lindeque.
+
+This game is licensed under GPL Version 2. 
+See http://gatesofolympus.com/LICENSE for more information.
 ###
 
 #BillboardPlane = ->
@@ -28,12 +32,15 @@ archerTowersNode = (sid) ->
 catapultTowersNode = (sid) -> 
     SceneJS.material(
       {
-        baseColor:      { r: 0.2, g: 0.2, b: 0.2 }
-        specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+        baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+        specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
         specular:       0.0
         shine:          0.0
       }
+    SceneJS.texture(
+    { layers: [{ uri:"http://scenejs.org/library/textures/stone/BrickWall.jpg" }]}
     SceneJS.node {sid: sid}
+  ) # texture
   ) # material
 
 ###
@@ -41,15 +48,15 @@ Level definitions
 ###
 
 levels = new Array 3
-levels[0] = 
+levels[0] = {
   archerTowers:   archerTowersNode "archerTowers0"
-  catapultTowers: catapultTowersNode "catapultTowers0"
-levels[1] =
+  catapultTowers: catapultTowersNode "catapultTowers0" }
+levels[1] = {
   archerTowers:   archerTowersNode "archerTowers1"
-  catapultTowers: catapultTowersNode "catapultTowers1"
-levels[2] =
+  catapultTowers: catapultTowersNode "catapultTowers1" }
+levels[2] = {
   archerTowers:   archerTowersNode "archerTowers2"
-  catapultTowers: catapultTowersNode "catapultTowers2"
+  catapultTowers: catapultTowersNode "catapultTowers2" }
 
 ###
 The main scene definition
@@ -83,7 +90,7 @@ gameScene = SceneJS.scene(
   #  ) # renderer
   #) # stationary
   SceneJS.camera({
-     optics:
+     optics: {
       type:   "ortho"
       left:   -10.0
       right:   10.0
@@ -91,7 +98,7 @@ gameScene = SceneJS.scene(
       top:     10.0
       near:    0.1
       far:     300.0
-    }
+    }}
   SceneJS.rotate((data) -> 
     {
       angle: data.get('pitch')
@@ -108,7 +115,8 @@ gameScene = SceneJS.scene(
   ) # symbol
   SceneJS.symbol(
     {sid:"CatapultTower"}
-    BlenderExport.CatapultTower()
+    #SceneJS.texture({ layers: [{ uri:"http://scenejs.org/library/textures/stone/BrickWall.jpg" }]}
+    BlenderExport.CatapultTower() 
   ) # symbol  
   SceneJS.scale({x:0.3,y:0.3,z:0.3}
   SceneJS.material({
@@ -265,15 +273,18 @@ createTowers = (towers) ->
         if t != 0
           switch t
             when 1 
-              towerNode = new SceneJS.Instance  { uri: "../ArcherTower" }
+              towerNode = SceneJS.instance  { uri: "../ArcherTower" }
               parentNode = levels[iz].archerTowers
             when 2 
-              towerNode = new SceneJS.Instance  { uri: "../CatapultTower" }
+              towerNode = SceneJS.instance  { uri: "../CatapultTower" }
+                #SceneJS.texture(
+                #  { layers: [{ uri:"textures/catapult.jpg" }]}
+                #  SceneJS.instance  { uri: "../CatapultTower" } )
               parentNode = levels[iz].catapultTowers
             else 
               alert "" + (iz * 100 + iy * 10 + ix) + " : " + t
           parentNode.addNode(
-            new SceneJS.Translate(
+            SceneJS.translate(
               {x: 3.0 * (ix-5), y: 3.0 * (iy-5)}
               towerNode
             )
