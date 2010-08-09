@@ -1,4 +1,4 @@
-(function(){
+(function() {
   var c, canvas, createTowers, dragging, gameScene, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
   /*
   Olympus Tower Defence
@@ -157,12 +157,10 @@
   mouseDown = function(event) {
     lastX = event.clientX;
     lastY = event.clientY;
-    dragging = true;
-    return dragging;
+    return (dragging = true);
   };
   mouseUp = function() {
-    dragging = false;
-    return dragging;
+    return (dragging = false);
   };
   mouseMove = function(event) {
     if (dragging) {
@@ -173,8 +171,7 @@
         pitch: pitch
       }).render();
       lastX = event.clientX;
-      lastY = event.clientY;
-      return lastY;
+      return (lastY = event.clientY);
     }
   };
   canvas.addEventListener('mousedown', mouseDown, true);
@@ -184,7 +181,7 @@
   Game logic
   */
   towers = new Array(300);
-  for (c = 0; c < 300; c += 1) {
+  for (c = 0; c < 300; c++) {
     towers[c] = 0;
   }
   towers[0] = 1;
@@ -219,9 +216,9 @@
   towers[299] = 1;
   createTowers = function(towers) {
     var ix, iy, iz, t, towerNode;
-    for (iz = 0; iz < 3; iz += 1) {
-      for (iy = 0; iy < 10; iy += 1) {
-        for (ix = 0; ix < 10; ix += 1) {
+    for (iz = 0; iz < 3; iz++) {
+      for (iy = 0; iy < 10; iy++) {
+        for (ix = 0; ix < 10; ix++) {
           t = towers[iz * 100 + iy * 10 + ix];
           if (t !== 0) {
             if (t === 1) {

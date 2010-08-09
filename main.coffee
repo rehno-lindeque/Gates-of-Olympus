@@ -3,7 +3,7 @@ Olympus Tower Defence
 Copyright (C) 2010, Rehno Lindeque.
 ###
 
-#BillboardPlane: ->
+#BillboardPlane = ->
 #  SceneJS.Geometry.apply(this, arguments)
 #  this._nodeType = "BillboardPlane"
 #  if this._fixedParams
@@ -13,25 +13,12 @@ Copyright (C) 2010, Rehno Lindeque.
 The main scene definition
 ###
 
-#SceneJS.symbol({ sid: "ArcherTower" }, BlenderExport.ArcherTower())
-
-#towersNode: new SceneJS.Node {sid: "towers"}
 levels = new Array 3
 levels[0] = SceneJS.node {sid: "level0"}
 levels[1] = SceneJS.node {sid: "level1"}
 levels[2] = SceneJS.node {sid: "level2"}
 
-#archerTower: new SceneJS.Material(
-#  {
-#    baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
-#    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-#    specular:       0.0
-#    shine:          0.0
-#  }
-#  BlenderExport.ArcherTower()
-#) # material (Archer tower)
-
-gameScene: SceneJS.scene(
+gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
   SceneJS.lights({
     sources: [{
@@ -59,27 +46,25 @@ gameScene: SceneJS.scene(
   #  ) # renderer
   #) # stationary
   SceneJS.camera({
-    #optics: {
-    #  type: "perspective"
-    #  fovy : 25.0
-    #  aspect : 1.0
-    #  near : 0.10
-    #  far : 300.0  }
-     optics: {
+     optics:
       type:   "ortho"
       left:   -10.0
       right:   10.0
       bottom: -10.0
       top:     10.0
       near:    0.1
-      far:     300.0 }
+      far:     300.0
     }
-  SceneJS.rotate((data) -> {
-    angle: data.get('pitch'), x: 1.0
-  },
-  SceneJS.rotate((data) -> {
-    angle: data.get('yaw'), z: 1.0
-  },
+  SceneJS.rotate((data) -> 
+    {
+      angle: data.get('pitch')
+      x: 1.0
+    }
+  SceneJS.rotate((data) -> 
+    {
+      angle: data.get('yaw')
+      z: 1.0
+    }
   SceneJS.symbol(
     {sid:"ArcherTower"}
     SceneJS.material(
@@ -169,35 +154,35 @@ gameScene: SceneJS.scene(
 Initialization and rendering loop
 ###
 
-yaw: 0
-pitch: 0
-lastX: 0
-lastY: 0
-dragging: false
+yaw = 0
+pitch = 0
+lastX = 0
+lastY = 0
+dragging = false
 
 gameScene
   .setData({yaw: yaw, pitch: pitch})
   .render()
 
-canvas: document.getElementById(gameScene.getCanvasId())
+canvas = document.getElementById(gameScene.getCanvasId())
 
-mouseDown: (event) ->
-  lastX: event.clientX
-  lastY: event.clientY
-  dragging: true
+mouseDown = (event) ->
+  lastX = event.clientX
+  lastY = event.clientY
+  dragging = true
 
-mouseUp: ->
-  dragging: false
+mouseUp = ->
+  dragging = false
 
-mouseMove: (event) ->
+mouseMove = (event) ->
   if dragging
     yaw += (event.clientX - lastX) * 0.5
     pitch += (event.clientY - lastY) * -0.5
     gameScene
       .setData({yaw: yaw, pitch: pitch})
       .render()
-    lastX: event.clientX
-    lastY: event.clientY
+    lastX = event.clientX
+    lastY = event.clientY
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
@@ -207,10 +192,9 @@ canvas.addEventListener('mouseup', mouseUp, true)
 ###
 Game logic
 ###
-towers: new Array 300
+towers = new Array 300
 for c in [0...300]
   towers[c] = 0
-
 
 towers[0] = 1
 towers[1] = 1
@@ -246,15 +230,15 @@ towers[298] = 2
 towers[299] = 1
 
 
-createTowers: (towers) ->
+createTowers = (towers) ->
   for iz in [0...3]
     for iy in [0...10]
       for ix in [0...10]
-        t: towers[iz * 100 + iy * 10 + ix]
+        t = towers[iz * 100 + iy * 10 + ix]
         if t != 0
           switch t
-            when 1 then towerNode: new SceneJS.Instance  { uri: "../ArcherTower" }
-            when 2 then towerNode: new SceneJS.Instance  { uri: "../CatapultTower" }
+            when 1 then towerNode = new SceneJS.Instance  { uri: "../ArcherTower" }
+            when 2 then towerNode = new SceneJS.Instance  { uri: "../CatapultTower" }
             else 
               alert "" + (iz * 100 + iy * 10 + ix) + " : " + t
           levels[iz].addNode(
