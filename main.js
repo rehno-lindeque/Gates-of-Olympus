@@ -99,17 +99,25 @@
     },
     specular: 0.9,
     shine: 6.0
+  }, SceneJS.scale({
+    x: 0.8,
+    y: 0.8,
+    z: 0.8
   }, SceneJS.geometry({
     type: "plane0",
     primitive: "triangles",
     positions: [-15, 15, 15, 15, 15, 15, 15, -15, 15, -15, -15, 15],
     indices: [0, 1, 2, 0, 2, 3]
-  }), SceneJS.geometry({
+  })), SceneJS.scale({
+    x: 0.9,
+    y: 0.9,
+    z: 0.9
+  }, SceneJS.geometry({
     type: "plane1",
     primitive: "triangles",
     positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  }), SceneJS.geometry({
+  })), SceneJS.geometry({
     type: "plane2",
     primitive: "triangles",
     positions: [-15, 15, -15, 15, 15, -15, 15, -15, -15, -15, -15, -15],
