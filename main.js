@@ -1,22 +1,67 @@
 (function() {
-  var c, canvas, createTowers, dragging, gameScene, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
+  var archerTowersNode, c, canvas, catapultTowersNode, createTowers, dragging, gameScene, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
   /*
   Olympus Tower Defence
   Copyright (C) 2010, Rehno Lindeque.
   */
   /*
-  The main scene definition
+  Tower definitions
+  */
+  archerTowersNode = function(sid) {
+    return SceneJS.material({
+      baseColor: {
+        r: 0.37,
+        g: 0.26,
+        b: 0.115
+      },
+      specularColor: {
+        r: 0.9,
+        g: 0.9,
+        b: 0.9
+      },
+      specular: 0.0,
+      shine: 0.0
+    }, SceneJS.node({
+      sid: sid
+    }));
+  };
+  catapultTowersNode = function(sid) {
+    return SceneJS.material({
+      baseColor: {
+        r: 0.2,
+        g: 0.2,
+        b: 0.2
+      },
+      specularColor: {
+        r: 0.9,
+        g: 0.9,
+        b: 0.9
+      },
+      specular: 0.0,
+      shine: 0.0
+    }, SceneJS.node({
+      sid: sid
+    }));
+  };
+  /*
+  Level definitions
   */
   levels = new Array(3);
-  levels[0] = SceneJS.node({
-    sid: "level0"
-  });
-  levels[1] = SceneJS.node({
-    sid: "level1"
-  });
-  levels[2] = SceneJS.node({
-    sid: "level2"
-  });
+  levels[0] = {
+    archerTowers: archerTowersNode("archerTowers0"),
+    catapultTowers: catapultTowersNode("catapultTowers0")
+  };
+  levels[1] = {
+    archerTowers: archerTowersNode("archerTowers1"),
+    catapultTowers: catapultTowersNode("catapultTowers1")
+  };
+  levels[2] = {
+    archerTowers: archerTowersNode("archerTowers2"),
+    catapultTowers: catapultTowersNode("catapultTowers2")
+  };
+  /*
+  The main scene definition
+  */
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
   }, SceneJS.lights({
@@ -72,38 +117,12 @@
     };
   }, SceneJS.symbol({
     sid: "ArcherTower"
-  }, SceneJS.material({
-    baseColor: {
-      r: 0.37,
-      g: 0.26,
-      b: 0.115
-    },
-    specularColor: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, BlenderExport.ArcherTower())), SceneJS.symbol({
+  }, BlenderExport.ArcherTower()), SceneJS.symbol({
     sid: "CatapultTower"
-  }, SceneJS.material({
-    baseColor: {
-      r: 0.2,
-      g: 0.2,
-      b: 0.2
-    },
-    specularColor: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, BlenderExport.CatapultTower())), SceneJS.scale({
-    x: 0.4,
-    y: 0.4,
-    z: 0.4
+  }, BlenderExport.CatapultTower()), SceneJS.scale({
+    x: 0.3,
+    y: 0.3,
+    z: 0.3
   }, SceneJS.material({
     baseColor: {
       r: 0.7,
@@ -117,30 +136,34 @@
     },
     specular: 0.9,
     shine: 6.0
+  }, SceneJS.translate({
+    z: 25
   }, SceneJS.scale({
-    x: 0.8,
-    y: 0.8,
-    z: 0.8
+    x: 0.75,
+    y: 0.75,
+    z: 0.75
   }, SceneJS.geometry({
     type: "plane0",
     primitive: "triangles",
-    positions: [-15, 15, 15, 15, 15, 15, 15, -15, 15, -15, -15, 15],
+    positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  }), levels[0]), SceneJS.scale({
-    x: 0.9,
-    y: 0.9,
-    z: 0.9
+  }), levels[0].archerTowers, levels[0].catapultTowers)), SceneJS.scale({
+    x: 0.875,
+    y: 0.875,
+    z: 0.875
   }, SceneJS.geometry({
     type: "plane1",
     primitive: "triangles",
     positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  }), levels[1]), SceneJS.geometry({
+  }), levels[1].archerTowers, levels[1].catapultTowers), SceneJS.translate({
+    z: -25
+  }, SceneJS.geometry({
     type: "plane2",
     primitive: "triangles",
-    positions: [-15, 15, -15, 15, 15, -15, 15, -15, -15, -15, -15, -15],
+    positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  }), levels[2]))))))));
+  }), levels[2].archerTowers, levels[2].catapultTowers)))))))));
   /*
   Initialization and rendering loop
   */
@@ -215,7 +238,7 @@
   towers[298] = 2;
   towers[299] = 1;
   createTowers = function(towers) {
-    var ix, iy, iz, t, towerNode;
+    var ix, iy, iz, parentNode, t, towerNode;
     for (iz = 0; iz < 3; iz++) {
       for (iy = 0; iy < 10; iy++) {
         for (ix = 0; ix < 10; ix++) {
@@ -225,17 +248,18 @@
               towerNode = new SceneJS.Instance({
                 uri: "../ArcherTower"
               });
+              parentNode = levels[iz].archerTowers;
             } else if (t === 2) {
               towerNode = new SceneJS.Instance({
                 uri: "../CatapultTower"
               });
+              parentNode = levels[iz].catapultTowers;
             } else {
               alert("" + (iz * 100 + iy * 10 + ix) + " : " + t);
             }
-            levels[iz].addNode(new SceneJS.Translate({
+            parentNode.addNode(new SceneJS.Translate({
               x: 3.0 * (ix - 5),
-              y: 3.0 * (iy - 5),
-              z: 15.0 * (1 - iz)
+              y: 3.0 * (iy - 5)
             }, towerNode));
           }
         }
