@@ -1,10 +1,9 @@
 ###
-Gates of Olympus
-A Tower Defense game
+Gates of Olympus (A multi-layer Tower Defense game...)
 Copyright 2010, Rehno Lindeque.
 
-This game is licensed under GPL Version 2. 
-See http://gatesofolympus.com/LICENSE for more information.
+* Please visit http://gatesofolympus.com/.
+* This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
 #BillboardPlane = ->
@@ -69,7 +68,7 @@ gameScene = SceneJS.scene(
       type:          "dir"
       color:         { r: 1.0, g: 1.0, b: 1.0 }
       diffuse:       true
-      specular:      false
+      specular:      true
       dir:           { x: 1.0, y: 1.0, z: -1.0 }
     }]
   }
@@ -189,11 +188,9 @@ gameScene = SceneJS.scene(
 Initialization and rendering loop
 ###
 
+# Camera parameters
 yaw = 0
 pitch = 0
-lastX = 0
-lastY = 0
-dragging = false
 
 gameScene
   .setData({yaw: yaw, pitch: pitch})
@@ -201,32 +198,14 @@ gameScene
 
 canvas = document.getElementById(gameScene.getCanvasId())
 
-mouseDown = (event) ->
-  lastX = event.clientX
-  lastY = event.clientY
-  dragging = true
-
-mouseUp = ->
-  dragging = false
-
-mouseMove = (event) ->
-  if dragging
-    yaw += (event.clientX - lastX) * 0.5
-    pitch += (event.clientY - lastY) * -0.5
-    gameScene
-      .setData({yaw: yaw, pitch: pitch})
-      .render()
-    lastX = event.clientX
-    lastY = event.clientY
-
-canvas.addEventListener('mousedown', mouseDown, true)
-canvas.addEventListener('mousemove', mouseMove, true)
-canvas.addEventListener('mouseup', mouseUp, true)
-
-
 ###
 Game logic
 ###
+
+# Game inputs
+currentTowerSelection = -1
+
+# Level data
 towers = new Array 300
 for c in [0...300]
   towers[c] = 0
@@ -293,4 +272,40 @@ createTowers = (towers) ->
 
 createTowers towers
 
+###
+User input 
+###
+
+# Mouse inputs
+lastX = 0
+lastY = 0
+dragging = false
+
+handleKeyDown = (event) ->
+  switch String.fromCharCode(event.keyCode)
+    when 1 then currentTowerSelection =  1
+    when 2 then currentTowerSelection =  2
+    else        currentTowerSelection = -1
+
+mouseDown = (event) ->
+  lastX = event.clientX
+  lastY = event.clientY
+  dragging = true
+
+mouseUp = ->
+  dragging = false
+
+mouseMove = (event) ->
+  if dragging
+    yaw += (event.clientX - lastX) * 0.5
+    pitch += (event.clientY - lastY) * -0.5
+    gameScene
+      .setData({yaw: yaw, pitch: pitch})
+      .render()
+    lastX = event.clientX
+    lastY = event.clientY
+
+canvas.addEventListener('mousedown', mouseDown, true)
+canvas.addEventListener('mousemove', mouseMove, true)
+canvas.addEventListener('mouseup', mouseUp, true)
 

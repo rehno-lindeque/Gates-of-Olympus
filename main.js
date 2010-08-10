@@ -1,8 +1,11 @@
 (function() {
-  var archerTowersNode, c, canvas, catapultTowersNode, createTowers, dragging, gameScene, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
+  var archerTowersNode, c, canvas, catapultTowersNode, createTowers, currentTowerSelection, dragging, gameScene, handleKeyDown, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
   /*
-  Olympus Tower Defence
-  Copyright (C) 2010, Rehno Lindeque.
+  Gates of Olympus (A multi-layer Tower Defense game...)
+  Copyright 2010, Rehno Lindeque.
+
+  * Please visit http://gatesofolympus.com/.
+  * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
   */
   /*
   Tower definitions
@@ -80,7 +83,7 @@
           b: 1.0
         },
         diffuse: true,
-        specular: false,
+        specular: true,
         dir: {
           x: 1.0,
           y: 1.0,
@@ -175,40 +178,15 @@
   */
   yaw = 0;
   pitch = 0;
-  lastX = 0;
-  lastY = 0;
-  dragging = false;
   gameScene.setData({
     yaw: yaw,
     pitch: pitch
   }).render();
   canvas = document.getElementById(gameScene.getCanvasId());
-  mouseDown = function(event) {
-    lastX = event.clientX;
-    lastY = event.clientY;
-    return (dragging = true);
-  };
-  mouseUp = function() {
-    return (dragging = false);
-  };
-  mouseMove = function(event) {
-    if (dragging) {
-      yaw += (event.clientX - lastX) * 0.5;
-      pitch += (event.clientY - lastY) * -0.5;
-      gameScene.setData({
-        yaw: yaw,
-        pitch: pitch
-      }).render();
-      lastX = event.clientX;
-      return (lastY = event.clientY);
-    }
-  };
-  canvas.addEventListener('mousedown', mouseDown, true);
-  canvas.addEventListener('mousemove', mouseMove, true);
-  canvas.addEventListener('mouseup', mouseUp, true);
   /*
   Game logic
   */
+  currentTowerSelection = -1;
   towers = new Array(300);
   for (c = 0; c < 300; c++) {
     towers[c] = 0;
@@ -274,4 +252,43 @@
     return null;
   };
   createTowers(towers);
+  /*
+  User input
+  */
+  lastX = 0;
+  lastY = 0;
+  dragging = false;
+  handleKeyDown = function(event) {
+    var _a;
+    if ((_a = String.fromCharCode(event.keyCode)) === 1) {
+      return (currentTowerSelection = 1);
+    } else if (_a === 2) {
+      return (currentTowerSelection = 2);
+    } else {
+      return (currentTowerSelection = -1);
+    }
+  };
+  mouseDown = function(event) {
+    lastX = event.clientX;
+    lastY = event.clientY;
+    return (dragging = true);
+  };
+  mouseUp = function() {
+    return (dragging = false);
+  };
+  mouseMove = function(event) {
+    if (dragging) {
+      yaw += (event.clientX - lastX) * 0.5;
+      pitch += (event.clientY - lastY) * -0.5;
+      gameScene.setData({
+        yaw: yaw,
+        pitch: pitch
+      }).render();
+      lastX = event.clientX;
+      return (lastY = event.clientY);
+    }
+  };
+  canvas.addEventListener('mousedown', mouseDown, true);
+  canvas.addEventListener('mousemove', mouseMove, true);
+  canvas.addEventListener('mouseup', mouseUp, true);
 })();
