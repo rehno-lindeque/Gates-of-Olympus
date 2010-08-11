@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, handleKeyDown, interval, lastX, lastY, levelNodes, levels, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, sqrGridSize, square, towers, yaw;
+  var _a, a, archerTowersNode, boo, c, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, foo, gameScene, gridSize, handleKeyDown, interval, lastX, lastY, levelNodes, levels, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -22,8 +22,26 @@
   /*
   Tower definitions
   */
+  foo = function(x, y) {
+    return null;
+  };
+  boo = function(z) {
+    return null;
+  };
+  a = function(b) {
+    var c;
+    c = 0;
+    return foo({
+      xxx: 0
+    }, boo(0));
+  };
+  c;
   archerTowersNode = function(sid) {
-    return SceneJS.material({
+    var node;
+    node = SceneJS.node({
+      sid: sid
+    });
+    SceneJS.material({
       baseColor: {
         r: 0.37,
         g: 0.26,
@@ -39,9 +57,14 @@
     }, SceneJS.node({
       sid: sid
     }));
+    return node;
   };
   catapultTowersNode = function(sid) {
-    return SceneJS.material({
+    var node;
+    node = SceneJS.node({
+      sid: sid
+    });
+    SceneJS.material({
       baseColor: {
         r: 1.0,
         g: 1.0,
@@ -60,9 +83,8 @@
           uri: "http://scenejs.org/library/textures/stone/BrickWall.jpg"
         }
       ]
-    }, SceneJS.node({
-      sid: sid
-    })));
+    }, node));
+    return node;
   };
   /*
   Level definitions
@@ -155,19 +177,6 @@
     x: 0.3,
     y: 0.3,
     z: 0.3
-  }, SceneJS.material({
-    baseColor: {
-      r: 0.7,
-      g: 0.7,
-      b: 0.7
-    },
-    specularColor: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    specular: 0.9,
-    shine: 6.0
   }, SceneJS.translate({
     z: 25
   }, SceneJS.scale({
@@ -180,7 +189,7 @@
     z: 0.875
   }, platformGeometry("level1"), levelNodes[1].archerTowers, levelNodes[1].catapultTowers), SceneJS.translate({
     z: -25
-  }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers)))))))));
+  }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers))))))));
   /*
   Initialization and rendering loop
   */

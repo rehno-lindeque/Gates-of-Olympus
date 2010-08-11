@@ -31,7 +31,21 @@ levels = 3
 Tower definitions
 ###
 
+#foo = (x,y) -> null
+#boo = (z) -> null
+#a = (b) -> 
+#  c = 0
+#  foo({
+#      xxx: 0
+#    }
+#    boo(
+#      0
+#    )
+#  )
+#  c
+
 archerTowersNode = (sid) -> 
+  node = SceneJS.node {sid: sid}
   SceneJS.material(
     {
       baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
@@ -41,20 +55,23 @@ archerTowersNode = (sid) ->
     }
     SceneJS.node {sid: sid}
   ) # material
-  
+  node
+
 catapultTowersNode = (sid) -> 
-    SceneJS.material(
-      {
-        baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
-        specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-        specular:       0.0
-        shine:          0.0
-      }
+  node = SceneJS.node {sid: sid}
+  SceneJS.material({
+      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+      specular:       0.0
+      shine:          0.0
+    }
     SceneJS.texture(
-    { layers: [{ uri:"http://scenejs.org/library/textures/stone/BrickWall.jpg" }]}
-    SceneJS.node {sid: sid}
-  ) # texture
+      { layers: [{ uri:"http://scenejs.org/library/textures/stone/BrickWall.jpg" }]}
+      node
+    ) # texture
   ) # material
+  node
+
 
 ###
 Level definitions
@@ -141,12 +158,12 @@ gameScene = SceneJS.scene(
             SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
             SceneJS.scale(
               {x:0.3,y:0.3,z:0.3}
-              SceneJS.material({
-                baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-                specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-                specular:       0.9
-                shine:          6.0
-              }
+              #SceneJS.material({
+              #  baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+              #  specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+              #  specular:       0.9
+              #  shine:          6.0
+              #}
               SceneJS.translate(
                 {z:25}
                 SceneJS.scale(
@@ -154,7 +171,7 @@ gameScene = SceneJS.scene(
                   platformGeometry("level0")
                   levelNodes[0].archerTowers
                   levelNodes[0].catapultTowers
-                ))
+                )
                 SceneJS.scale(
                   {x:0.875,y:0.875,z:0.875}
                   platformGeometry("level1")
@@ -167,7 +184,7 @@ gameScene = SceneJS.scene(
                   levelNodes[2].archerTowers
                   levelNodes[2].catapultTowers
                 ) # translate
-              ) # material  (planes)
+              #) # material  (planes)
             ) # scale
           ) # rotate
         ) # rotate
