@@ -95,84 +95,84 @@ The main scene definition
 gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
   SceneJS.lights({
-    sources: [{
-      type:          "dir"
-      color:         { r: 1.0, g: 1.0, b: 1.0 }
-      diffuse:       true
-      specular:      true
-      dir:           { x: 1.0, y: 1.0, z: -1.0 }
-    }]
-  }
-  SceneJS.lookAt({
-    eye : { x: 0.0, y: 10.0, z: 10.0 }
-    look : { x: 0.0, y: 0.0 }
-    up : { z: 1.0 }
-  }
-  # Background image (TODO)
-  #SceneJS.stationary(
-  #  {}
-  #  SceneJS.renderer(
-  #    {enableTexture2D : true}
-  #    SceneJS.scale(
-  #      { x: 100.0, y: 100.0, z: 100.0 },
-  #      SceneJS.objects.cube
-  #    ) # scale
-  #  ) # renderer
-  #) # stationary
-  SceneJS.camera({
-     optics: {
-      type:   "ortho"
-      left:   -10.0 * (1020.0 / 600.0)
-      right:   10.0 * (1020.0 / 600.0)
-      bottom: -10.0
-      top:     10.0
-      near:    0.1
-      far:     300.0
-    }}
-  SceneJS.rotate((data) -> 
-    {
-      angle: data.get('pitch')
-      x: 1.0
+      sources: [{
+        type:          "dir"
+        color:         { r: 1.0, g: 1.0, b: 1.0 }
+        diffuse:       true
+        specular:      true
+        dir:           { x: 1.0, y: 1.0, z: -1.0 }
+      }]
     }
-  SceneJS.rotate((data) -> 
-    {
-      angle: data.get('yaw')
-      z: 1.0
-    }
-  SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
-  SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
-  SceneJS.scale({x:0.3,y:0.3,z:0.3}
-  SceneJS.material({
-    baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-    specular:       0.9
-    shine:          6.0
-  }
-  SceneJS.translate({z:25}
-  SceneJS.scale(
-    {x:0.75,y:0.75,z:0.75}
-    platformGeometry("level0")
-    levelNodes[0].archerTowers
-    levelNodes[0].catapultTowers
-  ))
-  SceneJS.scale(
-    {x:0.875,y:0.875,z:0.875}
-    platformGeometry("level1")
-    levelNodes[1].archerTowers
-    levelNodes[1].catapultTowers
-  ) # scale
-  SceneJS.translate(
-    {z:-25}
-    platformGeometry("level2")
-    levelNodes[2].archerTowers
-    levelNodes[2].catapultTowers
-  ) # translate
-  ) # material  (planes)
-  ) # scale
-  ) # rotate
-  ) # rotate
-  ) # lookAt
-  ) # perspective
+    SceneJS.lookAt({
+        eye:  { x: 0.0, y: 10.0, z: 10.0 }
+        look: { x: 0.0, y: 0.0 }
+        up:   { z: 1.0 }
+      }
+      # Background image (TODO)
+      #SceneJS.stationary(
+      #  {}
+      #  SceneJS.renderer(
+      #    {enableTexture2D : true}
+      #    SceneJS.scale(
+      #      { x: 100.0, y: 100.0, z: 100.0 },
+      #      SceneJS.objects.cube
+      #    ) # scale
+      #  ) # renderer
+      #) # stationary
+      SceneJS.camera({
+         optics: {
+          type:   "ortho"
+          left:   -10.0 * (1020.0 / 600.0)
+          right:   10.0 * (1020.0 / 600.0)
+          bottom: -10.0
+          top:     10.0
+          near:    0.1
+          far:     300.0
+        }}
+        SceneJS.rotate((data) -> {
+            angle: data.get('pitch')
+            x: 1.0
+          }
+          SceneJS.rotate((data) -> {
+              angle: data.get('yaw')
+              z: 1.0
+            }
+            SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
+            SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
+            SceneJS.scale(
+              {x:0.3,y:0.3,z:0.3}
+              SceneJS.material({
+                baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+                specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+                specular:       0.9
+                shine:          6.0
+              }
+              SceneJS.translate(
+                {z:25}
+                SceneJS.scale(
+                  {x:0.75,y:0.75,z:0.75}
+                  platformGeometry("level0")
+                  levelNodes[0].archerTowers
+                  levelNodes[0].catapultTowers
+                ))
+                SceneJS.scale(
+                  {x:0.875,y:0.875,z:0.875}
+                  platformGeometry("level1")
+                  levelNodes[1].archerTowers
+                  levelNodes[1].catapultTowers
+                ) # scale
+                SceneJS.translate(
+                  {z:-25}
+                  platformGeometry("level2")
+                  levelNodes[2].archerTowers
+                  levelNodes[2].catapultTowers
+                ) # translate
+              ) # material  (planes)
+            ) # scale
+          ) # rotate
+        ) # rotate
+      ) # camera
+    ) # lookAt
   ) # lights
 ) # scene
 
@@ -252,9 +252,6 @@ createTowers = (towers) ->
               parentNode = levelNodes[iz].archerTowers
             when 2 
               towerNode = SceneJS.instance  { uri: "../CatapultTower" }
-                #SceneJS.texture(
-                #  { layers: [{ uri:"textures/catapult.jpg" }]}
-                #  SceneJS.instance  { uri: "../CatapultTower" } )
               parentNode = levelNodes[iz].catapultTowers
             else 
               alert "" + (iz * sqrGridSize + iy * gridSize + ix) + " : " + t
