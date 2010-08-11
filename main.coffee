@@ -292,13 +292,17 @@ mouseMove = (event) ->
   if dragging
     yaw += (event.clientX - lastX) * 0.5
     pitch += (event.clientY - lastY) * -0.5
-    gameScene
-      .setData({yaw: yaw, pitch: pitch})
-      .render()
     lastX = event.clientX
     lastY = event.clientY
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
 canvas.addEventListener('mouseup', mouseUp, true)
+
+window.render = ->
+  gameScene
+    .setData({yaw: yaw, pitch: pitch})
+    .render();
+
+interval = window.setInterval("window.render()", 10);
 

@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, handleKeyDown, lastX, lastY, levelNodes, levels, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, sqrGridSize, square, towers, yaw;
+  var _a, archerTowersNode, c, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, handleKeyDown, interval, lastX, lastY, levelNodes, levels, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -293,10 +293,6 @@
     if (dragging) {
       yaw += (event.clientX - lastX) * 0.5;
       pitch += (event.clientY - lastY) * -0.5;
-      gameScene.setData({
-        yaw: yaw,
-        pitch: pitch
-      }).render();
       lastX = event.clientX;
       return (lastY = event.clientY);
     }
@@ -304,4 +300,11 @@
   canvas.addEventListener('mousedown', mouseDown, true);
   canvas.addEventListener('mousemove', mouseMove, true);
   canvas.addEventListener('mouseup', mouseUp, true);
+  window.render = function() {
+    return gameScene.setData({
+      yaw: yaw,
+      pitch: pitch
+    }).render();
+  };
+  interval = window.setInterval("window.render()", 10);
 })();
