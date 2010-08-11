@@ -107,8 +107,8 @@
   }, SceneJS.camera({
     optics: {
       type: "ortho",
-      left: -10.0,
-      right: 10.0,
+      left: -10.0 * (1020.0 / 600.0),
+      right: 10.0 * (1020.0 / 600.0),
       bottom: -10.0,
       top: 10.0,
       near: 0.1,
