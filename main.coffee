@@ -12,6 +12,20 @@ Copyright 2010, Rehno Lindeque.
 #  if this._fixedParams
 #    this._init(this._getParams())
 
+###
+Auxiliary functions
+###
+
+square = (x) -> x*x
+
+###
+Globals
+###
+
+# Platforms
+gridSize = 12
+sqrGridSize = square(gridSize)
+levels = 3
 
 ###
 Tower definitions
@@ -46,16 +60,33 @@ catapultTowersNode = (sid) ->
 Level definitions
 ###
 
-levels = new Array 3
-levels[0] = {
+# Scene graph group nodes
+levelNodes = new Array 3
+levelNodes[0] = {
   archerTowers:   archerTowersNode "archerTowers0"
   catapultTowers: catapultTowersNode "catapultTowers0" }
-levels[1] = {
+levelNodes[1] = {
   archerTowers:   archerTowersNode "archerTowers1"
   catapultTowers: catapultTowersNode "catapultTowers1" }
-levels[2] = {
+levelNodes[2] = {
   archerTowers:   archerTowersNode "archerTowers2"
   catapultTowers: catapultTowersNode "catapultTowers2" }
+
+# Platform nodes
+cellScale = 3.0    # size of a grid cell in world space
+platformGeometry = (type) -> 
+  s = gridSize * cellScale * 0.5  # scale size of the grid in world space
+  SceneJS.geometry({
+    type: type
+    primitive: "triangles"
+    positions: [
+        -s,  s,  0
+         s,  s,  0
+         s, -s,  0
+        -s, -s,  0
+      ]
+    indices: [0,  1,  2, 0, 2, 3]
+  })
 
 ###
 The main scene definition
@@ -108,72 +139,33 @@ gameScene = SceneJS.scene(
       angle: data.get('yaw')
       z: 1.0
     }
-  SceneJS.symbol(
-    {sid:"ArcherTower"}
-    BlenderExport.ArcherTower()
-  ) # symbol
-  SceneJS.symbol(
-    {sid:"CatapultTower"}
-    #SceneJS.texture({ layers: [{ uri:"http://scenejs.org/library/textures/stone/BrickWall.jpg" }]}
-    BlenderExport.CatapultTower() 
-  ) # symbol  
+  SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
+  SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
   SceneJS.scale({x:0.3,y:0.3,z:0.3}
   SceneJS.material({
     baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
     specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
     specular:       0.9
     shine:          6.0
-  },
+  }
   SceneJS.translate({z:25}
   SceneJS.scale(
     {x:0.75,y:0.75,z:0.75}
-    SceneJS.geometry({
-      type: "plane0"
-      primitive: "triangles"
-      positions: 
-        [
-          -15,  15,  0
-           15,  15,  0
-           15, -15,  0
-          -15, -15,  0
-        ]
-      indices: [0,  1,  2, 0, 2, 3]
-    })
-    levels[0].archerTowers
-    levels[0].catapultTowers
+    platformGeometry("level0")
+    levelNodes[0].archerTowers
+    levelNodes[0].catapultTowers
   ))
   SceneJS.scale(
     {x:0.875,y:0.875,z:0.875}
-    SceneJS.geometry({
-      type: "plane1"
-      primitive: "triangles"
-      positions: 
-        [
-          -15,  15,  0
-           15,  15,  0
-           15, -15,  0
-          -15, -15,  0
-        ]
-      indices: [0,  1,  2, 0, 2, 3]
-    })
-    levels[1].archerTowers
-    levels[1].catapultTowers
+    platformGeometry("level1")
+    levelNodes[1].archerTowers
+    levelNodes[1].catapultTowers
   ) # scale
-  SceneJS.translate({z:-25}
-    SceneJS.geometry({
-      type: "plane2"
-      primitive: "triangles"
-      positions: 
-        [
-          -15,  15, 0
-           15,  15, 0 
-           15, -15, 0
-          -15, -15, 0
-        ]
-      indices: [0,  1,  2, 0, 2, 3]
-    })
-    levels[2].archerTowers
-    levels[2].catapultTowers
+  SceneJS.translate(
+    {z:-25}
+    platformGeometry("level2")
+    levelNodes[2].archerTowers
+    levelNodes[2].catapultTowers
   ) # translate
   ) # material  (planes)
   ) # scale
@@ -202,12 +194,12 @@ canvas = document.getElementById(gameScene.getCanvasId())
 Game logic
 ###
 
-# Game inputs
+# Logical inputs
 currentTowerSelection = -1
 
-# Level data
-towers = new Array 300
-for c in [0...300]
+# Platforms
+towers = new Array (sqrGridSize * levels)
+for c in [0...(sqrGridSize * levels)]
   towers[c] = 0
 
 towers[0] = 1
@@ -220,17 +212,21 @@ towers[6] = 1
 towers[7] = 2
 towers[8] = 1
 towers[9] = 1
+towers[10] = 1
+towers[11] = 1
 
-towers[190] = 1
-towers[191] = 2
-towers[192] = 1
-towers[193] = 1
-towers[194] = 1
-towers[195] = 2
-towers[196] = 1
-towers[197] = 2
-towers[198] = 1
-towers[199] = 1
+towers[sqrGridSize+0] = 1
+towers[sqrGridSize+1] = 2
+towers[sqrGridSize+2] = 1
+towers[sqrGridSize+3] = 1
+towers[sqrGridSize+4] = 1
+towers[sqrGridSize+5] = 2
+towers[sqrGridSize+6] = 1
+towers[sqrGridSize+7] = 2
+towers[sqrGridSize+8] = 1
+towers[sqrGridSize+9] = 1
+towers[sqrGridSize+10] = 1
+towers[sqrGridSize+11] = 1
 
 towers[290] = 1
 towers[291] = 1
@@ -245,26 +241,26 @@ towers[299] = 1
 
 
 createTowers = (towers) ->
-  for iz in [0...3]
-    for iy in [0...10]
-      for ix in [0...10]
-        t = towers[iz * 100 + iy * 10 + ix]
+  for iz in [0...levels]
+    for iy in [0...gridSize]
+      for ix in [0...gridSize]
+        t = towers[iz * sqrGridSize + iy * gridSize + ix]
         if t != 0
           switch t
             when 1 
               towerNode = SceneJS.instance  { uri: "../ArcherTower" }
-              parentNode = levels[iz].archerTowers
+              parentNode = levelNodes[iz].archerTowers
             when 2 
               towerNode = SceneJS.instance  { uri: "../CatapultTower" }
                 #SceneJS.texture(
                 #  { layers: [{ uri:"textures/catapult.jpg" }]}
                 #  SceneJS.instance  { uri: "../CatapultTower" } )
-              parentNode = levels[iz].catapultTowers
+              parentNode = levelNodes[iz].catapultTowers
             else 
-              alert "" + (iz * 100 + iy * 10 + ix) + " : " + t
+              alert "" + (iz * sqrGridSize + iy * gridSize + ix) + " : " + t
           parentNode.addNode(
             SceneJS.translate(
-              {x: 3.0 * (ix-5), y: 3.0 * (iy-5)}
+              {x: cellScale * (ix - gridSize / 2), y: cellScale * (iy - gridSize / 2)}
               towerNode
             )
           )

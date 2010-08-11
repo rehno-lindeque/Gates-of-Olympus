@@ -1,5 +1,5 @@
 (function() {
-  var archerTowersNode, c, canvas, catapultTowersNode, createTowers, currentTowerSelection, dragging, gameScene, handleKeyDown, lastX, lastY, levels, mouseDown, mouseMove, mouseUp, pitch, towers, yaw;
+  var _a, archerTowersNode, c, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, handleKeyDown, lastX, lastY, levelNodes, levels, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -7,6 +7,18 @@
   * Please visit http://gatesofolympus.com/.
   * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
   */
+  /*
+  Auxiliary functions
+  */
+  square = function(x) {
+    return x * x;
+  };
+  /*
+  Globals
+  */
+  gridSize = 12;
+  sqrGridSize = square(gridSize);
+  levels = 3;
   /*
   Tower definitions
   */
@@ -55,18 +67,29 @@
   /*
   Level definitions
   */
-  levels = new Array(3);
-  levels[0] = {
+  levelNodes = new Array(3);
+  levelNodes[0] = {
     archerTowers: archerTowersNode("archerTowers0"),
     catapultTowers: catapultTowersNode("catapultTowers0")
   };
-  levels[1] = {
+  levelNodes[1] = {
     archerTowers: archerTowersNode("archerTowers1"),
     catapultTowers: catapultTowersNode("catapultTowers1")
   };
-  levels[2] = {
+  levelNodes[2] = {
     archerTowers: archerTowersNode("archerTowers2"),
     catapultTowers: catapultTowersNode("catapultTowers2")
+  };
+  cellScale = 3.0;
+  platformGeometry = function(type) {
+    var s;
+    s = gridSize * cellScale * 0.5;
+    return SceneJS.geometry({
+      type: type,
+      primitive: "triangles",
+      positions: [-s, s, 0, s, s, 0, s, -s, 0, -s, -s, 0],
+      indices: [0, 1, 2, 0, 2, 3]
+    });
   };
   /*
   The main scene definition
@@ -151,28 +174,13 @@
     x: 0.75,
     y: 0.75,
     z: 0.75
-  }, SceneJS.geometry({
-    type: "plane0",
-    primitive: "triangles",
-    positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
-    indices: [0, 1, 2, 0, 2, 3]
-  }), levels[0].archerTowers, levels[0].catapultTowers)), SceneJS.scale({
+  }, platformGeometry("level0"), levelNodes[0].archerTowers, levelNodes[0].catapultTowers)), SceneJS.scale({
     x: 0.875,
     y: 0.875,
     z: 0.875
-  }, SceneJS.geometry({
-    type: "plane1",
-    primitive: "triangles",
-    positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
-    indices: [0, 1, 2, 0, 2, 3]
-  }), levels[1].archerTowers, levels[1].catapultTowers), SceneJS.translate({
+  }, platformGeometry("level1"), levelNodes[1].archerTowers, levelNodes[1].catapultTowers), SceneJS.translate({
     z: -25
-  }, SceneJS.geometry({
-    type: "plane2",
-    primitive: "triangles",
-    positions: [-15, 15, 0, 15, 15, 0, 15, -15, 0, -15, -15, 0],
-    indices: [0, 1, 2, 0, 2, 3]
-  }), levels[2].archerTowers, levels[2].catapultTowers)))))))));
+  }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers)))))))));
   /*
   Initialization and rendering loop
   */
@@ -187,8 +195,9 @@
   Game logic
   */
   currentTowerSelection = -1;
-  towers = new Array(300);
-  for (c = 0; c < 300; c++) {
+  towers = new Array(sqrGridSize * levels);
+  _a = (sqrGridSize * levels);
+  for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {
     towers[c] = 0;
   }
   towers[0] = 1;
@@ -201,16 +210,20 @@
   towers[7] = 2;
   towers[8] = 1;
   towers[9] = 1;
-  towers[190] = 1;
-  towers[191] = 2;
-  towers[192] = 1;
-  towers[193] = 1;
-  towers[194] = 1;
-  towers[195] = 2;
-  towers[196] = 1;
-  towers[197] = 2;
-  towers[198] = 1;
-  towers[199] = 1;
+  towers[10] = 1;
+  towers[11] = 1;
+  towers[sqrGridSize + 0] = 1;
+  towers[sqrGridSize + 1] = 2;
+  towers[sqrGridSize + 2] = 1;
+  towers[sqrGridSize + 3] = 1;
+  towers[sqrGridSize + 4] = 1;
+  towers[sqrGridSize + 5] = 2;
+  towers[sqrGridSize + 6] = 1;
+  towers[sqrGridSize + 7] = 2;
+  towers[sqrGridSize + 8] = 1;
+  towers[sqrGridSize + 9] = 1;
+  towers[sqrGridSize + 10] = 1;
+  towers[sqrGridSize + 11] = 1;
   towers[290] = 1;
   towers[291] = 1;
   towers[292] = 2;
@@ -223,27 +236,27 @@
   towers[299] = 1;
   createTowers = function(towers) {
     var ix, iy, iz, parentNode, t, towerNode;
-    for (iz = 0; iz < 3; iz++) {
-      for (iy = 0; iy < 10; iy++) {
-        for (ix = 0; ix < 10; ix++) {
-          t = towers[iz * 100 + iy * 10 + ix];
+    for (iz = 0; (0 <= levels ? iz < levels : iz > levels); (0 <= levels ? iz += 1 : iz -= 1)) {
+      for (iy = 0; (0 <= gridSize ? iy < gridSize : iy > gridSize); (0 <= gridSize ? iy += 1 : iy -= 1)) {
+        for (ix = 0; (0 <= gridSize ? ix < gridSize : ix > gridSize); (0 <= gridSize ? ix += 1 : ix -= 1)) {
+          t = towers[iz * sqrGridSize + iy * gridSize + ix];
           if (t !== 0) {
             if (t === 1) {
               towerNode = SceneJS.instance({
                 uri: "../ArcherTower"
               });
-              parentNode = levels[iz].archerTowers;
+              parentNode = levelNodes[iz].archerTowers;
             } else if (t === 2) {
               towerNode = SceneJS.instance({
                 uri: "../CatapultTower"
               });
-              parentNode = levels[iz].catapultTowers;
+              parentNode = levelNodes[iz].catapultTowers;
             } else {
-              alert("" + (iz * 100 + iy * 10 + ix) + " : " + t);
+              alert("" + (iz * sqrGridSize + iy * gridSize + ix) + " : " + t);
             }
             parentNode.addNode(SceneJS.translate({
-              x: 3.0 * (ix - 5),
-              y: 3.0 * (iy - 5)
+              x: cellScale * (ix - gridSize / 2),
+              y: cellScale * (iy - gridSize / 2)
             }, towerNode));
           }
         }
@@ -259,10 +272,10 @@
   lastY = 0;
   dragging = false;
   handleKeyDown = function(event) {
-    var _a;
-    if ((_a = String.fromCharCode(event.keyCode)) === 1) {
+    var _b;
+    if ((_b = String.fromCharCode(event.keyCode)) === 1) {
       return (currentTowerSelection = 1);
-    } else if (_a === 2) {
+    } else if (_b === 2) {
       return (currentTowerSelection = 2);
     } else {
       return (currentTowerSelection = -1);
