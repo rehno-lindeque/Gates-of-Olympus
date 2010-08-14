@@ -53,7 +53,7 @@ catapultTowersNode = (sid) ->
     specular:       0.0
     shine:          0.0
     tex
-  )
+  ) # material
   #node
   tex
 
@@ -129,7 +129,18 @@ lookAtConfig =
       #  ) # renderer
       #) # stationary
 
-platforms = 
+#todo: numberedDais = SceneJS.node
+guiNode = 
+  SceneJS.translate(
+    {x:-8.0,y:-4.0}
+    SceneJS.scale(
+      {x:0.1,y:0.1,z:0.1}
+      SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
+      SceneJS.instance  { uri: "NumberedDais" }
+    ) # scale
+  ) # translate
+
+platformsNode = 
   SceneJS.scale(
     {x:0.3,y:0.3,z:0.3}
     SceneJS.material({
@@ -160,27 +171,37 @@ platforms =
         levelNodes[2].catapultTowers
       ) # translate
     ) # material  (platforms)
-    ) # scale
+  ) # scale
 
 gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
+  SceneJS.lookAt(
+    lookAtConfig
+    SceneJS.camera(
+      cameraConfig
+      guiNode
+    ) # camera
+  ) # lookAt
   SceneJS.lights(
     lightConfig
     SceneJS.lookAt(
       lookAtConfig
       SceneJS.camera(
         cameraConfig
-        SceneJS.rotate((data) ->
-            angle: data.get('pitch')
-            x: 1.0
+        SceneJS.translate(
+          {x:3.0}
           SceneJS.rotate((data) ->
-              angle: data.get('yaw')
-              z: 1.0
-            SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
-            SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
-            platforms
+              angle: data.get('pitch')
+              x: 1.0
+            SceneJS.rotate((data) ->
+                angle: data.get('yaw')
+                z: 1.0
+              SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
+              SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
+              platformsNode
+            ) # rotate
           ) # rotate
-        ) # rotate
+        ) # translate
       ) # camera
     ) # lookAt
   ) # lights

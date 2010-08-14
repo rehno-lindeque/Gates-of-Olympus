@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, platforms, sqrGridSize, square, towers, yaw;
+  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, platformsNode, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -137,7 +137,19 @@
       z: 1.0
     }
   };
-  platforms = SceneJS.scale({
+  guiNode = SceneJS.translate({
+    x: -8.0,
+    y: -4.0
+  }, SceneJS.scale({
+    x: 0.1,
+    y: 0.1,
+    z: 0.1
+  }, SceneJS.symbol({
+    sid: "NumberedDais"
+  }, BlenderExport.NumberedDais()), SceneJS.instance({
+    uri: "NumberedDais"
+  })));
+  platformsNode = SceneJS.scale({
     x: 0.3,
     y: 0.3,
     z: 0.3
@@ -169,7 +181,9 @@
   }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers)));
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
-  }, SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.rotate(function(data) {
+  }, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, guiNode)), SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
+    x: 3.0
+  }, SceneJS.rotate(function(data) {
     return {
       angle: data.get('pitch'),
       x: 1.0
@@ -183,7 +197,7 @@
     sid: "ArcherTower"
   }, BlenderExport.ArcherTower()), SceneJS.symbol({
     sid: "CatapultTower"
-  }, BlenderExport.CatapultTower()), platforms))))));
+  }, BlenderExport.CatapultTower()), platformsNode)))))));
   /*
   Initialization and rendering loop
   */
