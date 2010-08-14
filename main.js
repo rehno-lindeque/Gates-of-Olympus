@@ -199,7 +199,7 @@
   }, SceneJS.texture({
     layers: [
       {
-        uri: "textures/sky.jpg"
+        uri: "textures/sky.png"
       }
     ]
   }, SceneJS.geometry({
