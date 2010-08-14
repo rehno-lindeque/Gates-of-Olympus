@@ -117,19 +117,6 @@ lookAtConfig =
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
 
-      # Background image (TODO)
-      #SceneJS.stationary(
-      #  {}
-      #  SceneJS.renderer(
-      #    {enableTexture2D : true}
-      #    SceneJS.scale(
-      #      { x: 100.0, y: 100.0, z: 100.0 },
-      #      SceneJS.objects.cube
-      #    ) # scale
-      #  ) # renderer
-      #) # stationary
-
-#todo: numberedDais = SceneJS.node
 guiNode = 
   SceneJS.translate(
     {x:-8.0,y:-4.0}
@@ -173,6 +160,27 @@ platformsNode =
     ) # material  (platforms)
   ) # scale
 
+skyboxNode = 
+  SceneJS.scale(
+    { x: 100.0, y: 100.0, z: 100.0 },
+    SceneJS.material(
+      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+      specular:       1.0
+      shine:          0.1
+      SceneJS.texture(
+        {layers: [{uri:"textures/sky.png"}]}
+        SceneJS.geometry(
+          type:       "Skybox"
+          primitive:  "triangles"
+          positions:  [1, 1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1, 1, 1, 1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1, 1, 1, 1, 1,-1,-1, 1,-1,-1, 1, 1,-1, 1, 1,-1, 1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1, 1,-1,-1, 1,-1, 1,-1,-1, 1, 1,-1,-1,-1,-1,-1,-1, 1,-1, 1, 1,-1]
+          uv:         [1,1,0,1,0,0,1,0,0,1,0,0,1,0,1,1,1,0,1,1,0,1,0,0,1,1,0,1,0,0,1,0,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1]
+          indices:    [0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11,12,13,14,12,14,15,16,17,18,16,18,19,20,21,22,20,22,23]
+        ) # geometry
+      ) # texture
+    ) # material
+  ) # scale
+
 gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
   SceneJS.lookAt(
@@ -199,6 +207,7 @@ gameScene = SceneJS.scene(
               SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
               SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
               platformsNode
+              SceneJS.stationary(skyboxNode)
             ) # rotate
           ) # rotate
         ) # translate

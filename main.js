@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, platformsNode, sqrGridSize, square, towers, yaw;
+  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -179,6 +179,36 @@
   }, platformGeometry("level1"), levelNodes[1].archerTowers, levelNodes[1].catapultTowers), SceneJS.translate({
     z: -25
   }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers)));
+  skyboxNode = SceneJS.scale({
+    x: 100.0,
+    y: 100.0,
+    z: 100.0
+  }, SceneJS.material({
+    baseColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specularColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specular: 1.0,
+    shine: 0.1
+  }, SceneJS.texture({
+    layers: [
+      {
+        uri: "textures/sky.jpg"
+      }
+    ]
+  }, SceneJS.geometry({
+    type: "Skybox",
+    primitive: "triangles",
+    positions: [1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1],
+    uv: [1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1],
+    indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+  }))));
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
   }, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, guiNode)), SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
@@ -197,7 +227,7 @@
     sid: "ArcherTower"
   }, BlenderExport.ArcherTower()), SceneJS.symbol({
     sid: "CatapultTower"
-  }, BlenderExport.CatapultTower()), platformsNode)))))));
+  }, BlenderExport.CatapultTower()), platformsNode, SceneJS.stationary(skyboxNode))))))));
   /*
   Initialization and rendering loop
   */
