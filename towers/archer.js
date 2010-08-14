@@ -1,4 +1,3 @@
-var BlenderExport = {};
 BlenderExport.ArcherTower = function() {
 return SceneJS.geometry({
 type: 'ArcherTower',
