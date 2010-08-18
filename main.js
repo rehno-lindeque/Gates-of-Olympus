@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, mouseDown, mouseMove, mouseUp, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towers, yaw;
+  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -13,12 +13,24 @@
   square = function(x) {
     return x * x;
   };
+  min = function(x, y) {
+    return x < y ? x : y;
+  };
+  max = function(x, y) {
+    return x > y ? x : y;
+  };
+  clamp = function(x, y, z) {
+    return (x < y) ? y : (x > z ? z : x);
+  };
   /*
   Globals
   */
   gridSize = 12;
   sqrGridSize = square(gridSize);
   levels = 3;
+  numTowerTypes = 3;
+  guiDiasRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  guiDiasRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   /*
   Tower definitions
   */
@@ -79,7 +91,7 @@
     archerTowers: archerTowersNode("archerTowers2"),
     catapultTowers: catapultTowersNode("catapultTowers2")
   };
-  cellScale = 3.0;
+  cellScale = 2.6;
   platformGeometry = function(type) {
     var s;
     s = gridSize * cellScale * 0.5;
@@ -96,8 +108,8 @@
   cameraConfig = {
     optics: {
       type: "ortho",
-      left: -10.0 * (1020.0 / 600.0),
-      right: 10.0 * (1020.0 / 600.0),
+      left: -10.0 * (1020.0 / 640.0),
+      right: 10.0 * (1020.0 / 640.0),
       bottom: -10.0,
       top: 10.0,
       near: 0.1,
@@ -146,9 +158,19 @@
     z: 0.1
   }, SceneJS.symbol({
     sid: "NumberedDais"
-  }, BlenderExport.NumberedDais()), SceneJS.instance({
+  }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
+    return {
+      angle: guiDiasRotPosition[0],
+      z: 1.0
+    };
+  }, SceneJS.rotate(function(data) {
+    return {
+      angle: guiDiasRotPosition[1],
+      x: 1.0
+    };
+  }, SceneJS.instance({
     uri: "NumberedDais"
-  })));
+  })))));
   platformsNode = SceneJS.scale({
     x: 0.3,
     y: 0.3,
@@ -231,7 +253,7 @@
   /*
   Initialization and rendering loop
   */
-  yaw = 0;
+  yaw = 45;
   pitch = 0;
   gameScene.setData({
     yaw: yaw,
@@ -282,28 +304,28 @@
   towers[298] = 2;
   towers[299] = 1;
   createTowers = function(towers) {
-    var ix, iy, iz, parentNode, t, towerNode;
-    for (iz = 0; (0 <= levels ? iz < levels : iz > levels); (0 <= levels ? iz += 1 : iz -= 1)) {
-      for (iy = 0; (0 <= gridSize ? iy < gridSize : iy > gridSize); (0 <= gridSize ? iy += 1 : iy -= 1)) {
-        for (ix = 0; (0 <= gridSize ? ix < gridSize : ix > gridSize); (0 <= gridSize ? ix += 1 : ix -= 1)) {
-          t = towers[iz * sqrGridSize + iy * gridSize + ix];
+    var cx, cy, cz, parentNode, t, towerNode;
+    for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
+      for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
+        for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
+          t = towers[cz * sqrGridSize + cy * gridSize + cx];
           if (t !== 0) {
             if (t === 1) {
               towerNode = SceneJS.instance({
                 uri: "../ArcherTower"
               });
-              parentNode = levelNodes[iz].archerTowers;
+              parentNode = levelNodes[cz].archerTowers;
             } else if (t === 2) {
               towerNode = SceneJS.instance({
                 uri: "../CatapultTower"
               });
-              parentNode = levelNodes[iz].catapultTowers;
+              parentNode = levelNodes[cz].catapultTowers;
             } else {
-              alert("" + (iz * sqrGridSize + iy * gridSize + ix) + " : " + t);
+              alert("" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t);
             }
             parentNode.addNode(SceneJS.translate({
-              x: cellScale * (ix - gridSize / 2),
-              y: cellScale * (iy - gridSize / 2)
+              x: cellScale * (cx - gridSize / 2),
+              y: cellScale * (cy - gridSize / 2)
             }, towerNode));
           }
         }
@@ -348,6 +370,18 @@
   canvas.addEventListener('mousemove', mouseMove, true);
   canvas.addEventListener('mouseup', mouseUp, true);
   window.render = function() {
+    for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
+      guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1;
+      if (guiDiasRotPosition[c] > 0) {
+        guiDiasRotVelocity[c] -= 0.001;
+      }
+      if (guiDiasRotPosition[c] < 0) {
+        guiDiasRotVelocity[c] += 0.001;
+      }
+      guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1);
+      guiDiasRotPosition[c] += guiDiasRotVelocity[c];
+      guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -20.0, 20.0);
+    }
     return gameScene.setData({
       yaw: yaw,
       pitch: pitch

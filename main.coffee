@@ -17,6 +17,9 @@ Auxiliary functions
 ###
 
 square = (x) -> x*x
+min = (x, y) -> if x < y then x else y
+max = (x, y) -> if x > y then x else y
+clamp = (x, y, z) -> if (x < y) then y else (if x > z then z else x)
 
 ###
 Globals
@@ -26,6 +29,20 @@ Globals
 gridSize = 12
 sqrGridSize = square(gridSize)
 levels = 3
+
+# Towers
+numTowerTypes = 3
+
+# State
+guiDiasRotVelocity = [
+  0.0, 0.0
+  0.0, 0.0
+  0.0, 0.0 ]
+
+guiDiasRotPosition = [
+  0.0, 0.0
+  0.0, 0.0
+  0.0, 0.0 ]
 
 ###
 Tower definitions
@@ -74,7 +91,7 @@ levelNodes[2] = {
   catapultTowers: catapultTowersNode "catapultTowers2" }
 
 # Platform nodes
-cellScale = 3.0    # size of a grid cell in world space
+cellScale = 2.6    # size of a grid cell in world space
 platformGeometry = (type) -> 
   s = gridSize * cellScale * 0.5  # scale size of the grid in world space
   SceneJS.geometry({
@@ -96,8 +113,8 @@ The main scene definition
 cameraConfig =
   optics:
     type:   "ortho"
-    left:   -10.0 * (1020.0 / 600.0)
-    right:   10.0 * (1020.0 / 600.0)
+    left:   -10.0 * (1020.0 / 640.0)
+    right:   10.0 * (1020.0 / 640.0)
     bottom: -10.0
     top:     10.0
     near:    0.1
@@ -123,7 +140,15 @@ guiNode =
     SceneJS.scale(
       {x:0.1,y:0.1,z:0.1}
       SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
-      SceneJS.instance  { uri: "NumberedDais" }
+      SceneJS.rotate((data) ->
+          angle: guiDiasRotPosition[0]
+          z: 1.0
+        SceneJS.rotate((data) ->
+            angle: guiDiasRotPosition[1]
+            x: 1.0
+          SceneJS.instance  { uri: "NumberedDais" }
+        ) # rotate (x-axis)
+      ) # rotate (z-axis)
     ) # scale
   ) # translate
 
@@ -197,7 +222,7 @@ gameScene = SceneJS.scene(
       SceneJS.camera(
         cameraConfig
         SceneJS.translate(
-          {x:3.0}
+          x: 3.0
           SceneJS.rotate((data) ->
               angle: data.get('pitch')
               x: 1.0
@@ -221,7 +246,7 @@ Initialization and rendering loop
 ###
 
 # Camera parameters
-yaw = 0
+yaw = 45
 pitch = 0
 
 gameScene
@@ -281,23 +306,23 @@ towers[299] = 1
 
 
 createTowers = (towers) ->
-  for iz in [0...levels]
-    for iy in [0...gridSize]
-      for ix in [0...gridSize]
-        t = towers[iz * sqrGridSize + iy * gridSize + ix]
+  for cz in [0...levels]
+    for cy in [0...gridSize]
+      for cx in [0...gridSize]
+        t = towers[cz * sqrGridSize + cy * gridSize + cx]
         if t != 0
           switch t
             when 1 
               towerNode = SceneJS.instance  { uri: "../ArcherTower" }
-              parentNode = levelNodes[iz].archerTowers
+              parentNode = levelNodes[cz].archerTowers
             when 2 
               towerNode = SceneJS.instance  { uri: "../CatapultTower" }
-              parentNode = levelNodes[iz].catapultTowers
+              parentNode = levelNodes[cz].catapultTowers
             else 
-              alert "" + (iz * sqrGridSize + iy * gridSize + ix) + " : " + t
+              alert "" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t
           parentNode.addNode(
             SceneJS.translate(
-              {x: cellScale * (ix - gridSize / 2), y: cellScale * (iy - gridSize / 2)}
+              {x: cellScale * (cx - gridSize / 2), y: cellScale * (cy - gridSize / 2)}
               towerNode
             )
           )
@@ -340,6 +365,13 @@ canvas.addEventListener('mousemove', mouseMove, true)
 canvas.addEventListener('mouseup', mouseUp, true)
 
 window.render = ->
+  for c in [0...numTowerTypes]
+    guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1
+    guiDiasRotVelocity[c] -= 0.001 if guiDiasRotPosition[c] > 0
+    guiDiasRotVelocity[c] += 0.001 if guiDiasRotPosition[c] < 0
+    guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1)
+    guiDiasRotPosition[c] += guiDiasRotVelocity[c]
+    guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -20.0, 20.0)
   gameScene
     .setData({yaw: yaw, pitch: pitch})
     .render();
