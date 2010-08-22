@@ -37,20 +37,29 @@
   towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"];
   towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"];
   archerTowersNode = function(sid) {
-    return SceneJS.material({
+    var tex;
+    tex = SceneJS.texture({
+      layers: [
+        {
+          uri: towerTextureURI[0]
+        }
+      ]
+    });
+    SceneJS.material({
       baseColor: {
-        r: 0.37,
-        g: 0.26,
-        b: 0.115
+        r: 1.0,
+        g: 1.0,
+        b: 1.0
       },
       specularColor: {
-        r: 0.9,
-        g: 0.9,
-        b: 0.9
+        r: 1.0,
+        g: 1.0,
+        b: 1.0
       },
       specular: 0.0,
       shine: 0.0
-    });
+    }, tex);
+    return tex;
   };
   catapultTowersNode = function(sid) {
     var tex;
@@ -128,7 +137,7 @@
           b: 1.0
         },
         diffuse: true,
-        specular: true,
+        specular: false,
         dir: {
           x: 1.0,
           y: 1.0,

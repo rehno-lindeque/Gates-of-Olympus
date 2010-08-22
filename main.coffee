@@ -52,17 +52,7 @@ towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"]
 towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"]
 
 archerTowersNode = (sid) -> 
-  SceneJS.material(
-    {
-      baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
-      specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-      specular:       0.0
-      shine:          0.0
-    }
-  ) # material
-
-catapultTowersNode = (sid) -> 
-  tex = SceneJS.texture({layers: [{uri: towerTextureURI[1]}]})#, node)
+  tex = SceneJS.texture({layers: [{uri: towerTextureURI[0]}]})
   SceneJS.material(
     baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
     specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
@@ -72,7 +62,16 @@ catapultTowersNode = (sid) ->
   ) # material
   tex
 
-
+catapultTowersNode = (sid) -> 
+  tex = SceneJS.texture({layers: [{uri: towerTextureURI[1]}]})
+  SceneJS.material(
+    baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+    specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+    specular:       0.0
+    shine:          0.0
+    tex
+  ) # material
+  tex
 
 ###
 Level definitions
@@ -125,10 +124,10 @@ lightConfig =
     type:          "dir"
     color:         { r: 1.0, g: 1.0, b: 1.0 }
     diffuse:       true
-    specular:      true
+    specular:      false
     dir:           { x: 1.0, y: 1.0, z: -1.0 }
   ]
-  
+
 lookAtConfig = 
   eye:  { x: 0.0, y: 10.0, z: 10.0 }
   look: { x: 0.0, y: 0.0 }
