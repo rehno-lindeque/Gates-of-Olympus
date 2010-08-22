@@ -48,8 +48,10 @@ guiDiasRotPosition = [
 Tower definitions
 ###
 
+towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"]
+towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"]
+
 archerTowersNode = (sid) -> 
-  #node = SceneJS.node {sid: sid}
   SceneJS.material(
     {
       baseColor:      { r: 0.37, g: 0.26, b: 0.115 }
@@ -57,13 +59,10 @@ archerTowersNode = (sid) ->
       specular:       0.0
       shine:          0.0
     }
-    #SceneJS.node {sid: sid}
   ) # material
-  #node
 
 catapultTowersNode = (sid) -> 
-  #node = SceneJS.node {sid: sid}
-  tex = SceneJS.texture({layers: [{uri:"textures/catapult.jpg"}]})#, node)
+  tex = SceneJS.texture({layers: [{uri: towerTextureURI[1]}]})#, node)
   SceneJS.material(
     baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
     specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
@@ -71,8 +70,9 @@ catapultTowersNode = (sid) ->
     shine:          0.0
     tex
   ) # material
-  #node
   tex
+
+
 
 ###
 Level definitions
@@ -134,20 +134,27 @@ lookAtConfig =
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
 
-guiNode = 
+numberedDaisNode = (index) ->
   SceneJS.translate(
-  {x:-8.0,y:-4.0}
+    {x:index*1.5}
     SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
     SceneJS.rotate((data) ->
-        angle: guiDiasRotPosition[0]
+        angle: guiDiasRotPosition[index*2]
         z: 1.0
       SceneJS.rotate((data) ->
-          angle: guiDiasRotPosition[1]
+          angle: guiDiasRotPosition[index*2 + 1]
           x: 1.0
         SceneJS.instance  { uri: "NumberedDais" }
-        SceneJS.instance  { uri: "../ArcherTower" }
+        SceneJS.instance  { uri: towerURI[index] }
       ) # rotate (x-axis)
     ) # rotate (z-axis)
+  ) # translate
+  
+guiNode = 
+  SceneJS.translate(
+    {x:-8.0,y:-4.0}
+    numberedDaisNode(0)
+    numberedDaisNode(1)
   ) # translate
 
 platformsNode = 
@@ -314,10 +321,10 @@ createTowers = (towers) ->
         if t != 0
           switch t
             when 1 
-              towerNode = SceneJS.instance  { uri: "../ArcherTower" }
+              towerNode = SceneJS.instance  { uri: towerURI[0] }
               parentNode = levelNodes[cz].archerTowers
             when 2 
-              towerNode = SceneJS.instance  { uri: "../CatapultTower" }
+              towerNode = SceneJS.instance  { uri: towerURI[1] }
               parentNode = levelNodes[cz].catapultTowers
             else 
               alert "" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t

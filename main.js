@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towers, yaw;
+  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -34,6 +34,8 @@
   /*
   Tower definitions
   */
+  towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"];
+  towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"];
   archerTowersNode = function(sid) {
     return SceneJS.material({
       baseColor: {
@@ -55,7 +57,7 @@
     tex = SceneJS.texture({
       layers: [
         {
-          uri: "textures/catapult.jpg"
+          uri: towerTextureURI[1]
         }
       ]
     });
@@ -149,26 +151,31 @@
       z: 1.0
     }
   };
+  numberedDaisNode = function(index) {
+    return SceneJS.translate({
+      x: index * 1.5
+    }, SceneJS.symbol({
+      sid: "NumberedDais"
+    }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
+      return {
+        angle: guiDiasRotPosition[index * 2],
+        z: 1.0
+      };
+    }, SceneJS.rotate(function(data) {
+      return {
+        angle: guiDiasRotPosition[index * 2 + 1],
+        x: 1.0
+      };
+    }, SceneJS.instance({
+      uri: "NumberedDais"
+    }), SceneJS.instance({
+      uri: towerURI[index]
+    }))));
+  };
   guiNode = SceneJS.translate({
     x: -8.0,
     y: -4.0
-  }, SceneJS.symbol({
-    sid: "NumberedDais"
-  }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[0],
-      z: 1.0
-    };
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[1],
-      x: 1.0
-    };
-  }, SceneJS.instance({
-    uri: "NumberedDais"
-  }), SceneJS.instance({
-    uri: "../ArcherTower"
-  }))));
+  }, numberedDaisNode(0), numberedDaisNode(1));
   platformsNode = SceneJS.scale({
     x: 1.0,
     y: 1.0,
@@ -312,12 +319,12 @@
           if (t !== 0) {
             if (t === 1) {
               towerNode = SceneJS.instance({
-                uri: "../ArcherTower"
+                uri: towerURI[0]
               });
               parentNode = levelNodes[cz].archerTowers;
             } else if (t === 2) {
               towerNode = SceneJS.instance({
-                uri: "../CatapultTower"
+                uri: towerURI[1]
               });
               parentNode = levelNodes[cz].catapultTowers;
             } else {
