@@ -51,19 +51,8 @@ Tower definitions
 towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"]
 towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"]
 
-archerTowersNode = (sid) -> 
-  tex = SceneJS.texture({layers: [{uri: towerTextureURI[0]}]})
-  SceneJS.material(
-    baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
-    specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-    specular:       0.0
-    shine:          0.0
-    tex
-  ) # material
-  tex
-
-catapultTowersNode = (sid) -> 
-  tex = SceneJS.texture({layers: [{uri: towerTextureURI[1]}]})
+towerNode = (index, sid) -> 
+  tex = SceneJS.texture({layers: [{uri: towerTextureURI[index]}]})
   SceneJS.material(
     baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
     specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
@@ -80,14 +69,14 @@ Level definitions
 # Scene graph group nodes
 levelNodes = new Array 3
 levelNodes[0] = {
-  archerTowers:   archerTowersNode "archerTowers0"
-  catapultTowers: catapultTowersNode "catapultTowers0" }
+  archerTowers:   towerNode(0, "archerTowers0")
+  catapultTowers: towerNode(1, "catapultTowers0") }
 levelNodes[1] = {
-  archerTowers:   archerTowersNode "archerTowers1"
-  catapultTowers: catapultTowersNode "catapultTowers1" }
+  archerTowers:   towerNode(0, "archerTowers1")
+  catapultTowers: towerNode(1, "catapultTowers1") }
 levelNodes[2] = {
-  archerTowers:   archerTowersNode "archerTowers2"
-  catapultTowers: catapultTowersNode "catapultTowers2" }
+  archerTowers:   towerNode(0, "archerTowers2")
+  catapultTowers: towerNode(1, "catapultTowers2") }
 
 # Platform nodes
 cellScale = 0.9    # size of a grid cell in world space
@@ -134,8 +123,10 @@ lookAtConfig =
   up:   { z: 1.0 }
 
 numberedDaisNode = (index) ->
+  node = towerNode(index, "selectTower"+index)
+  node.addNode(SceneJS.instance {uri: towerURI[index]})
   SceneJS.translate(
-    {x:index*1.5}
+    {x:index*-1.5}
     SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
     SceneJS.rotate((data) ->
         angle: guiDiasRotPosition[index*2]
@@ -144,7 +135,7 @@ numberedDaisNode = (index) ->
           angle: guiDiasRotPosition[index*2 + 1]
           x: 1.0
         SceneJS.instance  { uri: "NumberedDais" }
-        SceneJS.instance  { uri: towerURI[index] }
+        node
       ) # rotate (x-axis)
     ) # rotate (z-axis)
   ) # translate
@@ -320,17 +311,17 @@ createTowers = (towers) ->
         if t != 0
           switch t
             when 1 
-              towerNode = SceneJS.instance  { uri: towerURI[0] }
+              node = SceneJS.instance  { uri: towerURI[0] }
               parentNode = levelNodes[cz].archerTowers
             when 2 
-              towerNode = SceneJS.instance  { uri: towerURI[1] }
+              node = SceneJS.instance  { uri: towerURI[1] }
               parentNode = levelNodes[cz].catapultTowers
             else 
               alert "" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t
           parentNode.addNode(
             SceneJS.translate(
               {x: cellScale * (cx - gridSize / 2), y: cellScale * (cy - gridSize / 2)}
-              towerNode
+              node
             )
           )
   null

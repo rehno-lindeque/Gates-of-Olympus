@@ -1,5 +1,5 @@
 (function() {
-  var _a, archerTowersNode, c, cameraConfig, canvas, catapultTowersNode, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -36,37 +36,12 @@
   */
   towerURI = ["../ArcherTower", "../CatapultTower", "../LightningTower"];
   towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"];
-  archerTowersNode = function(sid) {
+  towerNode = function(index, sid) {
     var tex;
     tex = SceneJS.texture({
       layers: [
         {
-          uri: towerTextureURI[0]
-        }
-      ]
-    });
-    SceneJS.material({
-      baseColor: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0
-      },
-      specularColor: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0
-      },
-      specular: 0.0,
-      shine: 0.0
-    }, tex);
-    return tex;
-  };
-  catapultTowersNode = function(sid) {
-    var tex;
-    tex = SceneJS.texture({
-      layers: [
-        {
-          uri: towerTextureURI[1]
+          uri: towerTextureURI[index]
         }
       ]
     });
@@ -91,16 +66,16 @@
   */
   levelNodes = new Array(3);
   levelNodes[0] = {
-    archerTowers: archerTowersNode("archerTowers0"),
-    catapultTowers: catapultTowersNode("catapultTowers0")
+    archerTowers: towerNode(0, "archerTowers0"),
+    catapultTowers: towerNode(1, "catapultTowers0")
   };
   levelNodes[1] = {
-    archerTowers: archerTowersNode("archerTowers1"),
-    catapultTowers: catapultTowersNode("catapultTowers1")
+    archerTowers: towerNode(0, "archerTowers1"),
+    catapultTowers: towerNode(1, "catapultTowers1")
   };
   levelNodes[2] = {
-    archerTowers: archerTowersNode("archerTowers2"),
-    catapultTowers: catapultTowersNode("catapultTowers2")
+    archerTowers: towerNode(0, "archerTowers2"),
+    catapultTowers: towerNode(1, "catapultTowers2")
   };
   cellScale = 0.9;
   platformGeometry = function(type) {
@@ -161,8 +136,13 @@
     }
   };
   numberedDaisNode = function(index) {
+    var node;
+    node = towerNode(index, "selectTower" + index);
+    node.addNode(SceneJS.instance({
+      uri: towerURI[index]
+    }));
     return SceneJS.translate({
-      x: index * 1.5
+      x: index * -1.5
     }, SceneJS.symbol({
       sid: "NumberedDais"
     }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
@@ -177,9 +157,7 @@
       };
     }, SceneJS.instance({
       uri: "NumberedDais"
-    }), SceneJS.instance({
-      uri: towerURI[index]
-    }))));
+    }), node)));
   };
   guiNode = SceneJS.translate({
     x: -8.0,
@@ -320,19 +298,19 @@
   towers[298] = 2;
   towers[299] = 1;
   createTowers = function(towers) {
-    var cx, cy, cz, parentNode, t, towerNode;
+    var cx, cy, cz, node, parentNode, t;
     for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
       for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
         for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
           t = towers[cz * sqrGridSize + cy * gridSize + cx];
           if (t !== 0) {
             if (t === 1) {
-              towerNode = SceneJS.instance({
+              node = SceneJS.instance({
                 uri: towerURI[0]
               });
               parentNode = levelNodes[cz].archerTowers;
             } else if (t === 2) {
-              towerNode = SceneJS.instance({
+              node = SceneJS.instance({
                 uri: towerURI[1]
               });
               parentNode = levelNodes[cz].catapultTowers;
@@ -342,7 +320,7 @@
             parentNode.addNode(SceneJS.translate({
               x: cellScale * (cx - gridSize / 2),
               y: cellScale * (cy - gridSize / 2)
-            }, towerNode));
+            }, node));
           }
         }
       }
