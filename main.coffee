@@ -91,7 +91,7 @@ levelNodes[2] = {
   catapultTowers: catapultTowersNode "catapultTowers2" }
 
 # Platform nodes
-cellScale = 2.6    # size of a grid cell in world space
+cellScale = 0.7    # size of a grid cell in world space
 platformGeometry = (type) -> 
   s = gridSize * cellScale * 0.5  # scale size of the grid in world space
   SceneJS.geometry({
@@ -120,7 +120,7 @@ cameraConfig =
     near:    0.1
     far:     300.0
     
-lightConfig = 
+lightConfig =
   sources: [
     type:          "dir"
     color:         { r: 1.0, g: 1.0, b: 1.0 }
@@ -137,8 +137,8 @@ lookAtConfig =
 guiNode = 
   SceneJS.translate(
     {x:-8.0,y:-4.0}
-    SceneJS.scale(
-      {x:0.1,y:0.1,z:0.1}
+    #SceneJS.scale(
+    #  {x:0.1,y:0.1,z:0.1}
       SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
       SceneJS.rotate((data) ->
           angle: guiDiasRotPosition[0]
@@ -147,14 +147,15 @@ guiNode =
             angle: guiDiasRotPosition[1]
             x: 1.0
           SceneJS.instance  { uri: "NumberedDais" }
+          SceneJS.instance  { uri: "../ArcherTower" }
         ) # rotate (x-axis)
       ) # rotate (z-axis)
-    ) # scale
+    #) # scale
   ) # translate
 
 platformsNode = 
   SceneJS.scale(
-    {x:0.3,y:0.3,z:0.3}
+    {x:1.0,y:1.0,z:1.0}
     SceneJS.material({
         baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
         specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
@@ -162,25 +163,28 @@ platformsNode =
         shine:          6.0
       }
       SceneJS.translate(
-        {z:25}
+        {z:cellScale*10 + 1.15}
         SceneJS.scale(
-          {x:0.75,y:0.75,z:0.75}
+          {x:0.78,y:0.78,z:0.78}
           platformGeometry("level0")
           levelNodes[0].archerTowers
           levelNodes[0].catapultTowers
         ) # scale
       ) # translate
-      SceneJS.scale(
-        {x:0.875,y:0.875,z:0.875}
+      SceneJS.translate(
+        {z:1.15}
         platformGeometry("level1")
         levelNodes[1].archerTowers
         levelNodes[1].catapultTowers
-      ) # scale
+      ) #translate
       SceneJS.translate(
-        {z:-25}
-        platformGeometry("level2")
-        levelNodes[2].archerTowers
-        levelNodes[2].catapultTowers
+        {z:cellScale*-11 + 1.15}
+        SceneJS.scale(
+          {x:1.22,y:1.22,z:1.22}
+          platformGeometry("level2")
+          levelNodes[2].archerTowers
+          levelNodes[2].catapultTowers
+        ) # scale
       ) # translate
     ) # material  (platforms)
   ) # scale
@@ -208,6 +212,8 @@ skyboxNode =
 
 gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
+  SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
+  SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
   SceneJS.lookAt(
     lookAtConfig
     SceneJS.camera(
@@ -229,8 +235,6 @@ gameScene = SceneJS.scene(
             SceneJS.rotate((data) ->
                 angle: data.get('yaw')
                 z: 1.0
-              SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
-              SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
               platformsNode
               SceneJS.stationary(skyboxNode)
             ) # rotate
