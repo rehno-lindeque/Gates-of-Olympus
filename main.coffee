@@ -110,15 +110,18 @@ cameraConfig =
     
 lightConfig =
   sources: [
-    type:          "dir"
-    color:         { r: 1.0, g: 1.0, b: 1.0 }
-    diffuse:       true
-    specular:      false
-    dir:           { x: 1.0, y: 1.0, z: -1.0 }
+    type:      "dir"
+    color:     { r: 1.0, g: 1.0, b: 1.0 }
+    diffuse:   true
+    specular:  false
+    dir:       { x: 1.0, y: 1.0, z: -1.0 }
+  #,
+  #  type:      "ambient"
+  #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
 
 lookAtConfig = 
-  eye:  { x: 0.0, y: 10.0, z: 10.0 }
+  eye:  { x: 0.0, y: 10.0, z: 7.0 }
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
 
