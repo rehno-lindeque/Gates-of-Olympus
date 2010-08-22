@@ -320,7 +320,7 @@ createTowers = (towers) ->
               alert "" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t
           parentNode.addNode(
             SceneJS.translate(
-              {x: cellScale * (cx - gridSize / 2), y: cellScale * (cy - gridSize / 2)}
+              {x: cellScale * (cx - gridSize / 2) + cellScale * 0.5, y: cellScale * (cy - gridSize / 2) + cellScale * 0.5}
               node
             )
           )
