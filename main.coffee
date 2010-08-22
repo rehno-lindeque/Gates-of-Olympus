@@ -91,7 +91,7 @@ levelNodes[2] = {
   catapultTowers: catapultTowersNode "catapultTowers2" }
 
 # Platform nodes
-cellScale = 0.7    # size of a grid cell in world space
+cellScale = 0.9    # size of a grid cell in world space
 platformGeometry = (type) -> 
   s = gridSize * cellScale * 0.5  # scale size of the grid in world space
   SceneJS.geometry({
@@ -113,10 +113,10 @@ The main scene definition
 cameraConfig =
   optics:
     type:   "ortho"
-    left:   -10.0 * (1020.0 / 640.0)
-    right:   10.0 * (1020.0 / 640.0)
-    bottom: -10.0
-    top:     10.0
+    left:   -12.5 * (1020.0 / 800.0)
+    right:   12.5 * (1020.0 / 800.0)
+    bottom: -12.5
+    top:     12.5
     near:    0.1
     far:     300.0
     
@@ -136,21 +136,18 @@ lookAtConfig =
 
 guiNode = 
   SceneJS.translate(
-    {x:-8.0,y:-4.0}
-    #SceneJS.scale(
-    #  {x:0.1,y:0.1,z:0.1}
-      SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
+  {x:-8.0,y:-4.0}
+    SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
+    SceneJS.rotate((data) ->
+        angle: guiDiasRotPosition[0]
+        z: 1.0
       SceneJS.rotate((data) ->
-          angle: guiDiasRotPosition[0]
-          z: 1.0
-        SceneJS.rotate((data) ->
-            angle: guiDiasRotPosition[1]
-            x: 1.0
-          SceneJS.instance  { uri: "NumberedDais" }
-          SceneJS.instance  { uri: "../ArcherTower" }
-        ) # rotate (x-axis)
-      ) # rotate (z-axis)
-    #) # scale
+          angle: guiDiasRotPosition[1]
+          x: 1.0
+        SceneJS.instance  { uri: "NumberedDais" }
+        SceneJS.instance  { uri: "../ArcherTower" }
+      ) # rotate (x-axis)
+    ) # rotate (z-axis)
   ) # translate
 
 platformsNode = 

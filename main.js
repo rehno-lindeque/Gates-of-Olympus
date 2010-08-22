@@ -91,7 +91,7 @@
     archerTowers: archerTowersNode("archerTowers2"),
     catapultTowers: catapultTowersNode("catapultTowers2")
   };
-  cellScale = 0.7;
+  cellScale = 0.9;
   platformGeometry = function(type) {
     var s;
     s = gridSize * cellScale * 0.5;
@@ -108,10 +108,10 @@
   cameraConfig = {
     optics: {
       type: "ortho",
-      left: -10.0 * (1020.0 / 640.0),
-      right: 10.0 * (1020.0 / 640.0),
-      bottom: -10.0,
-      top: 10.0,
+      left: -12.5 * (1020.0 / 800.0),
+      right: 12.5 * (1020.0 / 800.0),
+      bottom: -12.5,
+      top: 12.5,
       near: 0.1,
       far: 300.0
     }
