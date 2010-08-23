@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, lightConfig, lookAtConfig, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, sceneLightsConfig, sceneLookAtConfig, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -102,7 +102,7 @@
       far: 300.0
     }
   };
-  lightConfig = {
+  sceneLightsConfig = {
     sources: [
       {
         type: "dir",
@@ -121,11 +121,44 @@
       }
     ]
   };
-  lookAtConfig = {
+  guiLightsConfig = {
+    sources: [
+      {
+        type: "dir",
+        color: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        diffuse: true,
+        specular: false,
+        dir: {
+          x: 1.0,
+          y: 1.0,
+          z: -1.0
+        }
+      }
+    ]
+  };
+  sceneLookAtConfig = {
     eye: {
       x: 0.0,
       y: 10.0,
       z: 7.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0
+    },
+    up: {
+      z: 1.0
+    }
+  };
+  guiLookAtConfig = {
+    eye: {
+      x: 0.0,
+      y: 10.0,
+      z: 4.0
     },
     look: {
       x: 0.0,
@@ -162,7 +195,20 @@
   guiNode = SceneJS.translate({
     x: -8.0,
     y: -4.0
-  }, numberedDaisNode(0), numberedDaisNode(1));
+  }, SceneJS.material({
+    baseColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specularColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specular: 0.0,
+    shine: 0.0
+  }, numberedDaisNode(0), numberedDaisNode(1)));
   platformsNode = SceneJS.scale({
     x: 1.0,
     y: 1.0,
@@ -210,8 +256,8 @@
       g: 1.0,
       b: 1.0
     },
-    specular: 1.0,
-    shine: 0.1
+    specular: 0.0,
+    shine: 0.0
   }, SceneJS.texture({
     layers: [
       {
@@ -242,7 +288,7 @@
       g: 0.7,
       b: 0.7
     }
-  }, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, guiNode)), SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
+  }, SceneJS.lights(guiLightsConfig, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(cameraConfig, guiNode))), SceneJS.lights(sceneLightsConfig, SceneJS.lookAt(sceneLookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
     x: 3.0
   }, SceneJS.rotate(function(data) {
     return {
@@ -385,7 +431,7 @@
       }
       guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1);
       guiDiasRotPosition[c] += guiDiasRotVelocity[c];
-      guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -20.0, 20.0);
+      guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0);
     }
     return gameScene.setData({
       yaw: yaw,

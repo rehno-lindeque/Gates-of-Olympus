@@ -108,7 +108,19 @@ cameraConfig =
     near:    0.1
     far:     300.0
     
-lightConfig =
+sceneLightsConfig =
+  sources: [
+    type:      "dir"
+    color:     { r: 1.0, g: 1.0, b: 1.0 }
+    diffuse:   true
+    specular:  false
+    dir:       { x: 1.0, y: 1.0, z: -1.0 }
+  #,
+  #  type:      "ambient"
+  #  color:     { r: 0.5, g: 0.5, b: 0.5 }
+  ]
+  
+guiLightsConfig =
   sources: [
     type:      "dir"
     color:     { r: 1.0, g: 1.0, b: 1.0 }
@@ -120,8 +132,13 @@ lightConfig =
   #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
 
-lookAtConfig = 
+sceneLookAtConfig = 
   eye:  { x: 0.0, y: 10.0, z: 7.0 }
+  look: { x: 0.0, y: 0.0 }
+  up:   { z: 1.0 }
+  
+guiLookAtConfig = 
+  eye:  { x: 0.0, y: 10.0, z: 4.0 }
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
 
@@ -146,8 +163,14 @@ numberedDaisNode = (index) ->
 guiNode = 
   SceneJS.translate(
     {x:-8.0,y:-4.0}
-    numberedDaisNode(0)
-    numberedDaisNode(1)
+    SceneJS.material(
+      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+      specular:       0.0
+      shine:          0.0
+      numberedDaisNode(0)
+      numberedDaisNode(1)
+    ) # material
   ) # translate
 
 platformsNode = 
@@ -192,8 +215,8 @@ skyboxNode =
     SceneJS.material(
       baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
       specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-      specular:       1.0
-      shine:          0.1
+      specular:       0.0
+      shine:          0.0
       SceneJS.texture(
         {layers: [{uri:"textures/sky.png"}]}
         SceneJS.geometry(
@@ -220,17 +243,20 @@ gameScene = SceneJS.scene(
       r: 0.7
       g: 0.7
       b: 0.7
-    SceneJS.lookAt(
-      lookAtConfig
-      SceneJS.camera(
-        cameraConfig
-        guiNode
-      ) # camera
+    SceneJS.lights(
+      guiLightsConfig
+      SceneJS.lookAt(
+        guiLookAtConfig
+        SceneJS.camera(
+          cameraConfig
+          guiNode
+        ) # camera
+      ) # lights
     ) # lookAt
     SceneJS.lights(
-      lightConfig
+      sceneLightsConfig
       SceneJS.lookAt(
-        lookAtConfig
+        sceneLookAtConfig
         SceneJS.camera(
           cameraConfig
           SceneJS.translate(
@@ -382,7 +408,7 @@ window.render = ->
     guiDiasRotVelocity[c] += 0.001 if guiDiasRotPosition[c] < 0
     guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1)
     guiDiasRotPosition[c] += guiDiasRotVelocity[c]
-    guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -20.0, 20.0)
+    guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0)
   gameScene
     .setData({yaw: yaw, pitch: pitch})
     .render();
