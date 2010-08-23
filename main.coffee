@@ -211,35 +211,45 @@ gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
   SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
   SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
-  SceneJS.lookAt(
-    lookAtConfig
-    SceneJS.camera(
-      cameraConfig
-      guiNode
-    ) # camera
-  ) # lookAt
-  SceneJS.lights(
-    lightConfig
+  SceneJS.renderer(
+    clear:
+      depth :   true
+      color :   true
+      stencil:  false
+    clearColor:
+      r: 0.7
+      g: 0.7
+      b: 0.7
     SceneJS.lookAt(
       lookAtConfig
       SceneJS.camera(
         cameraConfig
-        SceneJS.translate(
-          x: 3.0
-          SceneJS.rotate((data) ->
-              angle: data.get('pitch')
-              x: 1.0
-            SceneJS.rotate((data) ->
-                angle: data.get('yaw')
-                z: 1.0
-              platformsNode
-              SceneJS.stationary(skyboxNode)
-            ) # rotate
-          ) # rotate
-        ) # translate
+        guiNode
       ) # camera
     ) # lookAt
-  ) # lights
+    SceneJS.lights(
+      lightConfig
+      SceneJS.lookAt(
+        lookAtConfig
+        SceneJS.camera(
+          cameraConfig
+          SceneJS.translate(
+            x: 3.0
+            SceneJS.rotate((data) ->
+                angle: data.get('pitch')
+                x: 1.0
+              SceneJS.rotate((data) ->
+                  angle: data.get('yaw')
+                  z: 1.0
+                platformsNode
+                SceneJS.stationary(skyboxNode)
+              ) # rotate
+            ) # rotate
+          ) # translate
+        ) # camera
+      ) # lookAt
+    ) # lights
+  ) # renderer
 ) # scene
 
 ###

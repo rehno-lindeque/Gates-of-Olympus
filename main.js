@@ -231,7 +231,18 @@
     sid: "ArcherTower"
   }, BlenderExport.ArcherTower()), SceneJS.symbol({
     sid: "CatapultTower"
-  }, BlenderExport.CatapultTower()), SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, guiNode)), SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
+  }, BlenderExport.CatapultTower()), SceneJS.renderer({
+    clear: {
+      depth: true,
+      color: true,
+      stencil: false
+    },
+    clearColor: {
+      r: 0.7,
+      g: 0.7,
+      b: 0.7
+    }
+  }, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, guiNode)), SceneJS.lights(lightConfig, SceneJS.lookAt(lookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
     x: 3.0
   }, SceneJS.rotate(function(data) {
     return {
@@ -243,7 +254,7 @@
       angle: data.get('yaw'),
       z: 1.0
     };
-  }, platformsNode, SceneJS.stationary(skyboxNode))))))));
+  }, platformsNode, SceneJS.stationary(skyboxNode)))))))));
   /*
   Initialization and rendering loop
   */
