@@ -6,12 +6,6 @@ Copyright 2010, Rehno Lindeque.
 * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
-#BillboardPlane = ->
-#  SceneJS.Geometry.apply(this, arguments)
-#  this._nodeType = "BillboardPlane"
-#  if this._fixedParams
-#    this._init(this._getParams())
-
 ###
 Auxiliary functions
 ###
@@ -401,13 +395,6 @@ mouseMove = (event) ->
     lastX = event.clientX
     lastY = event.clientY
   else
-    # Get the mouse coordinates relative to the canvas
-    #if (event.layerX || event.layerX == 0) # Firefox
-    #  mouseX = event.layerX
-    #  mouseY = event.layerY
-    #if (event.offsetX || event.offsetX == 0) # Opera
-    #  mouseX = event.offsetX
-    #  mouseY = event.offsetY
     mouseX = event.clientX
     mouseY = -event.clientY
     canvasElement = document.getElementById("gameCanvas");
@@ -426,12 +413,7 @@ mouseMove = (event) ->
     xAxis      = SceneJS.math_normalizeVec3(SceneJS.math_cross3Vec3(yAxis,zAxis))
     yAxis      = SceneJS.math_cross3Vec3(zAxis,xAxis)
     screenX    = ((mouseX * 2.0) / canvasSize[0]) - 1.0
-    #screenX    *= (cameraConfig.optics.right - cameraConfig.optics.left)
     screenY    = ((mouseY  * 2.0) / canvasSize[1]) - 1.0
-    #screenY    *= (cameraConfig.optics.top - cameraConfig.optics.bottom)
-    #alert "Screen pos: (" + event.clientX + "," + event.clientY + ")"
-    #alert "Screen pos: (" + screenX + "," + screenY + ")"
-    #alert "Screen pos: " + mouseX + "(" + screenX + ")" + ", " + mouseY + "(" + screenY + ")"
     rayOrigin  = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3s(xAxis, screenX))
 
 canvas.addEventListener('mousedown', mouseDown, true)
