@@ -408,13 +408,13 @@ mouseMove = (event) ->
     rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
     yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
     zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]
-    zAxis      = SceneJS.math_subVec3(zAxis, rayOrigin)
-    zAxis      = SceneJS.math_normalizeVec3(zAxis)
-    xAxis      = SceneJS.math_normalizeVec3(SceneJS.math_cross3Vec3(yAxis,zAxis))
-    yAxis      = SceneJS.math_cross3Vec3(zAxis,xAxis)
+    zAxis      = subVec3(zAxis, rayOrigin)
+    zAxis      = normalizeVec3(zAxis)
+    xAxis      = normalizeVec3(cross3Vec3(yAxis,zAxis))
+    yAxis      = cross3Vec3(zAxis,xAxis)
     screenX    = ((mouseX * 2.0) / canvasSize[0]) - 1.0
     screenY    = ((mouseY  * 2.0) / canvasSize[1]) - 1.0
-    rayOrigin  = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3Scalar(xAxis, screenX))
+    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, screenX))
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
