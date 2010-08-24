@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, sceneLightsConfig, sceneLookAtConfig, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -25,6 +25,7 @@
   /*
   Globals
   */
+  canvasSize = [1020.0, 800.0];
   gridSize = 12;
   sqrGridSize = square(gridSize);
   levels = 3;
@@ -94,8 +95,8 @@
   cameraConfig = {
     optics: {
       type: "ortho",
-      left: -12.5 * (1020.0 / 800.0),
-      right: 12.5 * (1020.0 / 800.0),
+      left: -12.5 * (canvasSize[0] / canvasSize[1]),
+      right: 12.5 * (canvasSize[0] / canvasSize[1]),
       bottom: -12.5,
       top: 12.5,
       near: 0.1,
@@ -121,94 +122,6 @@
       }
     ]
   };
-  guiLightsConfig = {
-    sources: [
-      {
-        type: "dir",
-        color: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        diffuse: true,
-        specular: false,
-        dir: {
-          x: 1.0,
-          y: 1.0,
-          z: -1.0
-        }
-      }
-    ]
-  };
-  sceneLookAtConfig = {
-    eye: {
-      x: 0.0,
-      y: 10.0,
-      z: 7.0
-    },
-    look: {
-      x: 0.0,
-      y: 0.0
-    },
-    up: {
-      z: 1.0
-    }
-  };
-  guiLookAtConfig = {
-    eye: {
-      x: 0.0,
-      y: 10.0,
-      z: 4.0
-    },
-    look: {
-      x: 0.0,
-      y: 0.0
-    },
-    up: {
-      z: 1.0
-    }
-  };
-  numberedDaisNode = function(index) {
-    var node;
-    node = towerNode(index, "selectTower" + index);
-    node.addNode(SceneJS.instance({
-      uri: towerURI[index]
-    }));
-    return SceneJS.translate({
-      x: index * -1.5
-    }, SceneJS.symbol({
-      sid: "NumberedDais"
-    }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
-      return {
-        angle: guiDiasRotPosition[index * 2],
-        z: 1.0
-      };
-    }, SceneJS.rotate(function(data) {
-      return {
-        angle: guiDiasRotPosition[index * 2 + 1],
-        x: 1.0
-      };
-    }, SceneJS.instance({
-      uri: "NumberedDais"
-    }), node)));
-  };
-  guiNode = SceneJS.translate({
-    x: -8.0,
-    y: -4.0
-  }, SceneJS.material({
-    baseColor: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
-    },
-    specularColor: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, numberedDaisNode(0), numberedDaisNode(1)));
   platformsNode = SceneJS.scale({
     x: 1.0,
     y: 1.0,
@@ -271,6 +184,109 @@
     uv: [1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1],
     indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
   }))));
+  sceneLookAtURI = "SceneLookAt";
+  sceneLookAtConfig = {
+    uri: sceneLookAtURI,
+    eye: {
+      x: 0.0,
+      y: 10.0,
+      z: 7.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0
+    },
+    up: {
+      z: 1.0
+    }
+  };
+  sceneLookAtNode = SceneJS.lookAt(sceneLookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
+    x: 3.0
+  }, SceneJS.rotate(function(data) {
+    return {
+      angle: data.get('pitch'),
+      x: 1.0
+    };
+  }, SceneJS.rotate(function(data) {
+    return {
+      angle: data.get('yaw'),
+      z: 1.0
+    };
+  }, platformsNode, SceneJS.stationary(skyboxNode))))));
+  guiLightsConfig = {
+    sources: [
+      {
+        type: "dir",
+        color: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        diffuse: true,
+        specular: false,
+        dir: {
+          x: 1.0,
+          y: 1.0,
+          z: -1.0
+        }
+      }
+    ]
+  };
+  guiLookAtConfig = {
+    eye: {
+      x: 0.0,
+      y: 10.0,
+      z: 4.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0
+    },
+    up: {
+      z: 1.0
+    }
+  };
+  numberedDaisNode = function(index) {
+    var node;
+    node = towerNode(index, "selectTower" + index);
+    node.addNode(SceneJS.instance({
+      uri: towerURI[index]
+    }));
+    return SceneJS.translate({
+      x: index * -1.5
+    }, SceneJS.symbol({
+      sid: "NumberedDais"
+    }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
+      return {
+        angle: guiDiasRotPosition[index * 2],
+        z: 1.0
+      };
+    }, SceneJS.rotate(function(data) {
+      return {
+        angle: guiDiasRotPosition[index * 2 + 1],
+        x: 1.0
+      };
+    }, SceneJS.instance({
+      uri: "NumberedDais"
+    }), node)));
+  };
+  guiNode = SceneJS.translate({
+    x: -8.0,
+    y: -4.0
+  }, SceneJS.material({
+    baseColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specularColor: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    specular: 0.0,
+    shine: 0.0
+  }, numberedDaisNode(0), numberedDaisNode(1)));
   gameScene = SceneJS.scene({
     canvasId: "gameCanvas"
   }, SceneJS.symbol({
@@ -288,19 +304,7 @@
       g: 0.7,
       b: 0.7
     }
-  }, SceneJS.lights(guiLightsConfig, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(cameraConfig, guiNode))), SceneJS.lights(sceneLightsConfig, SceneJS.lookAt(sceneLookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
-    x: 3.0
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: data.get('pitch'),
-      x: 1.0
-    };
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: data.get('yaw'),
-      z: 1.0
-    };
-  }, platformsNode, SceneJS.stationary(skyboxNode)))))))));
+  }, SceneJS.lights(guiLightsConfig, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(cameraConfig, guiNode))), SceneJS.lights(sceneLightsConfig, sceneLookAtNode)));
   /*
   Initialization and rendering loop
   */
@@ -410,11 +414,31 @@
     return (dragging = false);
   };
   mouseMove = function(event) {
+    var canvasElement, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
     if (dragging) {
       yaw += (event.clientX - lastX) * 0.5;
       pitch += (event.clientY - lastY) * -0.5;
       lastX = event.clientX;
       return (lastY = event.clientY);
+    } else {
+      mouseX = event.clientX;
+      mouseY = -event.clientY;
+      canvasElement = document.getElementById("gameCanvas");
+      mouseX -= canvasElement.offsetLeft;
+      mouseY += canvasElement.offsetTop;
+      lookAtEye = sceneLookAtNode.getEye();
+      lookAtUp = sceneLookAtNode.getUp();
+      lookAtLook = sceneLookAtNode.getLook();
+      rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
+      yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
+      zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];
+      zAxis = SceneJS.math_subVec3(zAxis, rayOrigin);
+      zAxis = SceneJS.math_normalizeVec3(zAxis);
+      xAxis = SceneJS.math_normalizeVec3(SceneJS.math_cross3Vec3(yAxis, zAxis));
+      yAxis = SceneJS.math_cross3Vec3(zAxis, xAxis);
+      screenX = ((mouseX * 2.0) / canvasSize[0]) - 1.0;
+      screenY = ((mouseY * 2.0) / canvasSize[1]) - 1.0;
+      return (rayOrigin = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3s(xAxis, screenX)));
     }
   };
   canvas.addEventListener('mousedown', mouseDown, true);

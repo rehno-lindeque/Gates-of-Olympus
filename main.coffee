@@ -25,6 +25,9 @@ clamp = (x, y, z) -> if (x < y) then y else (if x > z then z else x)
 Globals
 ###
 
+# Canvas
+canvasSize = [1020.0, 800.0]
+
 # Platforms
 gridSize = 12
 sqrGridSize = square(gridSize)
@@ -101,8 +104,8 @@ The main scene definition
 cameraConfig =
   optics:
     type:   "ortho"
-    left:   -12.5 * (1020.0 / 800.0)
-    right:   12.5 * (1020.0 / 800.0)
+    left:   -12.5 * (canvasSize[0] / canvasSize[1])
+    right:   12.5 * (canvasSize[0] / canvasSize[1])
     bottom: -12.5
     top:     12.5
     near:    0.1
@@ -120,59 +123,6 @@ sceneLightsConfig =
   #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
   
-guiLightsConfig =
-  sources: [
-    type:      "dir"
-    color:     { r: 1.0, g: 1.0, b: 1.0 }
-    diffuse:   true
-    specular:  false
-    dir:       { x: 1.0, y: 1.0, z: -1.0 }
-  #,
-  #  type:      "ambient"
-  #  color:     { r: 0.5, g: 0.5, b: 0.5 }
-  ]
-
-sceneLookAtConfig = 
-  eye:  { x: 0.0, y: 10.0, z: 7.0 }
-  look: { x: 0.0, y: 0.0 }
-  up:   { z: 1.0 }
-  
-guiLookAtConfig = 
-  eye:  { x: 0.0, y: 10.0, z: 4.0 }
-  look: { x: 0.0, y: 0.0 }
-  up:   { z: 1.0 }
-
-numberedDaisNode = (index) ->
-  node = towerNode(index, "selectTower"+index)
-  node.addNode(SceneJS.instance {uri: towerURI[index]})
-  SceneJS.translate(
-    {x:index*-1.5}
-    SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
-    SceneJS.rotate((data) ->
-        angle: guiDiasRotPosition[index*2]
-        z: 1.0
-      SceneJS.rotate((data) ->
-          angle: guiDiasRotPosition[index*2 + 1]
-          x: 1.0
-        SceneJS.instance  { uri: "NumberedDais" }
-        node
-      ) # rotate (x-axis)
-    ) # rotate (z-axis)
-  ) # translate
-  
-guiNode = 
-  SceneJS.translate(
-    {x:-8.0,y:-4.0}
-    SceneJS.material(
-      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
-      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-      specular:       0.0
-      shine:          0.0
-      numberedDaisNode(0)
-      numberedDaisNode(1)
-    ) # material
-  ) # translate
-
 platformsNode = 
   SceneJS.scale(
     {x:1.0,y:1.0,z:1.0}
@@ -229,6 +179,82 @@ skyboxNode =
       ) # texture
     ) # material
   ) # scale
+  
+sceneLookAtURI = "SceneLookAt"
+sceneLookAtConfig = 
+  uri:  sceneLookAtURI
+  eye:  { x: 0.0, y: 10.0, z: 7.0 }
+  look: { x: 0.0, y: 0.0 }
+  up:   { z: 1.0 }
+  
+sceneLookAtNode = 
+  SceneJS.lookAt(
+    sceneLookAtConfig
+    SceneJS.camera(
+      cameraConfig
+      SceneJS.translate(
+        x: 3.0
+        SceneJS.rotate((data) ->
+            angle: data.get('pitch')
+            x: 1.0
+          SceneJS.rotate((data) ->
+              angle: data.get('yaw')
+              z: 1.0
+            platformsNode
+            SceneJS.stationary(skyboxNode)
+          ) # rotate
+        ) # rotate
+      ) # translate
+    ) # camera
+  ) # lookAt
+
+guiLightsConfig =
+  sources: [
+    type:      "dir"
+    color:     { r: 1.0, g: 1.0, b: 1.0 }
+    diffuse:   true
+    specular:  false
+    dir:       { x: 1.0, y: 1.0, z: -1.0 }
+  #,
+  #  type:      "ambient"
+  #  color:     { r: 0.5, g: 0.5, b: 0.5 }
+  ]
+
+guiLookAtConfig = 
+  eye:  { x: 0.0, y: 10.0, z: 4.0 }
+  look: { x: 0.0, y: 0.0 }
+  up:   { z: 1.0 }
+
+numberedDaisNode = (index) ->
+  node = towerNode(index, "selectTower"+index)
+  node.addNode(SceneJS.instance {uri: towerURI[index]})
+  SceneJS.translate(
+    {x:index*-1.5}
+    SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
+    SceneJS.rotate((data) ->
+        angle: guiDiasRotPosition[index*2]
+        z: 1.0
+      SceneJS.rotate((data) ->
+          angle: guiDiasRotPosition[index*2 + 1]
+          x: 1.0
+        SceneJS.instance  { uri: "NumberedDais" }
+        node
+      ) # rotate (x-axis)
+    ) # rotate (z-axis)
+  ) # translate
+  
+guiNode = 
+  SceneJS.translate(
+    {x:-8.0,y:-4.0}
+    SceneJS.material(
+      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+      specular:       0.0
+      shine:          0.0
+      numberedDaisNode(0)
+      numberedDaisNode(1)
+    ) # material
+  ) # translate
 
 gameScene = SceneJS.scene(
   {canvasId: "gameCanvas"}
@@ -239,10 +265,7 @@ gameScene = SceneJS.scene(
       depth :   true
       color :   true
       stencil:  false
-    clearColor:
-      r: 0.7
-      g: 0.7
-      b: 0.7
+    clearColor: { r: 0.7, g: 0.7, b: 0.7 }
     SceneJS.lights(
       guiLightsConfig
       SceneJS.lookAt(
@@ -255,25 +278,7 @@ gameScene = SceneJS.scene(
     ) # lookAt
     SceneJS.lights(
       sceneLightsConfig
-      SceneJS.lookAt(
-        sceneLookAtConfig
-        SceneJS.camera(
-          cameraConfig
-          SceneJS.translate(
-            x: 3.0
-            SceneJS.rotate((data) ->
-                angle: data.get('pitch')
-                x: 1.0
-              SceneJS.rotate((data) ->
-                  angle: data.get('yaw')
-                  z: 1.0
-                platformsNode
-                SceneJS.stationary(skyboxNode)
-              ) # rotate
-            ) # rotate
-          ) # translate
-        ) # camera
-      ) # lookAt
+      sceneLookAtNode
     ) # lights
   ) # renderer
 ) # scene
@@ -341,7 +346,6 @@ towers[297] = 2
 towers[298] = 2
 towers[299] = 1
 
-
 createTowers = (towers) ->
   for cz in [0...levels]
     for cy in [0...gridSize]
@@ -396,6 +400,39 @@ mouseMove = (event) ->
     pitch += (event.clientY - lastY) * -0.5
     lastX = event.clientX
     lastY = event.clientY
+  else
+    # Get the mouse coordinates relative to the canvas
+    #if (event.layerX || event.layerX == 0) # Firefox
+    #  mouseX = event.layerX
+    #  mouseY = event.layerY
+    #if (event.offsetX || event.offsetX == 0) # Opera
+    #  mouseX = event.offsetX
+    #  mouseY = event.offsetY
+    mouseX = event.clientX
+    mouseY = -event.clientY
+    canvasElement = document.getElementById("gameCanvas");
+    mouseX -= canvasElement.offsetLeft
+    mouseY += canvasElement.offsetTop
+    
+    # Transform ray origin into world space
+    lookAtEye  = sceneLookAtNode.getEye()
+    lookAtUp   = sceneLookAtNode.getUp()
+    lookAtLook = sceneLookAtNode.getLook()
+    rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
+    yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
+    zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]
+    zAxis      = SceneJS.math_subVec3(zAxis, rayOrigin)
+    zAxis      = SceneJS.math_normalizeVec3(zAxis)
+    xAxis      = SceneJS.math_normalizeVec3(SceneJS.math_cross3Vec3(yAxis,zAxis))
+    yAxis      = SceneJS.math_cross3Vec3(zAxis,xAxis)
+    screenX    = ((mouseX * 2.0) / canvasSize[0]) - 1.0
+    #screenX    *= (cameraConfig.optics.right - cameraConfig.optics.left)
+    screenY    = ((mouseY  * 2.0) / canvasSize[1]) - 1.0
+    #screenY    *= (cameraConfig.optics.top - cameraConfig.optics.bottom)
+    #alert "Screen pos: (" + event.clientX + "," + event.clientY + ")"
+    #alert "Screen pos: (" + screenX + "," + screenY + ")"
+    #alert "Screen pos: " + mouseX + "(" + screenX + ")" + ", " + mouseY + "(" + screenY + ")"
+    rayOrigin  = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3s(xAxis, screenX))
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
