@@ -414,7 +414,7 @@ mouseMove = (event) ->
     yAxis      = SceneJS.math_cross3Vec3(zAxis,xAxis)
     screenX    = ((mouseX * 2.0) / canvasSize[0]) - 1.0
     screenY    = ((mouseY  * 2.0) / canvasSize[1]) - 1.0
-    rayOrigin  = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3s(xAxis, screenX))
+    rayOrigin  = SceneJS.math_addVec3(rayOrigin, SceneJS.math_mulVec3Scalar(xAxis, screenX))
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
