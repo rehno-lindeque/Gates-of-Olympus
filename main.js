@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, interval, lastX, lastY, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, intersectRayXYPlane, interval, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -22,6 +22,9 @@
   clamp = function(x, y, z) {
     return (x < y) ? y : (x > z ? z : x);
   };
+  lerp = function(t, x, y) {
+    return x * (1.0 - t) + y * t;
+  };
   /*
   Globals
   */
@@ -29,6 +32,9 @@
   gridSize = 12;
   sqrGridSize = square(gridSize);
   levels = 3;
+  cellScale = 0.9;
+  platformHeights = [cellScale * 10 + 1.15, 1.15, cellScale * -11 + 1.15];
+  platformLengths = [0.78 * 0.5 * cellScale * 1.00 * 0.5 * cellScale * gridSize, 1.22 * 0.5 * cellScale * gridSize];
   numTowerTypes = 3;
   guiDiasRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   guiDiasRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
@@ -78,7 +84,6 @@
     archerTowers: towerNode(0, "archerTowers2"),
     catapultTowers: towerNode(1, "catapultTowers2")
   };
-  cellScale = 0.9;
   platformGeometry = function(type) {
     var s;
     s = gridSize * cellScale * 0.5;
@@ -140,15 +145,15 @@
     specular: 0.9,
     shine: 6.0
   }, SceneJS.translate({
-    z: cellScale * 10 + 1.15
+    z: platformHeights[0]
   }, SceneJS.scale({
     x: 0.78,
     y: 0.78,
     z: 0.78
   }, platformGeometry("level0"), levelNodes[0].archerTowers, levelNodes[0].catapultTowers)), SceneJS.translate({
-    z: 1.15
+    z: platformHeights[1]
   }, platformGeometry("level1"), levelNodes[1].archerTowers, levelNodes[1].catapultTowers), SceneJS.translate({
-    z: cellScale * -11 + 1.15
+    z: platformHeights[2]
   }, SceneJS.scale({
     x: 1.22,
     y: 1.22,
@@ -392,6 +397,16 @@
   /*
   User input
   */
+  intersectRayXYPlane = function(rayOrigin, rayDirection, planeZ) {
+    var dist, zDist;
+    if (rayDirection[2] === 0) {
+      return null;
+    } else {
+      zDist = planeZ - rayOrigin[2];
+      dist = zDist / rayDirection[2];
+      return dist < 0 ? null : addVec3(rayOrigin, mulVec3Scalar(rayDirection, dist));
+    }
+  };
   lastX = 0;
   lastY = 0;
   dragging = false;
@@ -414,7 +429,7 @@
     return (dragging = false);
   };
   mouseMove = function(event) {
-    var canvasElement, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
+    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
     if (dragging) {
       yaw += (event.clientX - lastX) * 0.5;
       pitch += (event.clientY - lastY) * -0.5;
@@ -422,10 +437,10 @@
       return (lastY = event.clientY);
     } else {
       mouseX = event.clientX;
-      mouseY = -event.clientY;
+      mouseY = event.clientY;
       canvasElement = document.getElementById("gameCanvas");
       mouseX -= canvasElement.offsetLeft;
-      mouseY += canvasElement.offsetTop;
+      mouseY -= canvasElement.offsetTop;
       lookAtEye = sceneLookAtNode.getEye();
       lookAtUp = sceneLookAtNode.getUp();
       lookAtLook = sceneLookAtNode.getLook();
@@ -436,9 +451,22 @@
       zAxis = normalizeVec3(zAxis);
       xAxis = normalizeVec3(cross3Vec3(yAxis, zAxis));
       yAxis = cross3Vec3(zAxis, xAxis);
-      screenX = ((mouseX * 2.0) / canvasSize[0]) - 1.0;
-      screenY = ((mouseY * 2.0) / canvasSize[1]) - 1.0;
-      return (rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, screenX)));
+      screenX = mouseX / canvasSize[0];
+      screenY = 1.0 - mouseY / canvasSize[1];
+      rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)));
+      rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
+      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
+      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
+        return alert("Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")");
+      } else {
+        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
+        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
+          return alert("Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")");
+        } else {
+          intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
+          return (typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2] ? alert("Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")") : null;
+        }
+      }
     }
   };
   canvas.addEventListener('mousedown', mouseDown, true);

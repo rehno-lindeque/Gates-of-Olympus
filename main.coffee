@@ -14,6 +14,7 @@ square = (x) -> x*x
 min = (x, y) -> if x < y then x else y
 max = (x, y) -> if x > y then x else y
 clamp = (x, y, z) -> if (x < y) then y else (if x > z then z else x)
+lerp = (t, x, y) -> x * (1.0 - t) + y * t
 
 ###
 Globals
@@ -23,9 +24,20 @@ Globals
 canvasSize = [1020.0, 800.0]
 
 # Platforms
-gridSize = 12
-sqrGridSize = square(gridSize)
-levels = 3
+gridSize = 12                   # number of grid cells in one row/column
+sqrGridSize = square(gridSize)  # total number of grid cells
+levels = 3                      # number of platforms
+cellScale = 0.9                 # size of a grid cell in world space
+
+platformHeights = [
+    cellScale*10 + 1.15
+    1.15
+    cellScale*-11 + 1.15 ]
+  
+platformLengths = [
+    0.78 * 0.5 * cellScale *    
+    1.00 * 0.5 * cellScale * gridSize
+    1.22 * 0.5 * cellScale * gridSize ]
 
 # Towers
 numTowerTypes = 3
@@ -76,7 +88,6 @@ levelNodes[2] = {
   catapultTowers: towerNode(1, "catapultTowers2") }
 
 # Platform nodes
-cellScale = 0.9    # size of a grid cell in world space
 platformGeometry = (type) -> 
   s = gridSize * cellScale * 0.5  # scale size of the grid in world space
   SceneJS.geometry({
@@ -127,7 +138,7 @@ platformsNode =
         shine:          6.0
       }
       SceneJS.translate(
-        {z:cellScale*10 + 1.15}
+        {z:platformHeights[0]}
         SceneJS.scale(
           {x:0.78,y:0.78,z:0.78}
           platformGeometry("level0")
@@ -136,13 +147,13 @@ platformsNode =
         ) # scale
       ) # translate
       SceneJS.translate(
-        {z:1.15}
+        {z:platformHeights[1]}
         platformGeometry("level1")
         levelNodes[1].archerTowers
         levelNodes[1].catapultTowers
       ) #translate
       SceneJS.translate(
-        {z:cellScale*-11 + 1.15}
+        {z:platformHeights[2]}
         SceneJS.scale(
           {x:1.22,y:1.22,z:1.22}
           platformGeometry("level2")
@@ -369,6 +380,19 @@ createTowers towers
 User input 
 ###
 
+# Calculate the intersection of any xy-plane 
+intersectRayXYPlane = (rayOrigin, rayDirection, planeZ) ->
+  if rayDirection[2] == 0
+    null                  # The ray is parallel to the plane
+  else
+    zDist = planeZ - rayOrigin[2]
+    dist = zDist / rayDirection[2]
+    #alert "z " + zDist + " dist " + dist
+    if dist < 0
+      null                # The plane is behind the camera.
+    else
+      addVec3(rayOrigin, mulVec3Scalar(rayDirection, dist))
+    
 # Mouse inputs
 lastX = 0
 lastY = 0
@@ -396,10 +420,10 @@ mouseMove = (event) ->
     lastY = event.clientY
   else
     mouseX = event.clientX
-    mouseY = -event.clientY
+    mouseY = event.clientY
     canvasElement = document.getElementById("gameCanvas");
     mouseX -= canvasElement.offsetLeft
-    mouseY += canvasElement.offsetTop
+    mouseY -= canvasElement.offsetTop
     
     # Transform ray origin into world space
     lookAtEye  = sceneLookAtNode.getEye()
@@ -412,9 +436,24 @@ mouseMove = (event) ->
     zAxis      = normalizeVec3(zAxis)
     xAxis      = normalizeVec3(cross3Vec3(yAxis,zAxis))
     yAxis      = cross3Vec3(zAxis,xAxis)
-    screenX    = ((mouseX * 2.0) / canvasSize[0]) - 1.0
-    screenY    = ((mouseY  * 2.0) / canvasSize[1]) - 1.0
-    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, screenX))
+    screenX    = mouseX / canvasSize[0]
+    screenY    = 1.0 - mouseY / canvasSize[1]
+    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)))
+    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)))
+
+    # Find the intersection with one of the platforms
+    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0])
+    #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
+    if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
+      alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
+    else 
+      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
+      if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
+        alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
+      else
+        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
+        if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
+          alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
