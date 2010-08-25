@@ -54,7 +54,7 @@ guiDiasRotPosition = [
   0.0, 0.0 ]
   
 # Input
-platformMouseSelect = 
+towerPlacement = 
   level: -1
   cell: { x: -1, y: -1 }
 
@@ -133,41 +133,53 @@ sceneLightsConfig =
   #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
   
+towerPlacementNode = () ->
+  tower1 = towerNode(0, "placementTower"+0)
+  tower1.addNode(SceneJS.instance {uri: towerURI[0]})
+  tower2 = towerNode(1, "placementTower"+1)
+  tower2.addNode(SceneJS.instance {uri: towerURI[1]})
+  SceneJS.selector(
+    {selection: [0]}
+    SceneJS.translate(
+      {z:platformHeights[1]}
+      tower1
+      tower2
+    ) # translate
+  ) # selector
+  
 platformsNode = 
-  SceneJS.scale(
-    {x:1.0,y:1.0,z:1.0}
-    SceneJS.material({
-        baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-        specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-        specular:       0.9
-        shine:          6.0
-      }
-      SceneJS.translate(
-        {z:platformHeights[0]}
-        SceneJS.scale(
-          {x:0.78,y:0.78,z:0.78}
-          platformGeometry("level0")
-          levelNodes[0].archerTowers
-          levelNodes[0].catapultTowers
-        ) # scale
-      ) # translate
-      SceneJS.translate(
-        {z:platformHeights[1]}
-        platformGeometry("level1")
-        levelNodes[1].archerTowers
-        levelNodes[1].catapultTowers
-      ) #translate
-      SceneJS.translate(
-        {z:platformHeights[2]}
-        SceneJS.scale(
-          {x:1.22,y:1.22,z:1.22}
-          platformGeometry("level2")
-          levelNodes[2].archerTowers
-          levelNodes[2].catapultTowers
-        ) # scale
-      ) # translate
-    ) # material  (platforms)
-  ) # scale
+  SceneJS.material({
+      baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+      specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+      specular:       0.9
+      shine:          6.0
+    }
+    towerPlacementNode()
+    SceneJS.translate(
+      {z:platformHeights[0]}
+      SceneJS.scale(
+        {x:0.78,y:0.78,z:0.78}
+        platformGeometry("level0")
+        levelNodes[0].archerTowers
+        levelNodes[0].catapultTowers
+      ) # scale
+    ) # translate
+    SceneJS.translate(
+      {z:platformHeights[1]}
+      platformGeometry("level1")
+      levelNodes[1].archerTowers
+      levelNodes[1].catapultTowers
+    ) #translate
+    SceneJS.translate(
+      {z:platformHeights[2]}
+      SceneJS.scale(
+        {x:1.22,y:1.22,z:1.22}
+        platformGeometry("level2")
+        levelNodes[2].archerTowers
+        levelNodes[2].catapultTowers
+      ) # scale
+    ) # translate
+  ) # material  (platforms)
 
 skyboxNode = 
   SceneJS.scale(
@@ -229,7 +241,7 @@ guiLightsConfig =
   #  type:      "ambient"
   #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
-
+  
 guiLookAtConfig = 
   eye:  { x: 0.0, y: 10.0, z: 4.0 }
   look: { x: 0.0, y: 0.0 }
@@ -451,33 +463,34 @@ mouseMove = (event) ->
     #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
     if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
       #alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
-      platformMouseSelect.level  = 0
-      platformMouseSelect.cell.x = intersection[0]
-      platformMouseSelect.cell.y = intersection[1]
+      towerPlacement.level  = 0
+      towerPlacement.cell.x = Math.floor(intersection[0])
+      towerPlacement.cell.y = Math.floor(intersection[1])
     else 
       intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
       if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
         #alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
-        platformMouseSelect.level  = 1
-        platformMouseSelect.cell.x = intersection[0]
-        platformMouseSelect.cell.y = intersection[1]
+        towerPlacement.level  = 1
+        towerPlacement.cell.x = Math.floor(intersection[0])
+        towerPlacement.cell.y = Math.floor(intersection[1])
       else
         intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
         if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
           #alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
-          platformMouseSelect.level  = 2
-          platformMouseSelect.cell.x = intersection[0]
-          platformMouseSelect.cell.y =   intersection[1]
+          towerPlacement.level  = 2
+          towerPlacement.cell.x = Math.floor(intersection[0])
+          towerPlacement.cell.y = Math.floor(intersection[1])
         else
-          platformMouseSelect.level  = -1
-          platformMouseSelect.cell.x = -1
-          platformMouseSelect.cell.y = -1
+          towerPlacement.level  = -1
+          towerPlacement.cell.x = -1
+          towerPlacement.cell.y = -1
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
 canvas.addEventListener('mouseup', mouseUp, true)
 
 window.render = ->
+  # Animate the gui diases
   for c in [0...numTowerTypes]
     guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1
     guiDiasRotVelocity[c] -= 0.001 if guiDiasRotPosition[c] > 0
@@ -485,6 +498,12 @@ window.render = ->
     guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1)
     guiDiasRotPosition[c] += guiDiasRotVelocity[c]
     guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0)
+  
+  # Update the selection tower node
+  #if towerPlacement.level >= 0
+    # todo
+    
+  # Render the scene
   gameScene
     .setData({yaw: yaw, pitch: pitch})
     .render();

@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, intersectRayXYPlane, interval, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformMouseSelect, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, intersectRayXYPlane, interval, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerPlacement, towerPlacementNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -38,7 +38,7 @@
   numTowerTypes = 3;
   guiDiasRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   guiDiasRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-  platformMouseSelect = {
+  towerPlacement = {
     level: -1,
     cell: {
       x: -1,
@@ -134,11 +134,23 @@
       }
     ]
   };
-  platformsNode = SceneJS.scale({
-    x: 1.0,
-    y: 1.0,
-    z: 1.0
-  }, SceneJS.material({
+  towerPlacementNode = function() {
+    var tower1, tower2;
+    tower1 = towerNode(0, "placementTower" + 0);
+    tower1.addNode(SceneJS.instance({
+      uri: towerURI[0]
+    }));
+    tower2 = towerNode(1, "placementTower" + 1);
+    tower2.addNode(SceneJS.instance({
+      uri: towerURI[1]
+    }));
+    return SceneJS.selector({
+      selection: [0]
+    }, SceneJS.translate({
+      z: platformHeights[1]
+    }, tower1, tower2));
+  };
+  platformsNode = SceneJS.material({
     baseColor: {
       r: 0.7,
       g: 0.7,
@@ -151,7 +163,7 @@
     },
     specular: 0.9,
     shine: 6.0
-  }, SceneJS.translate({
+  }, towerPlacementNode(), SceneJS.translate({
     z: platformHeights[0]
   }, SceneJS.scale({
     x: 0.78,
@@ -165,7 +177,7 @@
     x: 1.22,
     y: 1.22,
     z: 1.22
-  }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers))));
+  }, platformGeometry("level2"), levelNodes[2].archerTowers, levelNodes[2].catapultTowers)));
   skyboxNode = SceneJS.scale({
     x: 100.0,
     y: 100.0,
@@ -464,25 +476,25 @@
       rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
       intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
       if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
-        platformMouseSelect.level = 0;
-        platformMouseSelect.cell.x = intersection[0];
-        return (platformMouseSelect.cell.y = intersection[1]);
+        towerPlacement.level = 0;
+        towerPlacement.cell.x = Math.floor(intersection[0]);
+        return (towerPlacement.cell.y = Math.floor(intersection[1]));
       } else {
         intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
         if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
-          platformMouseSelect.level = 1;
-          platformMouseSelect.cell.x = intersection[0];
-          return (platformMouseSelect.cell.y = intersection[1]);
+          towerPlacement.level = 1;
+          towerPlacement.cell.x = Math.floor(intersection[0]);
+          return (towerPlacement.cell.y = Math.floor(intersection[1]));
         } else {
           intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
           if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
-            platformMouseSelect.level = 2;
-            platformMouseSelect.cell.x = intersection[0];
-            return (platformMouseSelect.cell.y = intersection[1]);
+            towerPlacement.level = 2;
+            towerPlacement.cell.x = Math.floor(intersection[0]);
+            return (towerPlacement.cell.y = Math.floor(intersection[1]));
           } else {
-            platformMouseSelect.level = -1;
-            platformMouseSelect.cell.x = -1;
-            return (platformMouseSelect.cell.y = -1);
+            towerPlacement.level = -1;
+            towerPlacement.cell.x = -1;
+            return (towerPlacement.cell.y = -1);
           }
         }
       }
