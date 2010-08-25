@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, intersectRayXYPlane, interval, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, handleKeyDown, intersectRayXYPlane, interval, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformMouseSelect, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerTextureURI, towerURI, towers, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -38,6 +38,13 @@
   numTowerTypes = 3;
   guiDiasRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   guiDiasRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  platformMouseSelect = {
+    level: -1,
+    cell: {
+      x: -1,
+      y: -1
+    }
+  };
   /*
   Tower definitions
   */
@@ -457,14 +464,26 @@
       rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
       intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
       if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
-        return alert("Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")");
+        platformMouseSelect.level = 0;
+        platformMouseSelect.cell.x = intersection[0];
+        return (platformMouseSelect.cell.y = intersection[1]);
       } else {
         intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
         if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
-          return alert("Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")");
+          platformMouseSelect.level = 1;
+          platformMouseSelect.cell.x = intersection[0];
+          return (platformMouseSelect.cell.y = intersection[1]);
         } else {
           intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
-          return (typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2] ? alert("Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")") : null;
+          if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
+            platformMouseSelect.level = 2;
+            platformMouseSelect.cell.x = intersection[0];
+            return (platformMouseSelect.cell.y = intersection[1]);
+          } else {
+            platformMouseSelect.level = -1;
+            platformMouseSelect.cell.x = -1;
+            return (platformMouseSelect.cell.y = -1);
+          }
         }
       }
     }

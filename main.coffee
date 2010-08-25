@@ -52,6 +52,11 @@ guiDiasRotPosition = [
   0.0, 0.0
   0.0, 0.0
   0.0, 0.0 ]
+  
+# Input
+platformMouseSelect = 
+  level: -1
+  cell: { x: -1, y: -1 }
 
 ###
 Tower definitions
@@ -445,15 +450,28 @@ mouseMove = (event) ->
     intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0])
     #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
     if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
-      alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
+      #alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
+      platformMouseSelect.level  = 0
+      platformMouseSelect.cell.x = intersection[0]
+      platformMouseSelect.cell.y = intersection[1]
     else 
       intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
       if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
-        alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
+        #alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
+        platformMouseSelect.level  = 1
+        platformMouseSelect.cell.x = intersection[0]
+        platformMouseSelect.cell.y = intersection[1]
       else
         intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
         if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
-          alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
+          #alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
+          platformMouseSelect.level  = 2
+          platformMouseSelect.cell.x = intersection[0]
+          platformMouseSelect.cell.y =   intersection[1]
+        else
+          platformMouseSelect.level  = -1
+          platformMouseSelect.cell.x = -1
+          platformMouseSelect.cell.y = -1
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
