@@ -138,14 +138,14 @@ towerPlacementNode = () ->
   tower1.addNode(SceneJS.instance {uri: towerURI[0]})
   tower2 = towerNode(1, "placementTower"+1)
   tower2.addNode(SceneJS.instance {uri: towerURI[1]})
-  SceneJS.selector(
-    {selection: [0]}
-    SceneJS.translate(
-      {z:platformHeights[1]}
+  SceneJS.translate(
+    {z:platformHeights[1]}
+    SceneJS.selector(
+      {selection: [0]}
       tower1
       tower2
-    ) # translate
-  ) # selector
+    ) # selector
+  ) # translate
   
 platformsNode = 
   SceneJS.material({

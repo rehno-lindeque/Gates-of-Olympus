@@ -144,10 +144,10 @@
     tower2.addNode(SceneJS.instance({
       uri: towerURI[1]
     }));
-    return SceneJS.selector({
-      selection: [0]
-    }, SceneJS.translate({
+    return SceneJS.translate({
       z: platformHeights[1]
+    }, SceneJS.selector({
+      selection: [0]
     }, tower1, tower2));
   };
   platformsNode = SceneJS.material({
