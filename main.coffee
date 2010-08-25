@@ -139,33 +139,32 @@ towerPlacementNode = () ->
   tower2 = towerNode(1, "placementTower"+1)
   tower2.addNode(SceneJS.instance {uri: towerURI[1]})
   SceneJS.translate(
-    {z:platformHeights[1]}
+    { z: platformHeights[1] }
     SceneJS.selector(
-      {selection: [0]}
+      { selection: [0] }
       tower1
       tower2
     ) # selector
   ) # translate
   
 platformsNode = 
-  SceneJS.material({
-      baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-      specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-      specular:       0.9
-      shine:          6.0
-    }
+  SceneJS.material(
+    baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+    specular:       0.9
+    shine:          6.0
     towerPlacementNode()
     SceneJS.translate(
-      {z:platformHeights[0]}
+      { z: platformHeights[0] }
       SceneJS.scale(
-        {x:0.78,y:0.78,z:0.78}
+        { x: 0.78, y: 0.78, z: 0.78 }
         platformGeometry("level0")
         levelNodes[0].archerTowers
         levelNodes[0].catapultTowers
       ) # scale
     ) # translate
     SceneJS.translate(
-      {z:platformHeights[1]}
+      { z: platformHeights[1] }
       platformGeometry("level1")
       levelNodes[1].archerTowers
       levelNodes[1].catapultTowers
@@ -173,7 +172,7 @@ platformsNode =
     SceneJS.translate(
       {z:platformHeights[2]}
       SceneJS.scale(
-        {x:1.22,y:1.22,z:1.22}
+        { x: 1.22, y: 1.22, z: 1.22 }
         platformGeometry("level2")
         levelNodes[2].archerTowers
         levelNodes[2].catapultTowers
@@ -190,7 +189,7 @@ skyboxNode =
       specular:       0.0
       shine:          0.0
       SceneJS.texture(
-        {layers: [{uri:"textures/sky.png"}]}
+        { layers: [{uri:"textures/sky.png"}] }
         SceneJS.geometry(
           type:       "Skybox"
           primitive:  "triangles"
