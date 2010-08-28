@@ -152,9 +152,9 @@
   };
   platformsNode = SceneJS.material({
     baseColor: {
-      r: 0.7,
-      g: 0.7,
-      b: 0.7
+      r: 0.75,
+      g: 0.78,
+      b: 0.85
     },
     specularColor: {
       r: 0.9,

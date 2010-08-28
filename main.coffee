@@ -149,7 +149,8 @@ towerPlacementNode = () ->
   
 platformsNode = 
   SceneJS.material(
-    baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+    #baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+    baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
     specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
     specular:       0.9
     shine:          6.0
