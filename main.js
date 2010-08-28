@@ -71,12 +71,12 @@
               node = SceneJS.instance({
                 uri: towerURI[0]
               });
-              parentNode = levelNodes[cz].archerTowers;
+              parentNode = level.levelNodes[cz].archerTowers;
             } else if (t === 2) {
               node = SceneJS.instance({
                 uri: towerURI[1]
               });
-              parentNode = levelNodes[cz].catapultTowers;
+              parentNode = level.levelNodes[cz].catapultTowers;
             } else {
               alert("" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t);
             }
