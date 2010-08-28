@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, dragging, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, intersectRayXYPlane, interval, keyDown, lastX, lastY, lerp, levelNodes, levels, max, min, mouseDown, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerPlacement, towerPlacementNode, towerTextureURI, towerURI, towers, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, intersectRayXYPlane, interval, keyDown, lerp, levelNodes, levels, max, min, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerPlacement, towerPlacementNode, towerTextureURI, towerURI, towers, updateTowerPlacement, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -148,7 +148,7 @@
       id: "placementTower",
       z: platformHeights[1]
     }, SceneJS.selector({
-      id: "placementTowerModel",
+      sid: "placementTowerModel",
       selection: [0]
     }, tower1, tower2));
   };
@@ -248,17 +248,7 @@
   };
   sceneLookAtNode = SceneJS.lookAt(sceneLookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
     x: 3.0
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: data.get('pitch'),
-      x: 1.0
-    };
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: data.get('yaw'),
-      z: 1.0
-    };
-  }, platformsNode, SceneJS.stationary(skyboxNode))))));
+  }, platformsNode, SceneJS.stationary(skyboxNode))));
   guiLightsConfig = {
     sources: [
       {
@@ -449,93 +439,103 @@
       return dist < 0 ? null : addVec3(rayOrigin, mulVec3Scalar(rayDirection, dist));
     }
   };
-  lastX = 0;
-  lastY = 0;
-  dragging = false;
-  keyDown = function(event) {
-    var _b;
-    if ((_b = String.fromCharCode(event.keyCode)) === "1") {
-      return (currentTowerSelection = 0);
-    } else if (_b === "2") {
-      return (currentTowerSelection = 1);
-    } else {
-      return (currentTowerSelection = -1);
-    }
-  };
-  mouseDown = function(event) {
-    lastX = event.clientX;
-    lastY = event.clientY;
-    return (dragging = true);
-  };
-  mouseUp = function() {
-    return (dragging = false);
-  };
-  mouseMove = function(event) {
+  mouseLastX = 0;
+  mouseLastY = 0;
+  mouseDragging = false;
+  updateTowerPlacement = function() {
     var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
-    if (dragging) {
-      yaw += (event.clientX - lastX) * 0.5;
-      pitch += (event.clientY - lastY) * -0.5;
-      lastX = event.clientX;
-      return (lastY = event.clientY);
+    mouseX = mouseLastX;
+    mouseY = mouseLastY;
+    canvasElement = document.getElementById("gameCanvas");
+    mouseX -= canvasElement.offsetLeft;
+    mouseY -= canvasElement.offsetTop;
+    lookAtEye = sceneLookAtNode.getEye();
+    lookAtUp = sceneLookAtNode.getUp();
+    lookAtLook = sceneLookAtNode.getLook();
+    rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
+    yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
+    zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];
+    zAxis = subVec3(zAxis, rayOrigin);
+    zAxis = normalizeVec3(zAxis);
+    xAxis = normalizeVec3(cross3Vec3(yAxis, zAxis));
+    yAxis = cross3Vec3(zAxis, xAxis);
+    screenX = mouseX / canvasSize[0];
+    screenY = 1.0 - mouseY / canvasSize[1];
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
+    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
+    if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
+      towerPlacement.level = 0;
+      towerPlacement.cell.x = Math.floor(intersection[0]);
+      towerPlacement.cell.y = Math.floor(intersection[1]);
     } else {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
-      canvasElement = document.getElementById("gameCanvas");
-      mouseX -= canvasElement.offsetLeft;
-      mouseY -= canvasElement.offsetTop;
-      lookAtEye = sceneLookAtNode.getEye();
-      lookAtUp = sceneLookAtNode.getUp();
-      lookAtLook = sceneLookAtNode.getLook();
-      rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
-      yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
-      zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];
-      zAxis = subVec3(zAxis, rayOrigin);
-      zAxis = normalizeVec3(zAxis);
-      xAxis = normalizeVec3(cross3Vec3(yAxis, zAxis));
-      yAxis = cross3Vec3(zAxis, xAxis);
-      screenX = mouseX / canvasSize[0];
-      screenY = 1.0 - mouseY / canvasSize[1];
-      rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)));
-      rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
-      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
-      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
-        towerPlacement.level = 0;
+      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
+      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
+        towerPlacement.level = 1;
         towerPlacement.cell.x = Math.floor(intersection[0]);
         towerPlacement.cell.y = Math.floor(intersection[1]);
       } else {
-        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
-        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
-          towerPlacement.level = 1;
+        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
+        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
+          towerPlacement.level = 2;
           towerPlacement.cell.x = Math.floor(intersection[0]);
           towerPlacement.cell.y = Math.floor(intersection[1]);
         } else {
-          intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
-          if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
-            towerPlacement.level = 2;
-            towerPlacement.cell.x = Math.floor(intersection[0]);
-            towerPlacement.cell.y = Math.floor(intersection[1]);
-          } else {
-            towerPlacement.level = -1;
-            towerPlacement.cell.x = -1;
-            towerPlacement.cell.y = -1;
-          }
+          towerPlacement.level = -1;
+          towerPlacement.cell.x = -1;
+          towerPlacement.cell.y = -1;
         }
       }
-      return towerPlacement.level !== -1 && currentTowerSelection !== -1 ? SceneJS.fireEvent("configure", "placementTower", {
+    }
+    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
+      SceneJS.fireEvent("configure", "placementTower", {
         cfg: {
           x: intersection[0],
           y: intersection[1],
           z: platformHeights[towerPlacement.level],
           "#placementTowerModel": {
+            selection: [currentTowerSelection]
+          }
+        }
+      });
+    } else {
+      SceneJS.fireEvent("configure", "placementTower", {
+        cfg: {
+          "#placementTowerModel": {
             selection: []
           }
         }
-      }) : SceneJS.fireEvent("configure", "placementTowerModel", {
-        cfg: {
-          selection: [currentTowerSelection]
-        }
       });
     }
+    return null;
+  };
+  keyDown = function(event) {
+    var _b;
+    if ((_b = String.fromCharCode(event.keyCode)) === "1") {
+      currentTowerSelection = 0;
+    } else if (_b === "2") {
+      currentTowerSelection = 1;
+    } else {
+      currentTowerSelection = -1;
+    }
+    return updateTowerPlacement();
+  };
+  mouseDown = function(event) {
+    mouseLastX = event.clientX;
+    mouseLastY = event.clientY;
+    return (mouseDragging = true);
+  };
+  mouseUp = function() {
+    return (mouseDragging = false);
+  };
+  mouseMove = function(event) {
+    if (mouseDragging) {
+      yaw += (event.clientX - mouseLastX) * 0.5;
+      pitch += (event.clientY - mouseLastY) * -0.5;
+    }
+    mouseLastX = event.clientX;
+    mouseLastY = event.clientY;
+    return !mouseDragging ? updateTowerPlacement() : null;
   };
   canvas.addEventListener('mousedown', mouseDown, true);
   canvas.addEventListener('mousemove', mouseMove, true);

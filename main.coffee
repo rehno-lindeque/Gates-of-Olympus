@@ -141,7 +141,7 @@ towerPlacementNode = () ->
   SceneJS.translate(
     { id: "placementTower", z: platformHeights[1] }
     SceneJS.selector(
-      { id: "placementTowerModel", selection: [0] }
+      { sid: "placementTowerModel", selection: [0] }
       tower1
       tower2
     ) # selector
@@ -221,16 +221,16 @@ sceneLookAtNode =
       cameraConfig
       SceneJS.translate(
         x: 3.0
-        SceneJS.rotate((data) ->
-            angle: data.get('pitch')
-            x: 1.0
-          SceneJS.rotate((data) ->
-              angle: data.get('yaw')
-              z: 1.0
-            platformsNode
-            SceneJS.stationary(skyboxNode)
-          ) # rotate
-        ) # rotate
+        #SceneJS.rotate((data) ->
+        #    angle: data.get('pitch')
+        #    x: 1.0
+        #  SceneJS.rotate((data) ->
+        #      angle: data.get('yaw')
+        #      z: 1.0
+        platformsNode
+        SceneJS.stationary(skyboxNode)
+        #  ) # rotate
+        #) # rotate
       ) # translate
     ) # camera
   ) # lookAt
@@ -412,103 +412,112 @@ intersectRayXYPlane = (rayOrigin, rayDirection, planeZ) ->
     dist = zDist / rayDirection[2]
     #alert "z " + zDist + " dist " + dist
     if dist < 0
-      null                # The plane is behind the camera.
+      #alert "Plane behind camera.."
+      null
     else
       addVec3(rayOrigin, mulVec3Scalar(rayDirection, dist))
-    
+
 # Mouse inputs
-lastX = 0
-lastY = 0
-dragging = false
+mouseLastX = 0
+mouseLastY = 0
+mouseDragging = false
+
+# Update the placement of the platform according to the mouse coordinates and tower selection
+updateTowerPlacement = () ->
+  mouseX = mouseLastX
+  mouseY = mouseLastY
+  canvasElement = document.getElementById("gameCanvas");
+  mouseX -= canvasElement.offsetLeft
+  mouseY -= canvasElement.offsetTop
+  
+  # Transform ray origin into world space
+  lookAtEye  = sceneLookAtNode.getEye()
+  lookAtUp   = sceneLookAtNode.getUp()
+  lookAtLook = sceneLookAtNode.getLook()
+  rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
+  yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
+  zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]
+  zAxis      = subVec3(zAxis, rayOrigin)
+  zAxis      = normalizeVec3(zAxis)
+  xAxis      = normalizeVec3(cross3Vec3(yAxis,zAxis))
+  yAxis      = cross3Vec3(zAxis,xAxis)
+  screenX    = mouseX / canvasSize[0]
+  screenY    = 1.0 - mouseY / canvasSize[1]
+  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)))
+  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)))
+
+  # Find the intersection with one of the platforms
+  intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0])
+  #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
+  if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
+    #alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
+    towerPlacement.level  = 0
+    towerPlacement.cell.x = Math.floor(intersection[0])
+    towerPlacement.cell.y = Math.floor(intersection[1])
+  else 
+    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
+    if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
+      #alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
+      towerPlacement.level  = 1
+      towerPlacement.cell.x = Math.floor(intersection[0])
+      towerPlacement.cell.y = Math.floor(intersection[1])
+    else
+      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
+      if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
+        #alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
+        towerPlacement.level  = 2
+        towerPlacement.cell.x = Math.floor(intersection[0])
+        towerPlacement.cell.y = Math.floor(intersection[1])
+      else
+        towerPlacement.level  = -1
+        towerPlacement.cell.x = -1
+        towerPlacement.cell.y = -1
+        
+  # Update the placement tower node
+  if towerPlacement.level != -1 and currentTowerSelection != -1
+    SceneJS.fireEvent(
+      "configure"
+      "placementTower"
+      cfg: 
+        x: intersection[0]
+        y: intersection[1]
+        z: platformHeights[towerPlacement.level]
+        "#placementTowerModel":
+          selection: [currentTowerSelection]
+    )
+  else
+    SceneJS.fireEvent(
+      "configure"
+      "placementTower"
+      cfg: 
+        "#placementTowerModel":
+          selection: []
+    )
+  null
 
 keyDown = (event) ->
   switch String.fromCharCode(event.keyCode)
     when "1" then currentTowerSelection =  0
     when "2" then currentTowerSelection =  1
     else          currentTowerSelection = -1
+  updateTowerPlacement()
 
 mouseDown = (event) ->
-  lastX = event.clientX
-  lastY = event.clientY
-  dragging = true
+  mouseLastX = event.clientX
+  mouseLastY = event.clientY
+  mouseDragging = true
 
 mouseUp = ->
-  dragging = false
+  mouseDragging = false
 
 mouseMove = (event) ->
-  if dragging
-    yaw += (event.clientX - lastX) * 0.5
-    pitch += (event.clientY - lastY) * -0.5
-    lastX = event.clientX
-    lastY = event.clientY
-  else
-    mouseX = event.clientX
-    mouseY = event.clientY
-    canvasElement = document.getElementById("gameCanvas");
-    mouseX -= canvasElement.offsetLeft
-    mouseY -= canvasElement.offsetTop
-    
-    # Transform ray origin into world space
-    lookAtEye  = sceneLookAtNode.getEye()
-    lookAtUp   = sceneLookAtNode.getUp()
-    lookAtLook = sceneLookAtNode.getLook()
-    rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
-    yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
-    zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]
-    zAxis      = subVec3(zAxis, rayOrigin)
-    zAxis      = normalizeVec3(zAxis)
-    xAxis      = normalizeVec3(cross3Vec3(yAxis,zAxis))
-    yAxis      = cross3Vec3(zAxis,xAxis)
-    screenX    = mouseX / canvasSize[0]
-    screenY    = 1.0 - mouseY / canvasSize[1]
-    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)))
-    rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)))
-
-    # Find the intersection with one of the platforms
-    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0])
-    #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
-    if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
-      #alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
-      towerPlacement.level  = 0
-      towerPlacement.cell.x = Math.floor(intersection[0])
-      towerPlacement.cell.y = Math.floor(intersection[1])
-    else 
-      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
-      if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
-        #alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
-        towerPlacement.level  = 1
-        towerPlacement.cell.x = Math.floor(intersection[0])
-        towerPlacement.cell.y = Math.floor(intersection[1])
-      else
-        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
-        if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
-          #alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
-          towerPlacement.level  = 2
-          towerPlacement.cell.x = Math.floor(intersection[0])
-          towerPlacement.cell.y = Math.floor(intersection[1])
-        else
-          towerPlacement.level  = -1
-          towerPlacement.cell.x = -1
-          towerPlacement.cell.y = -1
-          
-    # Update the placement tower node
-    if towerPlacement.level != -1 and currentTowerSelection != -1
-      SceneJS.fireEvent(
-        "configure"
-        "placementTower"
-        cfg: 
-          x: intersection[0]
-          y: intersection[1]
-          z: platformHeights[towerPlacement.level]
-          "#placementTowerModel":
-            selection: []
-      )
-    else
-      SceneJS.fireEvent(
-        "configure"
-        "placementTowerModel"
-        cfg: { selection: [currentTowerSelection] }
-      )
+  if mouseDragging
+    yaw += (event.clientX - mouseLastX) * 0.5
+    pitch += (event.clientY - mouseLastY) * -0.5
+  mouseLastX = event.clientX
+  mouseLastY = event.clientY
+  if not mouseDragging
+    updateTowerPlacement()
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
