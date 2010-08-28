@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, intersectRayXYPlane, interval, keyDown, lerp, levelNodes, levels, max, min, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode, sceneLookAtURI, skyboxNode, sqrGridSize, square, towerNode, towerPlacement, towerPlacementNode, towerTextureURI, towerURI, towers, updateTowerPlacement, yaw;
+  var _a, c, cameraConfig, canvas, canvasSize, cellScale, clamp, createTowers, currentTowerSelection, gameScene, gridSize, guiDiasRotPosition, guiDiasRotVelocity, guiLightsConfig, guiLookAtConfig, guiNode, intersectRayXYPlane, interval, keyDown, lerp, levelNodes, levels, max, min, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, numTowerTypes, numberedDaisNode, pitch, platformGeometry, platformHeights, platformLengths, platformsNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtID, sceneLookAtNode, skyboxNode, sqrGridSize, square, towerNode, towerPlacement, towerPlacementNode, towerTextureURI, towerURI, towers, updateTowerPlacement, yaw;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -230,9 +230,9 @@
       }
     ]
   });
-  sceneLookAtURI = "SceneLookAt";
+  sceneLookAtID = "SceneLookAt";
   sceneLookAtConfig = {
-    uri: sceneLookAtURI,
+    id: sceneLookAtID,
     eye: {
       x: 0.0,
       y: 10.0,

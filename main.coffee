@@ -207,9 +207,9 @@ skyboxNode =
       ]
   )
 
-sceneLookAtURI = "SceneLookAt"
+sceneLookAtID = "SceneLookAt"
 sceneLookAtConfig = 
-  uri:  sceneLookAtURI
+  id:   sceneLookAtID
   eye:  { x: 0.0, y: 10.0, z: 7.0 }
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
@@ -221,16 +221,8 @@ sceneLookAtNode =
       cameraConfig
       SceneJS.translate(
         x: 3.0
-        #SceneJS.rotate((data) ->
-        #    angle: data.get('pitch')
-        #    x: 1.0
-        #  SceneJS.rotate((data) ->
-        #      angle: data.get('yaw')
-        #      z: 1.0
         platformsNode
         SceneJS.stationary(skyboxNode)
-        #  ) # rotate
-        #) # rotate
       ) # translate
     ) # camera
   ) # lookAt
@@ -499,6 +491,8 @@ keyDown = (event) ->
   switch String.fromCharCode(event.keyCode)
     when "1" then currentTowerSelection =  0
     when "2" then currentTowerSelection =  1
+    #when "a"
+    #  lookAtEye  = sceneLookAtNode.getEye()
     else          currentTowerSelection = -1
   updateTowerPlacement()
 
