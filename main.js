@@ -523,6 +523,8 @@
       }
       return towerPlacement.level !== -1 && currentTowerSelection !== -1 ? SceneJS.fireEvent("configure", "placementTower", {
         cfg: {
+          x: intersection[0],
+          y: intersection[1],
           z: platformHeights[towerPlacement.level],
           "#placementTowerModel": {
             selection: []
