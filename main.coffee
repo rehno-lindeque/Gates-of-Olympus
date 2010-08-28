@@ -139,9 +139,9 @@ towerPlacementNode = () ->
   tower2 = towerNode(1, "placementTower"+1)
   tower2.addNode(SceneJS.instance {uri: towerURI[1]})
   SceneJS.translate(
-    { z: platformHeights[1] }
+    { id: "placementTower", z: platformHeights[1] }
     SceneJS.selector(
-      { selection: [0] }
+      { id: "placementTowerModel", selection: [0] }
       tower1
       tower2
     ) # selector
@@ -180,29 +180,6 @@ platformsNode =
       ) # scale
     ) # translate
   ) # material  (platforms)
-
-###
-skyboxNode =
-  SceneJS.scale(
-    { x: 100.0, y: 100.0, z: 100.0 },
-    SceneJS.material(
-      baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
-      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-      specular:       0.0
-      shine:          0.0
-      SceneJS.texture(
-        { layers: [{uri:"textures/sky.png"}] }
-        SceneJS.geometry(
-          type:       "Skybox"
-          primitive:  "triangles"
-          positions:  [1, 1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1, 1, 1, 1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1, 1, 1, 1, 1,-1,-1, 1,-1,-1, 1, 1,-1, 1, 1,-1, 1,-1,-1,-1,-1,-1,-1, 1,-1,-1,-1, 1,-1,-1, 1,-1, 1,-1,-1, 1, 1,-1,-1,-1,-1,-1,-1, 1,-1, 1, 1,-1]
-          uv:         [1,1,0,1,0,0,1,0,0,1,0,0,1,0,1,1,1,0,1,1,0,1,0,0,1,1,0,1,0,0,1,0,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1]
-          indices:    [0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11,12,13,14,12,14,15,16,17,18,16,18,19,20,21,22,20,22,23]
-        ) # geometry
-      ) # texture
-    ) # material
-  ) # scale
-###
 
 skyboxNode = 
   SceneJS.createNode(
@@ -444,11 +421,11 @@ lastX = 0
 lastY = 0
 dragging = false
 
-handleKeyDown = (event) ->
+keyDown = (event) ->
   switch String.fromCharCode(event.keyCode)
-    when 1 then currentTowerSelection =  1
-    when 2 then currentTowerSelection =  2
-    else        currentTowerSelection = -1
+    when "1" then currentTowerSelection =  0
+    when "2" then currentTowerSelection =  1
+    else          currentTowerSelection = -1
 
 mouseDown = (event) ->
   lastX = event.clientX
@@ -513,10 +490,28 @@ mouseMove = (event) ->
           towerPlacement.level  = -1
           towerPlacement.cell.x = -1
           towerPlacement.cell.y = -1
+          
+    # Update the placement tower node
+    if towerPlacement.level != -1 and currentTowerSelection != -1
+      SceneJS.fireEvent(
+        "configure"
+        "placementTower"
+        cfg: 
+          z: platformHeights[towerPlacement.level]
+          "#placementTowerModel":
+            selection: []
+      )
+    else
+      SceneJS.fireEvent(
+        "configure"
+        "placementTowerModel"
+        cfg: { selection: [currentTowerSelection] }
+      )
 
 canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
 canvas.addEventListener('mouseup', mouseUp, true)
+document.onkeydown = keyDown
 
 window.render = ->
   # Animate the gui diases
@@ -528,10 +523,6 @@ window.render = ->
     guiDiasRotPosition[c] += guiDiasRotVelocity[c]
     guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0)
   
-  # Update the selection tower node
-  #if towerPlacement.level >= 0
-    # todo
-    
   # Render the scene
   gameScene
     .setData({yaw: yaw, pitch: pitch})
