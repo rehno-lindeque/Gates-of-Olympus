@@ -34,7 +34,7 @@
   levels = 3;
   cellScale = 0.9;
   platformHeights = [cellScale * 10 + 1.15, 1.15, cellScale * -11 + 1.15];
-  platformLengths = [0.78 * 0.5 * cellScale * 1.00 * 0.5 * cellScale * gridSize, 1.22 * 0.5 * cellScale * gridSize];
+  platformLengths = [0.78 * 0.5 * cellScale * gridSize, 1.00 * 0.5 * cellScale * gridSize, 1.22 * 0.5 * cellScale * gridSize];
   numTowerTypes = 3;
   guiDiasRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   guiDiasRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];

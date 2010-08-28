@@ -35,7 +35,7 @@ platformHeights = [
     cellScale*-11 + 1.15 ]
   
 platformLengths = [
-    0.78 * 0.5 * cellScale *    
+    0.78 * 0.5 * cellScale * gridSize
     1.00 * 0.5 * cellScale * gridSize
     1.22 * 0.5 * cellScale * gridSize ]
 
@@ -514,6 +514,7 @@ mouseMove = (event) ->
   if mouseDragging
     yaw += (event.clientX - mouseLastX) * 0.5
     pitch += (event.clientY - mouseLastY) * -0.5
+    #alert "" + platformHeights + " " + platformLengths
   mouseLastX = event.clientX
   mouseLastY = event.clientY
   if not mouseDragging
