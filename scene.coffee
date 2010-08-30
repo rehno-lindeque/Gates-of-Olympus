@@ -7,16 +7,6 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 The main scene definition
 ###
 
-cameraConfig =
-  optics:
-    type:   "ortho"
-    left:   -12.5 * (canvasSize[0] / canvasSize[1])
-    right:   12.5 * (canvasSize[0] / canvasSize[1])
-    bottom: -12.5
-    top:     12.5
-    near:    0.1
-    far:     300.0
-    
 sceneLightsConfig =
   sources: [
     type:      "dir"
@@ -28,25 +18,6 @@ sceneLightsConfig =
   #  type:      "ambient"
   #  color:     { r: 0.5, g: 0.5, b: 0.5 }
   ]
-
-sceneLookAtConfig = 
-  id:   "SceneLookAt"
-  eye:  { x: 0.0, y: 10.0, z: 7.0 }
-  look: { x: 0.0, y: 0.0 }
-  up:   { z: 1.0 }
-  
-sceneLookAtNode = 
-  SceneJS.lookAt(
-    sceneLookAtConfig
-    SceneJS.camera(
-      cameraConfig
-      SceneJS.translate(
-        x: 3.0
-        level.platformsNode
-        SceneJS.stationary(skybox.node)
-      ) # translate
-    ) # camera
-  ) # lookAt
 
 guiLightsConfig =
   sources: [
@@ -61,7 +32,7 @@ guiLightsConfig =
   ]
   
 guiLookAtConfig = 
-  eye:  { x: 0.0, y: 10.0, z: 4.0 }
+  eye:  { x: 0.0, y: -10.0, z: 4.0 }
   look: { x: 0.0, y: 0.0 }
   up:   { z: 1.0 }
 
@@ -69,7 +40,7 @@ numberedDaisNode = (index) ->
   node = towerNode(index, "selectTower"+index)
   node.addNode(SceneJS.instance {uri: towerURI[index]})
   SceneJS.translate(
-    {x:index*-1.5}
+    {x:index*1.5}
     SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
     SceneJS.rotate((data) ->
         angle: guiDiasRotPosition[index*2]
@@ -85,7 +56,7 @@ numberedDaisNode = (index) ->
   
 guiNode = 
   SceneJS.translate(
-    {x:-8.0,y:-4.0}
+    {x:8.0,y:4.0}
     SceneJS.material(
       baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
       specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
@@ -112,15 +83,18 @@ gameScene = SceneJS.scene(
       SceneJS.lookAt(
         guiLookAtConfig
         SceneJS.camera(
-          cameraConfig
+          sceneCamera.config
           guiNode
         ) # camera
       ) # lights
     ) # lookAt
-    SceneJS.lights(
-      sceneLightsConfig
-      sceneLookAtNode
-    ) # lights
+    SceneJS.translate(
+      { x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2] }
+      SceneJS.lights(
+        sceneLightsConfig
+        sceneLookAt.node
+      ) # lights
+    ) # translate
   ) # renderer
 ) # scene
 

@@ -1,4 +1,4 @@
-var cameraConfig, gameScene, guiLightsConfig, guiLookAtConfig, guiNode, numberedDaisNode, sceneLightsConfig, sceneLookAtConfig, sceneLookAtNode;
+var gameScene, guiLightsConfig, guiLookAtConfig, guiNode, numberedDaisNode, sceneLightsConfig;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -6,17 +6,6 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 The main scene definition
 */
-cameraConfig = {
-  optics: {
-    type: "ortho",
-    left: -12.5 * (canvasSize[0] / canvasSize[1]),
-    right: 12.5 * (canvasSize[0] / canvasSize[1]),
-    bottom: -12.5,
-    top: 12.5,
-    near: 0.1,
-    far: 300.0
-  }
-};
 sceneLightsConfig = {
   sources: [
     {
@@ -36,24 +25,6 @@ sceneLightsConfig = {
     }
   ]
 };
-sceneLookAtConfig = {
-  id: "SceneLookAt",
-  eye: {
-    x: 0.0,
-    y: 10.0,
-    z: 7.0
-  },
-  look: {
-    x: 0.0,
-    y: 0.0
-  },
-  up: {
-    z: 1.0
-  }
-};
-sceneLookAtNode = SceneJS.lookAt(sceneLookAtConfig, SceneJS.camera(cameraConfig, SceneJS.translate({
-  x: 3.0
-}, level.platformsNode, SceneJS.stationary(skybox.node))));
 guiLightsConfig = {
   sources: [
     {
@@ -76,7 +47,7 @@ guiLightsConfig = {
 guiLookAtConfig = {
   eye: {
     x: 0.0,
-    y: 10.0,
+    y: -10.0,
     z: 4.0
   },
   look: {
@@ -94,7 +65,7 @@ numberedDaisNode = function(index) {
     uri: towerURI[index]
   }));
   return SceneJS.translate({
-    x: index * -1.5
+    x: index * 1.5
   }, SceneJS.symbol({
     sid: "NumberedDais"
   }, BlenderExport.NumberedDais()), SceneJS.rotate(function(data) {
@@ -112,8 +83,8 @@ numberedDaisNode = function(index) {
   }), node)));
 };
 guiNode = SceneJS.translate({
-  x: -8.0,
-  y: -4.0
+  x: 8.0,
+  y: 4.0
 }, SceneJS.material({
   baseColor: {
     r: 1.0,
@@ -146,4 +117,8 @@ gameScene = SceneJS.scene({
     g: 0.7,
     b: 0.7
   }
-}, SceneJS.lights(guiLightsConfig, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(cameraConfig, guiNode))), SceneJS.lights(sceneLightsConfig, sceneLookAtNode)));
+}, SceneJS.lights(guiLightsConfig, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, guiNode))), SceneJS.translate({
+  x: gameSceneOffset[0],
+  y: gameSceneOffset[1],
+  z: gameSceneOffset[2]
+}, SceneJS.lights(sceneLightsConfig, sceneLookAt.node))));

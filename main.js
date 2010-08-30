@@ -1,5 +1,5 @@
 (function() {
-  var _a, c, canvas, createTowers, currentTowerSelection, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, pitch, towers, updateTowerPlacement, yaw;
+  var calcTowerPlacement, canvas, currentTowerSelection, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -10,87 +10,47 @@
   /*
   Initialization and rendering loop
   */
-  yaw = 45;
-  pitch = 0;
-  gameScene.setData({
-    yaw: yaw,
-    pitch: pitch
-  }).render();
+  gameScene.render();
   canvas = document.getElementById(gameScene.getCanvasId());
   /*
   Game logic
   */
   currentTowerSelection = -1;
-  towers = new Array(sqrGridSize * levels);
-  _a = (sqrGridSize * levels);
-  for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {
-    towers[c] = 0;
-  }
-  towers[0] = 1;
-  towers[1] = 1;
-  towers[2] = 1;
-  towers[3] = 2;
-  towers[4] = 2;
-  towers[5] = 2;
-  towers[6] = 1;
-  towers[7] = 2;
-  towers[8] = 1;
-  towers[9] = 1;
-  towers[10] = 1;
-  towers[11] = 1;
-  towers[sqrGridSize + 0] = 1;
-  towers[sqrGridSize + 1] = 2;
-  towers[sqrGridSize + 2] = 1;
-  towers[sqrGridSize + 3] = 1;
-  towers[sqrGridSize + 4] = 1;
-  towers[sqrGridSize + 5] = 2;
-  towers[sqrGridSize + 6] = 1;
-  towers[sqrGridSize + 7] = 2;
-  towers[sqrGridSize + 8] = 1;
-  towers[sqrGridSize + 9] = 1;
-  towers[sqrGridSize + 10] = 1;
-  towers[sqrGridSize + 11] = 1;
-  towers[290] = 1;
-  towers[291] = 1;
-  towers[292] = 2;
-  towers[293] = 1;
-  towers[294] = 1;
-  towers[295] = 1;
-  towers[296] = 1;
-  towers[297] = 2;
-  towers[298] = 2;
-  towers[299] = 1;
-  createTowers = function(towers) {
-    var cx, cy, cz, node, parentNode, t;
-    for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
-      for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
-        for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
-          t = towers[cz * sqrGridSize + cy * gridSize + cx];
-          if (t !== 0) {
-            if (t === 1) {
-              node = SceneJS.instance({
-                uri: towerURI[0]
-              });
-              parentNode = level.levelNodes[cz].archerTowers;
-            } else if (t === 2) {
-              node = SceneJS.instance({
-                uri: towerURI[1]
-              });
-              parentNode = level.levelNodes[cz].catapultTowers;
-            } else {
-              alert("" + (cz * sqrGridSize + cy * gridSize + cx) + " : " + t);
-            }
-            parentNode.addNode(SceneJS.translate({
-              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-            }, node));
-          }
-        }
-      }
-    }
-    return null;
-  };
-  createTowers(towers);
+  level.towers[0] = 0;
+  level.towers[1] = 0;
+  level.towers[2] = 0;
+  level.towers[3] = 1;
+  level.towers[4] = 1;
+  level.towers[5] = 1;
+  level.towers[6] = 0;
+  level.towers[7] = 1;
+  level.towers[8] = 0;
+  level.towers[9] = 0;
+  level.towers[10] = 0;
+  level.towers[11] = 0;
+  level.towers[sqrGridSize + 0] = 0;
+  level.towers[sqrGridSize + 1] = 1;
+  level.towers[sqrGridSize + 2] = 0;
+  level.towers[sqrGridSize + 3] = 0;
+  level.towers[sqrGridSize + 4] = 0;
+  level.towers[sqrGridSize + 5] = 1;
+  level.towers[sqrGridSize + 6] = 0;
+  level.towers[sqrGridSize + 7] = 1;
+  level.towers[sqrGridSize + 8] = 0;
+  level.towers[sqrGridSize + 9] = 0;
+  level.towers[sqrGridSize + 10] = 0;
+  level.towers[sqrGridSize + 11] = 0;
+  level.towers[290] = 0;
+  level.towers[291] = 0;
+  level.towers[292] = 1;
+  level.towers[293] = 0;
+  level.towers[294] = 0;
+  level.towers[295] = 0;
+  level.towers[296] = 0;
+  level.towers[297] = 1;
+  level.towers[298] = 1;
+  level.towers[299] = 0;
+  level.createTowers(level.towers);
   /*
   User input
   */
@@ -107,6 +67,12 @@
   mouseLastX = 0;
   mouseLastY = 0;
   mouseDragging = false;
+  calcTowerPlacement = function(level, intersection) {
+    return {
+      x: Math.floor(intersection[0] / (cellScale * platformScales[level]) + gridHalfSize),
+      y: Math.floor(intersection[1] / (cellScale * platformScales[level]) + gridHalfSize)
+    };
+  };
   updateTowerPlacement = function() {
     var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
     mouseX = mouseLastX;
@@ -114,37 +80,37 @@
     canvasElement = document.getElementById("gameCanvas");
     mouseX -= canvasElement.offsetLeft;
     mouseY -= canvasElement.offsetTop;
-    lookAtEye = sceneLookAtNode.getEye();
-    lookAtUp = sceneLookAtNode.getUp();
-    lookAtLook = sceneLookAtNode.getLook();
+    lookAtEye = sceneLookAt.node.getEye();
+    lookAtUp = sceneLookAt.node.getUp();
+    lookAtLook = sceneLookAt.node.getLook();
     rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
     yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
     zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];
     zAxis = subVec3(zAxis, rayOrigin);
     zAxis = normalizeVec3(zAxis);
-    xAxis = normalizeVec3(cross3Vec3(yAxis, zAxis));
-    yAxis = cross3Vec3(zAxis, xAxis);
+    xAxis = normalizeVec3(cross3Vec3(zAxis, yAxis));
+    yAxis = cross3Vec3(xAxis, zAxis);
     screenX = mouseX / canvasSize[0];
     screenY = 1.0 - mouseY / canvasSize[1];
-    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, cameraConfig.optics.left, cameraConfig.optics.right)));
-    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, cameraConfig.optics.bottom, cameraConfig.optics.top)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, sceneCamera.config.optics.left, sceneCamera.config.optics.right)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, sceneCamera.config.optics.bottom, sceneCamera.config.optics.top)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, gameSceneOffset[0]));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, gameSceneOffset[1]));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(zAxis, gameSceneOffset[2]));
     intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
     if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
       towerPlacement.level = 0;
-      towerPlacement.cell.x = Math.floor(intersection[0]);
-      towerPlacement.cell.y = Math.floor(intersection[1]);
+      towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
     } else {
       intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
       if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
         towerPlacement.level = 1;
-        towerPlacement.cell.x = Math.floor(intersection[0]);
-        towerPlacement.cell.y = Math.floor(intersection[1]);
+        towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
       } else {
         intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
         if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
           towerPlacement.level = 2;
-          towerPlacement.cell.x = Math.floor(intersection[0]);
-          towerPlacement.cell.y = Math.floor(intersection[1]);
+          towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
         } else {
           towerPlacement.level = -1;
           towerPlacement.cell.x = -1;
@@ -175,12 +141,12 @@
     return null;
   };
   keyDown = function(event) {
-    var _b;
-    if ((_b = String.fromCharCode(event.keyCode)) === "1") {
+    var _a;
+    if ((_a = event.keyCode) === key1) {
       currentTowerSelection = 0;
-    } else if (_b === "2") {
+    } else if (_a === key2) {
       currentTowerSelection = 1;
-    } else {
+    } else if (_a === keyESC) {
       currentTowerSelection = -1;
     }
     return updateTowerPlacement();
@@ -191,12 +157,15 @@
     return (mouseDragging = true);
   };
   mouseUp = function() {
+    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
+      level.addTower(towerPlacement, currentTowerSelection);
+    }
     return (mouseDragging = false);
   };
   mouseMove = function(event) {
     if (mouseDragging) {
-      yaw += (event.clientX - mouseLastX) * 0.5;
-      pitch += (event.clientY - mouseLastY) * -0.5;
+      sceneLookAt.angle += (event.clientX - mouseLastX) * mouseSpeed;
+      sceneLookAt.update();
     }
     mouseLastX = event.clientX;
     mouseLastY = event.clientY;
@@ -207,6 +176,7 @@
   canvas.addEventListener('mouseup', mouseUp, true);
   document.onkeydown = keyDown;
   window.render = function() {
+    var c;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
       guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1;
       if (guiDiasRotPosition[c] > 0) {
@@ -219,10 +189,7 @@
       guiDiasRotPosition[c] += guiDiasRotVelocity[c];
       guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0);
     }
-    return gameScene.setData({
-      yaw: yaw,
-      pitch: pitch
-    }).render();
+    return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);
 })();

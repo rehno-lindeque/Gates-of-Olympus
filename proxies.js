@@ -1,7 +1,10 @@
-var Level, Skybox, level, skybox, towerNode, towerPlacementNode;
+var Level, SceneCamera, SceneLookAt, Skybox, level, sceneCamera, sceneLookAt, skybox, towerNode, towerPlacementNode;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
+*/
+/*
+A proxy for the skybox
 */
 Skybox = function() {
   this.node = SceneJS.createNode({
@@ -56,7 +59,9 @@ Skybox = function() {
   });
   return this;
 };
-skybox = new Skybox();
+/*
+Tower scene graph nodes
+*/
 towerNode = function(index, sid) {
   var tex;
   tex = SceneJS.texture({
@@ -100,21 +105,30 @@ towerPlacementNode = function() {
     selection: [0]
   }, tower1, tower2));
 };
+/*
+A proxy for the whole level with platforms and creatures etc.
+*/
 Level = function() {
-  this.levelNodes = new Array(3);
-  this.levelNodes[0] = {
+  var _a, c;
+  this.towerNodes = new Array(3);
+  this.towerNodes[0] = {
     archerTowers: towerNode(0, "archerTowers0"),
     catapultTowers: towerNode(1, "catapultTowers0")
   };
-  this.levelNodes[1] = {
+  this.towerNodes[1] = {
     archerTowers: towerNode(0, "archerTowers1"),
     catapultTowers: towerNode(1, "catapultTowers1")
   };
-  this.levelNodes[2] = {
+  this.towerNodes[2] = {
     archerTowers: towerNode(0, "archerTowers2"),
     catapultTowers: towerNode(1, "catapultTowers2")
   };
-  this.platformsNode = SceneJS.material({
+  this.towers = new Array(sqrGridSize * levels);
+  _a = (sqrGridSize * levels);
+  for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {
+    this.towers[c] = -1;
+  }
+  this.node = SceneJS.material({
     baseColor: {
       r: 0.75,
       g: 0.78,
@@ -133,15 +147,129 @@ Level = function() {
     x: 0.78,
     y: 0.78,
     z: 0.78
-  }, platformGeometry("level0"), this.levelNodes[0].archerTowers, this.levelNodes[0].catapultTowers)), SceneJS.translate({
+  }, platformGeometry("level0"), this.towerNodes[0].archerTowers, this.towerNodes[0].catapultTowers)), SceneJS.translate({
     z: platformHeights[1]
-  }, platformGeometry("level1"), this.levelNodes[1].archerTowers, this.levelNodes[1].catapultTowers), SceneJS.translate({
+  }, platformGeometry("level1"), this.towerNodes[1].archerTowers, this.towerNodes[1].catapultTowers), SceneJS.translate({
     z: platformHeights[2]
   }, SceneJS.scale({
     x: 1.22,
     y: 1.22,
     z: 1.22
-  }, platformGeometry("level2"), this.levelNodes[2].archerTowers, this.levelNodes[2].catapultTowers)));
+  }, platformGeometry("level2"), this.towerNodes[2].archerTowers, this.towerNodes[2].catapultTowers)));
   return this;
 };
+Level.prototype.getTowerRoot = function(level, towerType) {
+  if (towerType === 0) {
+    return this.towerNodes[level].archerTowers;
+  } else if (towerType === 1) {
+    return this.towerNodes[level].catapultTowers;
+  } else {
+    return null;
+  }
+};
+Level.prototype.addTower = function(towerPlacement, towerType) {
+  var cx, cy, cz, index, node, parentNode;
+  index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
+  if (this.towers[index] === -1) {
+    this.towers[index] = towerType;
+    parentNode = this.getTowerRoot(towerPlacement.level, towerType);
+    node = SceneJS.instance({
+      uri: towerURI[towerType]
+    });
+    cx = towerPlacement.cell.x;
+    cy = towerPlacement.cell.y;
+    cz = towerPlacement.level;
+    return parentNode.addNode(SceneJS.translate({
+      x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+      y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+    }, node));
+  }
+};
+Level.prototype.createTowers = function(towers) {
+  var cx, cy, cz, node, parentNode, t;
+  for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
+    for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
+      for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
+        t = towers[cz * sqrGridSize + cy * gridSize + cx];
+        if (t !== -1) {
+          if (t === 0) {
+            node = SceneJS.instance({
+              uri: towerURI[0]
+            });
+            parentNode = this.towerNodes[cz].archerTowers;
+          } else if (t === 1) {
+            node = SceneJS.instance({
+              uri: towerURI[1]
+            });
+            parentNode = this.towerNodes[cz].catapultTowers;
+          }
+          parentNode.addNode(SceneJS.translate({
+            x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+            y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+          }, node));
+        }
+      }
+    }
+  }
+  return null;
+};
+/*
+The camera proxy
+*/
+SceneCamera = function(levelNode, backgroundNode) {
+  this.config = {
+    optics: {
+      type: "ortho",
+      left: -12.5 * (canvasSize[0] / canvasSize[1]),
+      right: 12.5 * (canvasSize[0] / canvasSize[1]),
+      bottom: -12.5,
+      top: 12.5,
+      near: 0.1,
+      far: 300.0
+    }
+  };
+  this.node = SceneJS.camera(this.config, levelNode, SceneJS.stationary(backgroundNode));
+  return this;
+};
+/*
+The look-at proxy for the main game scene
+*/
+SceneLookAt = function(cameraNode) {
+  this.angle = 0.0;
+  this.radius = 10.0;
+  this.node = SceneJS.lookAt({
+    id: "SceneLookAt",
+    eye: {
+      x: 0.0,
+      y: -this.radius,
+      z: 7.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0
+    },
+    up: {
+      x: 0.0,
+      y: 0.0,
+      z: 1.0
+    }
+  }, cameraNode);
+  return this;
+};
+SceneLookAt.prototype.update = function() {
+  var cosAngle;
+  cosAngle = Math.cos(this.angle);
+  return this.node.setEye({
+    x: (Math.sin(this.angle)) * this.radius,
+    y: cosAngle * -this.radius,
+    z: 7.0
+  });
+};
+/*
+Proxy instances
+*/
+skybox = new Skybox();
 level = new Level();
+sceneCamera = new SceneCamera(level.node, skybox.node);
+sceneLookAt = new SceneLookAt(sceneCamera.node);

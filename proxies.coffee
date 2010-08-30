@@ -3,6 +3,10 @@ Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
+###
+A proxy for the skybox
+###
+
 class Skybox
   constructor: () ->
     @node = 
@@ -30,8 +34,9 @@ class Skybox
               ]
           ])
 
-skybox = new Skybox()
-
+###
+Tower scene graph nodes
+###
 
 towerNode = (index, sid) -> 
   tex = SceneJS.texture({layers: [{uri: towerTextureURI[index]}]})
@@ -58,20 +63,28 @@ towerPlacementNode = () ->
     ) # selector
   ) # translate
 
+###
+A proxy for the whole level with platforms and creatures etc.
+###
+
 class Level
   constructor: () ->
-    @levelNodes = new Array 3
-    @levelNodes[0] = {
+    @towerNodes = new Array 3
+    @towerNodes[0] = {
       archerTowers:   towerNode(0, "archerTowers0")
       catapultTowers: towerNode(1, "catapultTowers0") }
-    @levelNodes[1] = {
+    @towerNodes[1] = {
       archerTowers:   towerNode(0, "archerTowers1")
       catapultTowers: towerNode(1, "catapultTowers1") }
-    @levelNodes[2] = {
+    @towerNodes[2] = {
       archerTowers:   towerNode(0, "archerTowers2")
       catapultTowers: towerNode(1, "catapultTowers2") }
     
-    @platformsNode =   
+    @towers = new Array (sqrGridSize * levels)
+    for c in [0...(sqrGridSize * levels)]
+      @towers[c] = -1
+    
+    @node =   
       SceneJS.material(
         #baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
         baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
@@ -84,46 +97,124 @@ class Level
           SceneJS.scale(
             { x: 0.78, y: 0.78, z: 0.78 }
             platformGeometry("level0")
-            @levelNodes[0].archerTowers
-            @levelNodes[0].catapultTowers
+            @towerNodes[0].archerTowers
+            @towerNodes[0].catapultTowers
           ) # scale
         ) # translate
         SceneJS.translate(
           { z: platformHeights[1] }
           platformGeometry("level1")
-          @levelNodes[1].archerTowers
-          @levelNodes[1].catapultTowers
+          @towerNodes[1].archerTowers
+          @towerNodes[1].catapultTowers
         ) #translate
         SceneJS.translate(
           {z:platformHeights[2]}
           SceneJS.scale(
             { x: 1.22, y: 1.22, z: 1.22 }
             platformGeometry("level2")
-            @levelNodes[2].archerTowers
-            @levelNodes[2].catapultTowers
+            @towerNodes[2].archerTowers
+            @towerNodes[2].catapultTowers
           ) # scale
         ) # translate
       ) # material  (platforms)
-    
-level = new Level()
+  
+  getTowerRoot: (level, towerType) ->
+    switch towerType
+      when 0 then @towerNodes[level].archerTowers
+      when 1 then @towerNodes[level].catapultTowers
+      else null
+  
+  addTower: (towerPlacement, towerType) ->
+    index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x
+    #alert towerPlacement.cell.x + " " + towerPlacement.cell.y
+    if @towers[index] == -1
+      @towers[index] = towerType
+      parentNode = @getTowerRoot(towerPlacement.level, towerType)
+      node = SceneJS.instance  { uri: towerURI[towerType] }
+      cx = towerPlacement.cell.x
+      cy = towerPlacement.cell.y
+      cz = towerPlacement.level
+      parentNode.addNode(
+        SceneJS.translate(
+          {x: cellScale * (cx - gridSize / 2) + cellScale * 0.5, y: cellScale * (cy - gridSize / 2) + cellScale * 0.5}
+          node
+        ) # translate
+      ) # addNode
+  
+  createTowers: (towers) ->
+    for cz in [0...levels]
+      for cy in [0...gridSize]
+        for cx in [0...gridSize]
+          t = towers[cz * sqrGridSize + cy * gridSize + cx]
+          if t != -1
+            switch t
+              when 0 
+                node = SceneJS.instance  { uri: towerURI[0] }
+                parentNode = @towerNodes[cz].archerTowers
+              when 1 
+                node = SceneJS.instance  { uri: towerURI[1] }
+                parentNode = @towerNodes[cz].catapultTowers
+            parentNode.addNode(
+              SceneJS.translate(
+                {x: cellScale * (cx - gridSize / 2) + cellScale * 0.5, y: cellScale * (cy - gridSize / 2) + cellScale * 0.5}
+                node
+              ) # translate
+            ) # addNode
+    null
 
-#sceneLookAtConfig = 
-#  id:   "SceneLookAt"
-#  eye:  { x: 0.0, y: 10.0, z: 7.0 }
-#  look: { x: 0.0, y: 0.0 }
-#  up:   { z: 1.0 }
-#
-#class SceneLookAt
-#  constructor: () ->
-#    @node = 
-#      SceneJS.lookAt(
-#        sceneLookAtConfig
-#        SceneJS.camera(
-#          cameraConfig
-#          SceneJS.translate(
-#            x: 3.0
-#            platformsNode
-#            SceneJS.stationary(skyboxNode)
-#          ) # translate
-#        ) # camera
-#      ) # lookAt
+
+###
+The camera proxy
+###
+
+class SceneCamera
+  constructor: (levelNode, backgroundNode) ->
+    @config =
+      optics:
+        type:   "ortho"
+        left:   -12.5 * (canvasSize[0] / canvasSize[1])
+        right:   12.5 * (canvasSize[0] / canvasSize[1])
+        bottom: -12.5
+        top:     12.5
+        near:    0.1
+        far:     300.0
+    @node = 
+      SceneJS.camera(
+        @config
+        levelNode
+        SceneJS.stationary backgroundNode
+      ) # camera
+
+###
+The look-at proxy for the main game scene
+###
+
+class SceneLookAt
+  constructor: (cameraNode) ->
+    @angle = 0.0
+    @radius = 10.0
+    @node = 
+      SceneJS.lookAt(
+        id:   "SceneLookAt"
+        eye:  { x: 0.0, y: -@radius, z: 7.0 }
+        look: { x: 0.0, y: 0.0, z: 0.0 }
+        up:   { x: 0.0, y: 0.0, z: 1.0 }
+        cameraNode
+      ) # lookAt
+  
+  update: () ->
+    cosAngle = Math.cos @angle
+    @node.setEye(
+      x: (Math.sin @angle) * @radius
+      y: cosAngle * -@radius
+      z: 7.0
+    ) # setEye
+
+###
+Proxy instances
+###
+
+skybox = new Skybox
+level = new Level
+sceneCamera = new SceneCamera(level.node, skybox.node)
+sceneLookAt = new SceneLookAt sceneCamera.node
