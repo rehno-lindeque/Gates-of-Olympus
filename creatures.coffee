@@ -48,7 +48,8 @@ class Creatures
       "creatures"
       cfg:
         "+node":
-          type: "translate", x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]
+          type: "translate", 
+          x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]
           nodes: [
               type: "instance", target:"Scorpion"
             ]
