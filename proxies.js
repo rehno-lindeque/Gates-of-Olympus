@@ -9,47 +9,39 @@ A proxy for the skybox
 Skybox = function() {
   this.node = SceneJS.createNode({
     type: "scale",
-    cfg: {
-      x: 100.0,
-      y: 100.0,
-      z: 100.0
-    },
+    x: 100.0,
+    y: 100.0,
+    z: 100.0,
     nodes: [
       {
         type: "material",
-        cfg: {
-          baseColor: {
-            r: 1.0,
-            g: 1.0,
-            b: 1.0
-          },
-          specularColor: {
-            r: 1.0,
-            g: 1.0,
-            b: 1.0
-          },
-          specular: 0.0,
-          shine: 0.0
+        baseColor: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
         },
+        specularColor: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        specular: 0.0,
+        shine: 0.0,
         nodes: [
           {
             type: "texture",
-            cfg: {
-              layers: [
-                {
-                  uri: "textures/sky.png"
-                }
-              ]
-            },
+            layers: [
+              {
+                uri: "textures/sky.png"
+              }
+            ],
             nodes: [
               {
                 type: "geometry",
-                cfg: {
-                  primitive: "triangles",
-                  positions: [1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1],
-                  uv: [1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1],
-                  indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
-                }
+                primitive: "triangles",
+                positions: [1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1],
+                uv: [1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1],
+                indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
               }
             ]
           }
@@ -293,46 +285,34 @@ guiDaisNode = function(id, index) {
   return {
     type: "translate",
     id: id,
-    cfg: {
-      x: index * 1.5
-    },
+    x: index * 1.5,
     nodes: [
       {
         type: "rotate",
         sid: "rotZ",
-        cfg: {
-          angle: guiDiasRotPosition[index * 2],
-          z: 1.0
-        },
+        angle: guiDiasRotPosition[index * 2],
+        z: 1.0,
         nodes: [
           {
             type: "rotate",
             sid: "rotX",
-            cfg: {
-              angle: guiDiasRotPosition[index * 2],
-              x: 1.0
-            },
+            angle: guiDiasRotPosition[index * 2],
+            x: 1.0,
             nodes: [
               {
                 type: "instance",
-                cfg: {
-                  target: "NumberedDais"
-                }
+                target: "NumberedDais"
               }, {
                 type: "texture",
-                cfg: {
-                  layers: [
-                    {
-                      uri: towerTextureURI[index]
-                    }
-                  ]
-                },
+                layers: [
+                  {
+                    uri: towerTextureURI[index]
+                  }
+                ],
                 nodes: [
                   {
                     type: "instance",
-                    cfg: {
-                      target: towerIds[index]
-                    }
+                    target: towerIds[index]
                   }
                 ]
               }
@@ -351,14 +331,12 @@ GUIDais = function(index) {
 };
 GUIDais.prototype.update = function() {
   return SceneJS.fireEvent("configure", this.id, {
-    cfg: {
-      "#rotZ": {
-        angle: guiDiasRotPosition[this.index * 2],
-        z: 1.0,
-        "#rotX": {
-          angle: guiDiasRotPosition[this.index * 2 + 1],
-          x: 1.0
-        }
+    "#rotZ": {
+      angle: guiDiasRotPosition[this.index * 2],
+      z: 1.0,
+      "#rotX": {
+        angle: guiDiasRotPosition[this.index * 2 + 1],
+        x: 1.0
       }
     }
   });
