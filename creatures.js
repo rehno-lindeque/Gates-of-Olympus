@@ -67,8 +67,15 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
         z: creature.pos[2],
         nodes: [
           {
-            type: "instance",
-            target: "Scorpion"
+            type: "rotate",
+            angle: 0,
+            z: 1,
+            nodes: [
+              {
+                type: "instance",
+                target: "Scorpion"
+              }
+            ]
           }
         ]
       }
@@ -87,6 +94,7 @@ Creatures.prototype.update = function() {
       y: this.creatures[c].pos[1],
       z: this.creatures[c].pos[2]
     });
+    node.getNodeAt(0).setAngle(this.creatures[c].rot);
     c += 1;
   }
   return null;
