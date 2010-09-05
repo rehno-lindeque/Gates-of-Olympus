@@ -61,6 +61,9 @@ level.towers[299] = 0
 
 level.createTowers level.towers
 
+# Creatures
+level.creatures.addCreature(Scorpion)
+
 ###
 User input 
 ###

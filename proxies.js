@@ -91,11 +91,11 @@ towerPlacementNode = function() {
   var tower1, tower2;
   tower1 = towerNode(0, "placementTower" + 0);
   tower1.addNode(SceneJS.instance({
-    uri: towerURI[0]
+    target: towerIds[0]
   }));
   tower2 = towerNode(1, "placementTower" + 1);
   tower2.addNode(SceneJS.instance({
-    uri: towerURI[1]
+    target: towerIds[1]
   }));
   return SceneJS.translate({
     id: "placementTower",
@@ -110,6 +110,7 @@ A proxy for the whole level with platforms and creatures etc.
 */
 Level = function() {
   var _a, c;
+  this.creatures = new Creatures();
   this.towerNodes = new Array(3);
   this.towerNodes[0] = {
     archerTowers: towerNode(0, "archerTowers0"),
@@ -141,7 +142,9 @@ Level = function() {
     },
     specular: 0.9,
     shine: 6.0
-  }, towerPlacementNode(), SceneJS.translate({
+  }, SceneJS.translate({
+    z: platformHeights[1]
+  }), towerPlacementNode(), SceneJS.translate({
     z: platformHeights[0]
   }, SceneJS.scale({
     x: 0.78,
@@ -174,7 +177,7 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
     this.towers[index] = towerType;
     parentNode = this.getTowerRoot(towerPlacement.level, towerType);
     node = SceneJS.instance({
-      uri: towerURI[towerType]
+      target: towerIds[towerType]
     });
     cx = towerPlacement.cell.x;
     cy = towerPlacement.cell.y;
@@ -194,12 +197,12 @@ Level.prototype.createTowers = function(towers) {
         if (t !== -1) {
           if (t === 0) {
             node = SceneJS.instance({
-              uri: towerURI[0]
+              target: towerIds[0]
             });
             parentNode = this.towerNodes[cz].archerTowers;
           } else if (t === 1) {
             node = SceneJS.instance({
-              uri: towerURI[1]
+              target: towerIds[1]
             });
             parentNode = this.towerNodes[cz].catapultTowers;
           }
@@ -228,7 +231,21 @@ SceneCamera = function(levelNode, backgroundNode) {
       far: 300.0
     }
   };
-  this.node = SceneJS.camera(this.config, levelNode, SceneJS.stationary(backgroundNode));
+  this.node = SceneJS.camera(this.config, SceneJS.light({
+    type: "dir",
+    color: {
+      r: 1.0,
+      g: 1.0,
+      b: 1.0
+    },
+    diffuse: true,
+    specular: false,
+    dir: {
+      x: 1.0,
+      y: 1.0,
+      z: -1.0
+    }
+  }), levelNode, SceneJS.stationary(backgroundNode));
   return this;
 };
 /*

@@ -51,9 +51,9 @@ towerNode = (index, sid) ->
 
 towerPlacementNode = () ->
   tower1 = towerNode(0, "placementTower"+0)
-  tower1.addNode(SceneJS.instance {uri: towerURI[0]})
+  tower1.addNode(SceneJS.instance {target: towerIds[0]})
   tower2 = towerNode(1, "placementTower"+1)
-  tower2.addNode(SceneJS.instance {uri: towerURI[1]})
+  tower2.addNode(SceneJS.instance {target: towerIds[1]})
   SceneJS.translate(
     { id: "placementTower", z: platformHeights[1] }
     SceneJS.selector(
@@ -69,6 +69,7 @@ A proxy for the whole level with platforms and creatures etc.
 
 class Level
   constructor: () ->
+    @creatures = new Creatures
     @towerNodes = new Array 3
     @towerNodes[0] = {
       archerTowers:   towerNode(0, "archerTowers0")
@@ -91,6 +92,10 @@ class Level
         specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
         specular:       0.9
         shine:          6.0
+        SceneJS.translate(
+          { z: platformHeights[1] }
+          #todo: @creatures.node
+        )
         towerPlacementNode()
         SceneJS.translate(
           { z: platformHeights[0] }
@@ -130,7 +135,7 @@ class Level
     if @towers[index] == -1
       @towers[index] = towerType
       parentNode = @getTowerRoot(towerPlacement.level, towerType)
-      node = SceneJS.instance  { uri: towerURI[towerType] }
+      node = SceneJS.instance  { target: towerIds[towerType] }
       cx = towerPlacement.cell.x
       cy = towerPlacement.cell.y
       cz = towerPlacement.level
@@ -149,10 +154,10 @@ class Level
           if t != -1
             switch t
               when 0 
-                node = SceneJS.instance  { uri: towerURI[0] }
+                node = SceneJS.instance  { target: towerIds[0] }
                 parentNode = @towerNodes[cz].archerTowers
               when 1 
-                node = SceneJS.instance  { uri: towerURI[1] }
+                node = SceneJS.instance  { target: towerIds[1] }
                 parentNode = @towerNodes[cz].catapultTowers
             parentNode.addNode(
               SceneJS.translate(
@@ -181,6 +186,17 @@ class SceneCamera
     @node = 
       SceneJS.camera(
         @config
+        SceneJS.light(
+          type:      "dir"
+          color:     { r: 1.0, g: 1.0, b: 1.0 }
+          diffuse:   true
+          specular:  false
+          dir:       { x: 1.0, y: 1.0, z: -1.0 }
+        )
+        #SceneJS.light(
+        #  type:      "ambient"
+        #  color:     { r: 0.5, g: 0.5, b: 0.5 }
+        #)
         levelNode
         SceneJS.stationary backgroundNode
       ) # camera

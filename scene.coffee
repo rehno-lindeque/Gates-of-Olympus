@@ -7,18 +7,6 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 The main scene definition
 ###
 
-sceneLightsConfig =
-  sources: [
-    type:      "dir"
-    color:     { r: 1.0, g: 1.0, b: 1.0 }
-    diffuse:   true
-    specular:  false
-    dir:       { x: 1.0, y: 1.0, z: -1.0 }
-  #,
-  #  type:      "ambient"
-  #  color:     { r: 0.5, g: 0.5, b: 0.5 }
-  ]
-
 guiLightsConfig =
   sources: [
     type:      "dir"
@@ -38,17 +26,17 @@ guiLookAtConfig =
 
 numberedDaisNode = (index) ->
   node = towerNode(index, "selectTower"+index)
-  node.addNode(SceneJS.instance {uri: towerURI[index]})
+  node.addNode(SceneJS.instance { target: towerIds[index] })
   SceneJS.translate(
     {x:index*1.5}
-    SceneJS.symbol({sid:"NumberedDais"}, BlenderExport.NumberedDais())
+    BlenderExport.NumberedDais()
     SceneJS.rotate((data) ->
         angle: guiDiasRotPosition[index*2]
         z: 1.0
       SceneJS.rotate((data) ->
           angle: guiDiasRotPosition[index*2 + 1]
           x: 1.0
-        SceneJS.instance  { uri: "NumberedDais" }
+        SceneJS.instance  { target: "NumberedDais" }
         node
       ) # rotate (x-axis)
     ) # rotate (z-axis)
@@ -70,30 +58,25 @@ guiNode =
 gameScene = SceneJS.scene(
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
-  SceneJS.symbol({sid:"ArcherTower"}, BlenderExport.ArcherTower())
-  SceneJS.symbol({sid:"CatapultTower"}, BlenderExport.CatapultTower())
+  BlenderExport.ArcherTower()
+  BlenderExport.CatapultTower()
   SceneJS.renderer(
     clear:
       depth :   true
       color :   true
       stencil:  false
     clearColor: { r: 0.7, g: 0.7, b: 0.7 }
-    SceneJS.lights(
-      guiLightsConfig
-      SceneJS.lookAt(
-        guiLookAtConfig
-        SceneJS.camera(
-          sceneCamera.config
-          guiNode
-        ) # camera
-      ) # lights
+    SceneJS.lookAt(
+      guiLookAtConfig
+      SceneJS.camera(
+        sceneCamera.config
+        SceneJS.light(guiLightsConfig)
+        guiNode
+      ) # camera
     ) # lookAt
     SceneJS.translate(
       { x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2] }
-      SceneJS.lights(
-        sceneLightsConfig
-        sceneLookAt.node
-      ) # lights
+      sceneLookAt.node
     ) # translate
   ) # renderer
 ) # scene
