@@ -1,4 +1,4 @@
-var gameScene, guiLightsConfig, guiLookAtConfig, guiNode, numberedDaisNode;
+var gameScene, guiLightsConfig, guiLookAtConfig;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -39,45 +39,6 @@ guiLookAtConfig = {
     z: 1.0
   }
 };
-numberedDaisNode = function(index) {
-  var node;
-  node = towerNode(index, "selectTower" + index);
-  node.addNode(SceneJS.instance({
-    target: towerIds[index]
-  }));
-  return SceneJS.translate({
-    x: index * 1.5
-  }, BlenderExport.NumberedDais(), SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[index * 2],
-      z: 1.0
-    };
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[index * 2 + 1],
-      x: 1.0
-    };
-  }, SceneJS.instance({
-    target: "NumberedDais"
-  }), node)));
-};
-guiNode = SceneJS.translate({
-  x: 8.0,
-  y: 4.0
-}, SceneJS.material({
-  baseColor: {
-    r: 1.0,
-    g: 1.0,
-    b: 1.0
-  },
-  specularColor: {
-    r: 1.0,
-    g: 1.0,
-    b: 1.0
-  },
-  specular: 0.0,
-  shine: 0.0
-}, numberedDaisNode(0), numberedDaisNode(1)));
 gameScene = SceneJS.scene({
   canvasId: "gameCanvas",
   loggingElementId: "scenejsLog"
@@ -92,7 +53,7 @@ gameScene = SceneJS.scene({
     g: 0.7,
     b: 0.7
   }
-}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, SceneJS.light(guiLightsConfig), guiNode)), SceneJS.translate({
+}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, SceneJS.light(guiLightsConfig), gui.node)), SceneJS.translate({
   x: gameSceneOffset[0],
   y: gameSceneOffset[1],
   z: gameSceneOffset[2]

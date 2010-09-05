@@ -227,9 +227,58 @@ class SceneLookAt
     ) # setEye
 
 ###
+A proxy for dias tower selection gui element
+###
+
+numberedDaisNode = (index) ->
+  node = towerNode(index, "selectTower"+index)
+  node.addNode(SceneJS.instance { target: towerIds[index] })
+  SceneJS.translate(
+    {x:index*1.5}
+    BlenderExport.NumberedDais()
+    SceneJS.rotate((data) ->
+        angle: guiDiasRotPosition[index*2]
+        z: 1.0
+      SceneJS.rotate((data) ->
+          angle: guiDiasRotPosition[index*2 + 1]
+          x: 1.0
+        SceneJS.instance  { target: "NumberedDais" }
+        node
+      ) # rotate (x-axis)
+    ) # rotate (z-axis)
+  ) # translate
+
+class GUIDais
+  constructor: (index) ->
+    @node = numberedDaisNode index
+
+###
+Top level GUI container
+###
+
+class GUI
+  constructor: () ->
+    @daises = new Array 2
+    @daises[0] = new GUIDais 0
+    @daises[1] = new GUIDais 1
+    @node = 
+      SceneJS.translate(
+        {x:8.0,y:4.0}
+        SceneJS.material(
+          baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+          specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+          specular:       0.0
+          shine:          0.0
+          @daises[0].node
+          @daises[1].node
+        ) # material
+      ) # translate
+
+###
 Proxy instances
 ###
 
+gui = new GUI
 skybox = new Skybox
 level = new Level
 sceneCamera = new SceneCamera(level.node, skybox.node)
