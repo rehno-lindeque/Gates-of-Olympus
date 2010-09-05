@@ -166,6 +166,9 @@ class Level
               ) # translate
             ) # addNode
     null
+  
+  update: () ->
+    @creatures.update()
 
 
 ###

@@ -209,6 +209,7 @@ window.render = ->
     guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0)
   
   gui.update()
+  level.update()
   
   # Render the scene
   gameScene.render();

@@ -216,6 +216,9 @@ Level.prototype.createTowers = function(towers) {
   }
   return null;
 };
+Level.prototype.update = function() {
+  return this.creatures.update();
+};
 /*
 The camera proxy
 */

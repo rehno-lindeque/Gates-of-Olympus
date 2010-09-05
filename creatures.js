@@ -14,15 +14,16 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 Creature types
 */
-Creature = function() {
-  this.position = [0, 0, 0];
+Creature = function() {};
+Creature.prototype.create = function() {
+  this.position = [1.0, 0.0, 0.0];
   this.rotation = 0;
+  this.angle = 0;
   this.node = null;
-  this.health = 0;
-  return this;
+  return (this.health = 0);
 };
 Scorpion = function() {
-  null;
+  this.create();
   return this;
 };
 __extends(Scorpion, Creature);
@@ -54,8 +55,10 @@ Creatures = function() {
   return this;
 };
 Creatures.prototype.addCreature = function(CreaturePrototype) {
-  this.creatures[this.creatures.length] = new CreaturePrototype();
-  return SceneJS.fireEvent("configure", "creatures", {
+  var creature;
+  creature = new CreaturePrototype();
+  this.creatures[this.creatures.length] = creature;
+  SceneJS.fireEvent("configure", "creatures", {
     cfg: {
       baseColor: {
         r: 0.4,
@@ -72,11 +75,30 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
     },
     cfg: {
       "+node": {
-        type: "instance",
-        cfg: {
-          target: "Scorpion"
-        }
+        type: "translate",
+        nodes: [
+          {
+            type: "instance",
+            cfg: {
+              target: "Scorpion"
+            }
+          }
+        ]
       }
     }
   });
+  return creature;
+};
+Creatures.prototype.update = function() {
+  var _a, _b, _c, _d, c, node;
+  c = 0;
+  _a = []; _c = SceneJS.getNode("creatures").getNodes();
+  for (_b = 0, _d = _c.length; _b < _d; _b++) {
+    node = _c[_b];
+    _a.push((function() {
+      node.setXYZ(this.creatures[c].position[0], this.creatures[c].position[1], this.creatures[c].position[2]);
+      return c += 1;
+    }).call(this));
+  }
+  return _a;
 };
