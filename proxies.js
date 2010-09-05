@@ -341,10 +341,8 @@ guiDaisNode = function(id, index) {
   };
 };
 GUIDais = function(index) {
-  var geomNode;
   this.index = index;
   this.id = "dais" + index;
-  geomNode = BlenderExport.NumberedDais();
   this.node = SceneJS.createNode(guiDaisNode(this.id, index));
   return this;
 };
@@ -369,6 +367,7 @@ GUI = function() {
   this.daises = new Array(2);
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
+  this.daisGeometry = BlenderExport.NumberedDais();
   this.node = SceneJS.translate({
     x: 8.0,
     y: 4.0

@@ -265,7 +265,6 @@ class GUIDais
   constructor: (index) ->
     @index = index
     @id = "dais" + index
-    geomNode = BlenderExport.NumberedDais()
     @node = SceneJS.createNode guiDaisNode(@id, index)
   
   update: () ->
@@ -290,6 +289,7 @@ class GUI
     @daises = new Array 2
     @daises[0] = new GUIDais 0
     @daises[1] = new GUIDais 1
+    @daisGeometry = BlenderExport.NumberedDais()
     @node = 
       SceneJS.translate(
         {x:8.0,y:4.0}
