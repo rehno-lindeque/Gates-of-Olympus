@@ -60,22 +60,13 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   this.creatures[this.creatures.length] = creature;
   SceneJS.fireEvent("configure", "creatures", {
     cfg: {
-      baseColor: {
-        r: 0.4,
-        g: 0.2,
-        b: 0.2
-      },
-      specularColor: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0
-      },
-      specular: 0.0,
-      shine: 0.0
-    },
-    cfg: {
       "+node": {
         type: "translate",
+        cfg: {
+          x: -10,
+          y: -10,
+          z: 0
+        },
         nodes: [
           {
             type: "instance",
@@ -90,15 +81,13 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var _a, _b, _c, _d, c, node;
+  var _a, _b, _c, c, node;
   c = 0;
-  _a = []; _c = SceneJS.getNode("creatures").getNodes();
-  for (_b = 0, _d = _c.length; _b < _d; _b++) {
-    node = _c[_b];
-    _a.push((function() {
-      node.setXYZ(this.creatures[c].position[0], this.creatures[c].position[1], this.creatures[c].position[2]);
-      return c += 1;
-    }).call(this));
+  _b = SceneJS.getNode("creatures").getNodes();
+  for (_a = 0, _c = _b.length; _a < _c; _a++) {
+    node = _b[_a];
+    node.setXYZ(10, 10, 10);
+    c += 1;
   }
-  return _a;
+  return null;
 };
