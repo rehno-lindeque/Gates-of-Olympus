@@ -94,7 +94,7 @@ class Level
         shine:          6.0
         SceneJS.translate(
           { z: platformHeights[1] }
-          #todo: @creatures.node
+          @creatures.node
         )
         towerPlacementNode()
         SceneJS.translate(
@@ -230,24 +230,6 @@ class SceneLookAt
 A proxy for dias tower selection gui element
 ###
 
-#numberedDaisNode = (index) ->
-#  node = towerNode(index, "selectTower"+index)
-#  node.addNode(SceneJS.instance { target: towerIds[index] })
-#  SceneJS.translate(
-#    {x:index*1.5}
-#    BlenderExport.NumberedDais()
-#    SceneJS.rotate((data) ->
-#        angle: guiDiasRotPosition[index*2]
-#        z: 1.0
-#      SceneJS.rotate((data) ->
-#          angle: guiDiasRotPosition[index*2 + 1]
-#          x: 1.0
-#        SceneJS.instance  { target: "NumberedDais" }
-#        node
-#      ) # rotate (x-axis)
-#    ) # rotate (z-axis)
-#  ) # translate
-
 guiDaisNode = (id, index) ->
   type: "translate"
   id: id
@@ -281,7 +263,6 @@ guiDaisNode = (id, index) ->
 
 class GUIDais
   constructor: (index) ->
-    #@node = numberedDaisNode index
     @index = index
     @id = "dais" + index
     geomNode = BlenderExport.NumberedDais()

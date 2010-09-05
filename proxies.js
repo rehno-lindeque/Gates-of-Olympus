@@ -144,7 +144,7 @@ Level = function() {
     shine: 6.0
   }, SceneJS.translate({
     z: platformHeights[1]
-  }), towerPlacementNode(), SceneJS.translate({
+  }, this.creatures.node), towerPlacementNode(), SceneJS.translate({
     z: platformHeights[0]
   }, SceneJS.scale({
     x: 0.78,
