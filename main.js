@@ -190,6 +190,7 @@
       guiDiasRotPosition[c] += guiDiasRotVelocity[c];
       guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0);
     }
+    gui.update();
     return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);

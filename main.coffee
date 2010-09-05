@@ -208,6 +208,8 @@ window.render = ->
     guiDiasRotPosition[c] += guiDiasRotVelocity[c]
     guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0)
   
+  gui.update()
+  
   # Render the scene
   gameScene.render();
 

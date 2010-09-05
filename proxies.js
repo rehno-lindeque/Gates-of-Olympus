@@ -1,4 +1,4 @@
-var GUI, GUIDais, Level, SceneCamera, SceneLookAt, Skybox, gui, level, numberedDaisNode, sceneCamera, sceneLookAt, skybox, towerNode, towerPlacementNode;
+var GUI, GUIDais, Level, SceneCamera, SceneLookAt, Skybox, gui, guiDaisNode, level, sceneCamera, sceneLookAt, skybox, towerNode, towerPlacementNode;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -286,31 +286,81 @@ SceneLookAt.prototype.update = function() {
 /*
 A proxy for dias tower selection gui element
 */
-numberedDaisNode = function(index) {
-  var node;
-  node = towerNode(index, "selectTower" + index);
-  node.addNode(SceneJS.instance({
-    target: towerIds[index]
-  }));
-  return SceneJS.translate({
-    x: index * 1.5
-  }, BlenderExport.NumberedDais(), SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[index * 2],
-      z: 1.0
-    };
-  }, SceneJS.rotate(function(data) {
-    return {
-      angle: guiDiasRotPosition[index * 2 + 1],
-      x: 1.0
-    };
-  }, SceneJS.instance({
-    target: "NumberedDais"
-  }), node)));
+guiDaisNode = function(id, index) {
+  return {
+    type: "translate",
+    id: id,
+    cfg: {
+      x: index * 1.5
+    },
+    nodes: [
+      {
+        type: "rotate",
+        sid: "rotZ",
+        cfg: {
+          angle: guiDiasRotPosition[index * 2],
+          z: 1.0
+        },
+        nodes: [
+          {
+            type: "rotate",
+            sid: "rotX",
+            cfg: {
+              angle: guiDiasRotPosition[index * 2],
+              x: 1.0
+            },
+            nodes: [
+              {
+                type: "instance",
+                cfg: {
+                  target: "NumberedDais"
+                }
+              }, {
+                type: "texture",
+                cfg: {
+                  layers: [
+                    {
+                      uri: towerTextureURI[index]
+                    }
+                  ]
+                },
+                nodes: [
+                  {
+                    type: "instance",
+                    cfg: {
+                      target: towerIds[index]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
 };
 GUIDais = function(index) {
-  this.node = numberedDaisNode(index);
+  var geomNode;
+  this.index = index;
+  this.id = "dais" + index;
+  geomNode = BlenderExport.NumberedDais();
+  this.node = SceneJS.createNode(guiDaisNode(this.id, index));
   return this;
+};
+GUIDais.prototype.update = function() {
+  return SceneJS.fireEvent("configure", this.id, {
+    cfg: {
+      "#rotZ": {
+        angle: guiDiasRotPosition[this.index * 2],
+        z: 1.0,
+        "#rotX": {
+          angle: guiDiasRotPosition[this.index * 2 + 1],
+          x: 1.0
+        }
+      }
+    }
+  });
 };
 /*
 Top level GUI container
@@ -337,6 +387,10 @@ GUI = function() {
     shine: 0.0
   }, this.daises[0].node, this.daises[1].node));
   return this;
+};
+GUI.prototype.update = function() {
+  this.daises[0].update();
+  return this.daises[1].update();
 };
 /*
 Proxy instances

@@ -230,27 +230,75 @@ class SceneLookAt
 A proxy for dias tower selection gui element
 ###
 
-numberedDaisNode = (index) ->
-  node = towerNode(index, "selectTower"+index)
-  node.addNode(SceneJS.instance { target: towerIds[index] })
-  SceneJS.translate(
-    {x:index*1.5}
-    BlenderExport.NumberedDais()
-    SceneJS.rotate((data) ->
+#numberedDaisNode = (index) ->
+#  node = towerNode(index, "selectTower"+index)
+#  node.addNode(SceneJS.instance { target: towerIds[index] })
+#  SceneJS.translate(
+#    {x:index*1.5}
+#    BlenderExport.NumberedDais()
+#    SceneJS.rotate((data) ->
+#        angle: guiDiasRotPosition[index*2]
+#        z: 1.0
+#      SceneJS.rotate((data) ->
+#          angle: guiDiasRotPosition[index*2 + 1]
+#          x: 1.0
+#        SceneJS.instance  { target: "NumberedDais" }
+#        node
+#      ) # rotate (x-axis)
+#    ) # rotate (z-axis)
+#  ) # translate
+
+guiDaisNode = (id, index) ->
+  type: "translate"
+  id: id
+  cfg: { x: index * 1.5 }
+  nodes: [
+      type: "rotate"
+      sid: "rotZ"
+      cfg:
         angle: guiDiasRotPosition[index*2]
         z: 1.0
-      SceneJS.rotate((data) ->
-          angle: guiDiasRotPosition[index*2 + 1]
-          x: 1.0
-        SceneJS.instance  { target: "NumberedDais" }
-        node
-      ) # rotate (x-axis)
-    ) # rotate (z-axis)
-  ) # translate
+      nodes: [
+          type: "rotate"
+          sid: "rotX"
+          cfg:
+            angle: guiDiasRotPosition[index*2]
+            x: 1.0
+          nodes: [
+              type: "instance"
+              cfg: { target: "NumberedDais" }
+            ,
+              type: "texture"
+              cfg: 
+                layers: [{uri: towerTextureURI[index]}]
+              nodes: [
+                  type: "instance"
+                  cfg: { target: towerIds[index] }
+                ]
+            ]
+        ]
+    ]
 
 class GUIDais
   constructor: (index) ->
-    @node = numberedDaisNode index
+    #@node = numberedDaisNode index
+    @index = index
+    @id = "dais" + index
+    geomNode = BlenderExport.NumberedDais()
+    @node = SceneJS.createNode guiDaisNode(@id, index)
+  
+  update: () ->
+    SceneJS.fireEvent(
+      "configure"
+      @id
+      cfg:
+        "#rotZ":
+          angle: guiDiasRotPosition[@index*2]
+          z: 1.0
+          "#rotX":
+            angle: guiDiasRotPosition[@index*2+1]
+            x: 1.0
+    )
 
 ###
 Top level GUI container
@@ -273,7 +321,10 @@ class GUI
           @daises[1].node
         ) # material
       ) # translate
-
+  
+  update: () ->
+    @daises[0].update()
+    @daises[1].update()
 ###
 Proxy instances
 ###
