@@ -331,12 +331,14 @@ GUIDais = function(index) {
 };
 GUIDais.prototype.update = function() {
   return SceneJS.fireEvent("configure", this.id, {
-    "#rotZ": {
-      angle: guiDiasRotPosition[this.index * 2],
-      z: 1.0,
-      "#rotX": {
-        angle: guiDiasRotPosition[this.index * 2 + 1],
-        x: 1.0
+    cfg: {
+      "#rotZ": {
+        angle: guiDiasRotPosition[this.index * 2],
+        z: 1.0,
+        "#rotX": {
+          angle: guiDiasRotPosition[this.index * 2 + 1],
+          x: 1.0
+        }
       }
     }
   });

@@ -271,12 +271,13 @@ class GUIDais
     SceneJS.fireEvent(
       "configure"
       @id
-      "#rotZ":
-        angle: guiDiasRotPosition[@index*2]
-        z: 1.0
-        "#rotX":
-          angle: guiDiasRotPosition[@index*2+1]
-          x: 1.0
+      cfg:
+        "#rotZ":
+          angle: guiDiasRotPosition[@index*2]
+          z: 1.0
+          "#rotX":
+            angle: guiDiasRotPosition[@index*2+1]
+            x: 1.0
     )
 
 ###

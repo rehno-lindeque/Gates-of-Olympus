@@ -16,9 +16,8 @@ Creature types
 */
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.position = [1.0, 0.0, 0.0];
-  this.rotation = 0;
-  this.angle = 0;
+  this.pos = [0, 0, 0];
+  this.rot = 0;
   this.node = null;
   return (this.health = 0);
 };
@@ -27,6 +26,9 @@ Scorpion = function() {
   return this;
 };
 __extends(Scorpion, Creature);
+Scorpion.prototype.create = function() {
+  return Scorpion.__super__.create.call(this);
+};
 /*
 Collection of all creatures
 */
@@ -60,9 +62,9 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
     cfg: {
       "+node": {
         type: "translate",
-        x: -10,
-        y: -10,
-        z: 0,
+        x: creature.pos[0],
+        y: creature.pos[1],
+        z: creature.pos[2],
         nodes: [
           {
             type: "instance",
@@ -80,7 +82,11 @@ Creatures.prototype.update = function() {
   _b = SceneJS.getNode("creatures").getNodes();
   for (_a = 0, _c = _b.length; _a < _c; _a++) {
     node = _b[_a];
-    node.setXYZ(10, 10, 10);
+    node.setXYZ({
+      x: this.creatures[c].pos[0],
+      y: this.creatures[c].pos[1],
+      z: this.creatures[c].pos[2]
+    });
     c += 1;
   }
   return null;
