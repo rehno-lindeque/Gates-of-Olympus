@@ -101,9 +101,9 @@ updateTowerPlacement = () ->
   mouseY -= canvasElement.offsetTop
   
   # Transform ray origin into world space
-  lookAtEye  = sceneLookAt.lookAtNode.getEye()
-  lookAtUp   = sceneLookAt.lookAtNode.getUp()
-  lookAtLook = sceneLookAt.lookAtNode.getLook()
+  lookAtEye  = levelLookAt.lookAtNode.getEye()
+  lookAtUp   = levelLookAt.lookAtNode.getUp()
+  lookAtLook = levelLookAt.lookAtNode.getLook()
   rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
   yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
   zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]
@@ -113,8 +113,8 @@ updateTowerPlacement = () ->
   yAxis      = cross3Vec3(xAxis, zAxis)
   screenX    = mouseX / canvasSize[0]
   screenY    = 1.0 - mouseY / canvasSize[1]
-  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, sceneCamera.config.optics.left, sceneCamera.config.optics.right)))
-  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, sceneCamera.config.optics.bottom, sceneCamera.config.optics.top)))
+  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, levelCamera.config.optics.left, levelCamera.config.optics.right)))
+  rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, levelCamera.config.optics.bottom, levelCamera.config.optics.top)))
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, gameSceneOffset[0]))
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, gameSceneOffset[1]))
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(zAxis, gameSceneOffset[2]))
@@ -186,8 +186,8 @@ mouseUp = ->
 
 mouseMove = (event) ->
   if mouseDragging
-    sceneLookAt.angle += (event.clientX - mouseLastX) * mouseSpeed
-    sceneLookAt.update()
+    levelLookAt.angle += (event.clientX - mouseLastX) * mouseSpeed
+    levelLookAt.update()
   mouseLastX = event.clientX
   mouseLastY = event.clientY
   if not mouseDragging

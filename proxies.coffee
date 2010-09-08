@@ -175,7 +175,7 @@ class Level
 The camera proxy
 ###
 
-class SceneCamera
+class LevelCamera
   constructor: (levelNode) ->
     @config =
       optics:
@@ -207,7 +207,7 @@ class SceneCamera
 The look-at proxy for the main game scene
 ###
 
-class SceneLookAt
+class LevelLookAt
   constructor: (cameraNode, backgroundCameraNode) ->
     @angle = 0.0
     @radius = 10.0
@@ -320,7 +320,7 @@ class BackgroundCamera
     @config =
       optics:
         type:   "perspective"
-        fovy:   30.0
+        fovy:   25.0
         aspect: 1020.0 / 800.0
         near:   0.10
         far:    300.0
@@ -332,16 +332,4 @@ class BackgroundCamera
           SceneJS.stationary backgroundNode
         ) # cloudDome
       ) # camera
-
-###
-Proxy instances
-###
-
-gui = new GUI
-skybox = new Skybox
-level = new Level
-sceneCamera = new SceneCamera(level.node)
-backgroundCamera = new BackgroundCamera skybox.node
-sceneLookAt = new SceneLookAt(sceneCamera.node, backgroundCamera.node)
-
 

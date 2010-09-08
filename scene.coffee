@@ -4,6 +4,17 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 ###
 
 ###
+Proxies
+###
+
+gui = new GUI
+skybox = new Skybox
+backgroundCamera = new BackgroundCamera skybox.node
+level = new Level
+levelCamera = new LevelCamera(level.node)
+levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
+
+###
 The main scene definition
 ###
 
@@ -38,13 +49,13 @@ gameScene = SceneJS.scene(
     SceneJS.lookAt(
       guiLookAtConfig
       SceneJS.camera(
-        sceneCamera.config
+        levelCamera.config
         SceneJS.light(guiLightsConfig)
         gui.node
       ) # camera
     ) # lookAt
-    sceneLookAt.node
-    sceneLookAt.backgroundLookAtNode
+    levelLookAt.node
+    levelLookAt.backgroundLookAtNode
   ) # renderer
 ) # scene
 

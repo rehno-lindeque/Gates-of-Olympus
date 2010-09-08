@@ -1,8 +1,17 @@
-var gameScene, guiLightsConfig, guiLookAtConfig;
+var backgroundCamera, gameScene, gui, guiLightsConfig, guiLookAtConfig, level, levelCamera, levelLookAt, skybox;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
+/*
+Proxies
+*/
+gui = new GUI();
+skybox = new Skybox();
+backgroundCamera = new BackgroundCamera(skybox.node);
+level = new Level();
+levelCamera = new LevelCamera(level.node);
+levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node);
 /*
 The main scene definition
 */
@@ -53,4 +62,4 @@ gameScene = SceneJS.scene({
     g: 0.7,
     b: 0.7
   }
-}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, SceneJS.light(guiLightsConfig), gui.node)), sceneLookAt.node, sceneLookAt.backgroundLookAtNode));
+}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(levelCamera.config, SceneJS.light(guiLightsConfig), gui.node)), levelLookAt.node, levelLookAt.backgroundLookAtNode));
