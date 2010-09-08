@@ -1,4 +1,5 @@
 #!/bin/sh
+coffee --no-wrap -c scenejsclouddome.coffee
 coffee --no-wrap -c global.coffee
 coffee --no-wrap -c resources.coffee
 coffee --no-wrap -c creatures.coffee
