@@ -176,7 +176,7 @@ The camera proxy
 ###
 
 class SceneCamera
-  constructor: (levelNode, backgroundNode) ->
+  constructor: (levelNode) ->
     @config =
       optics:
         type:   "ortho"
@@ -201,7 +201,6 @@ class SceneCamera
         #  color:     { r: 0.5, g: 0.5, b: 0.5 }
         #)
         levelNode
-        #SceneJS.stationary backgroundNode
       ) # camera
 
 ###
@@ -212,23 +211,27 @@ class SceneLookAt
   constructor: (cameraNode, backgroundCameraNode) ->
     @angle = 0.0
     @radius = 10.0
+    @config = 
+      id:   "SceneLookAt"
+      eye:  { x: 0.0, y: -@radius, z: 7.0 }
+      look: { x: 0.0, y: 0.0, z: 0.0 }
+      up:   { x: 0.0, y: 0.0, z: 1.0 }
+    @lookAtNode = SceneJS.lookAt(@config, cameraNode)
+    @backgroundLookAtNode = SceneJS.lookAt(@config, backgroundCameraNode)
     @node = 
-      SceneJS.lookAt(
-        id:   "SceneLookAt"
-        eye:  { x: 0.0, y: -@radius, z: 7.0 }
-        look: { x: 0.0, y: 0.0, z: 0.0 }
-        up:   { x: 0.0, y: 0.0, z: 1.0 }
-        cameraNode
-        backgroundCameraNode
-      ) # lookAt
+      SceneJS.translate(
+        { x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2] }
+        @lookAtNode
+      ) # translate
   
   update: () ->
     cosAngle = Math.cos @angle
-    @node.setEye(
+    cfg =
       x: (Math.sin @angle) * @radius
       y: cosAngle * -@radius
       z: 7.0
-    ) # setEye
+    @lookAtNode.setEye(cfg)
+    @backgroundLookAtNode.setEye(cfg)
 
 ###
 A proxy for dias tower selection gui element
@@ -334,7 +337,7 @@ Proxy instances
 gui = new GUI
 skybox = new Skybox
 level = new Level
-sceneCamera = new SceneCamera(level.node, skybox.node)
+sceneCamera = new SceneCamera(level.node)
 backgroundCamera = new BackgroundCamera skybox.node
 sceneLookAt = new SceneLookAt(sceneCamera.node, backgroundCamera.node)
 

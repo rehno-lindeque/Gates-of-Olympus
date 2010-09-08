@@ -214,7 +214,7 @@ Level.prototype.update = function() {
 /*
 The camera proxy
 */
-SceneCamera = function(levelNode, backgroundNode) {
+SceneCamera = function(levelNode) {
   this.config = {
     optics: {
       type: "ortho",
@@ -249,7 +249,7 @@ The look-at proxy for the main game scene
 SceneLookAt = function(cameraNode, backgroundCameraNode) {
   this.angle = 0.0;
   this.radius = 10.0;
-  this.node = SceneJS.lookAt({
+  this.config = {
     id: "SceneLookAt",
     eye: {
       x: 0.0,
@@ -266,17 +266,26 @@ SceneLookAt = function(cameraNode, backgroundCameraNode) {
       y: 0.0,
       z: 1.0
     }
-  }, cameraNode, backgroundCameraNode);
+  };
+  this.lookAtNode = SceneJS.lookAt(this.config, cameraNode);
+  this.backgroundLookAtNode = SceneJS.lookAt(this.config, backgroundCameraNode);
+  this.node = SceneJS.translate({
+    x: gameSceneOffset[0],
+    y: gameSceneOffset[1],
+    z: gameSceneOffset[2]
+  }, this.lookAtNode);
   return this;
 };
 SceneLookAt.prototype.update = function() {
-  var cosAngle;
+  var cfg, cosAngle;
   cosAngle = Math.cos(this.angle);
-  return this.node.setEye({
+  cfg = {
     x: (Math.sin(this.angle)) * this.radius,
     y: cosAngle * -this.radius,
     z: 7.0
-  });
+  };
+  this.lookAtNode.setEye(cfg);
+  return this.backgroundLookAtNode.setEye(cfg);
 };
 /*
 A proxy for dias tower selection gui element
@@ -396,6 +405,6 @@ Proxy instances
 gui = new GUI();
 skybox = new Skybox();
 level = new Level();
-sceneCamera = new SceneCamera(level.node, skybox.node);
+sceneCamera = new SceneCamera(level.node);
 backgroundCamera = new BackgroundCamera(skybox.node);
 sceneLookAt = new SceneLookAt(sceneCamera.node, backgroundCamera.node);

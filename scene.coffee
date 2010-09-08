@@ -43,10 +43,8 @@ gameScene = SceneJS.scene(
         gui.node
       ) # camera
     ) # lookAt
-    SceneJS.translate(
-      { x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2] }
-      sceneLookAt.node
-    ) # translate
+    sceneLookAt.node
+    sceneLookAt.backgroundLookAtNode
   ) # renderer
 ) # scene
 

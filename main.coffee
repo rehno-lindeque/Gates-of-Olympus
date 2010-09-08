@@ -101,9 +101,9 @@ updateTowerPlacement = () ->
   mouseY -= canvasElement.offsetTop
   
   # Transform ray origin into world space
-  lookAtEye  = sceneLookAt.node.getEye()
-  lookAtUp   = sceneLookAt.node.getUp()
-  lookAtLook = sceneLookAt.node.getLook()
+  lookAtEye  = sceneLookAt.lookAtNode.getEye()
+  lookAtUp   = sceneLookAt.lookAtNode.getUp()
+  lookAtLook = sceneLookAt.lookAtNode.getLook()
   rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
   yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
   zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]

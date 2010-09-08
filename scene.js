@@ -53,8 +53,4 @@ gameScene = SceneJS.scene({
     g: 0.7,
     b: 0.7
   }
-}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, SceneJS.light(guiLightsConfig), gui.node)), SceneJS.translate({
-  x: gameSceneOffset[0],
-  y: gameSceneOffset[1],
-  z: gameSceneOffset[2]
-}, sceneLookAt.node)));
+}, SceneJS.lookAt(guiLookAtConfig, SceneJS.camera(sceneCamera.config, SceneJS.light(guiLightsConfig), gui.node)), sceneLookAt.node, sceneLookAt.backgroundLookAtNode));
