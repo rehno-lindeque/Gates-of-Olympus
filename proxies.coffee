@@ -327,7 +327,10 @@ class BackgroundCamera
     @node = 
       SceneJS.camera(
         @config
-        SceneJS.stationary backgroundNode
+        SceneJS.cloudDome(
+          radius:  100.0
+          SceneJS.stationary backgroundNode
+        ) # cloudDome
       ) # camera
 
 ###

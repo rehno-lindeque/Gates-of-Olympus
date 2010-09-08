@@ -4,7 +4,7 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 ###
 
 # Create the cloud dome node
-SceneJS.CloudDome = SceneJS.createNodeType("clouddome")
+SceneJS.CloudDome = SceneJS.createNodeType("cloudDome")
 
 SceneJS.CloudDome.prototype._init = (params) ->
   @setRadius params.radius

@@ -396,7 +396,9 @@ BackgroundCamera = function(backgroundNode) {
       far: 300.0
     }
   };
-  this.node = SceneJS.camera(this.config, SceneJS.stationary(backgroundNode));
+  this.node = SceneJS.camera(this.config, SceneJS.cloudDome({
+    radius: 100.0
+  }, SceneJS.stationary(backgroundNode)));
   return this;
 };
 /*
