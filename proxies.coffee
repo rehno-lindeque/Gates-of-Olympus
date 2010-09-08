@@ -201,7 +201,7 @@ class SceneCamera
         #  color:     { r: 0.5, g: 0.5, b: 0.5 }
         #)
         levelNode
-        SceneJS.stationary backgroundNode
+        #SceneJS.stationary backgroundNode
       ) # camera
 
 ###
@@ -209,7 +209,7 @@ The look-at proxy for the main game scene
 ###
 
 class SceneLookAt
-  constructor: (cameraNode) ->
+  constructor: (cameraNode, backgroundCameraNode) ->
     @angle = 0.0
     @radius = 10.0
     @node = 
@@ -219,6 +219,7 @@ class SceneLookAt
         look: { x: 0.0, y: 0.0, z: 0.0 }
         up:   { x: 0.0, y: 0.0, z: 1.0 }
         cameraNode
+        backgroundCameraNode
       ) # lookAt
   
   update: () ->
@@ -306,6 +307,26 @@ class GUI
   update: () ->
     @daises[0].update()
     @daises[1].update()
+
+###
+Background proxies
+###
+
+class BackgroundCamera
+  constructor: (backgroundNode) ->
+    @config =
+      optics:
+        type:   "perspective"
+        fovy:   30.0
+        aspect: 1020.0 / 800.0
+        near:   0.10
+        far:    300.0
+    @node = 
+      SceneJS.camera(
+        @config
+        SceneJS.stationary backgroundNode
+      ) # camera
+
 ###
 Proxy instances
 ###
@@ -314,4 +335,7 @@ gui = new GUI
 skybox = new Skybox
 level = new Level
 sceneCamera = new SceneCamera(level.node, skybox.node)
-sceneLookAt = new SceneLookAt sceneCamera.node
+backgroundCamera = new BackgroundCamera skybox.node
+sceneLookAt = new SceneLookAt(sceneCamera.node, backgroundCamera.node)
+
+

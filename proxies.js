@@ -1,4 +1,4 @@
-var GUI, GUIDais, Level, SceneCamera, SceneLookAt, Skybox, gui, guiDaisNode, level, sceneCamera, sceneLookAt, skybox, towerNode, towerPlacementNode;
+var BackgroundCamera, GUI, GUIDais, Level, SceneCamera, SceneLookAt, Skybox, backgroundCamera, gui, guiDaisNode, level, sceneCamera, sceneLookAt, skybox, towerNode, towerPlacementNode;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -240,13 +240,13 @@ SceneCamera = function(levelNode, backgroundNode) {
       y: 1.0,
       z: -1.0
     }
-  }), levelNode, SceneJS.stationary(backgroundNode));
+  }), levelNode);
   return this;
 };
 /*
 The look-at proxy for the main game scene
 */
-SceneLookAt = function(cameraNode) {
+SceneLookAt = function(cameraNode, backgroundCameraNode) {
   this.angle = 0.0;
   this.radius = 10.0;
   this.node = SceneJS.lookAt({
@@ -266,7 +266,7 @@ SceneLookAt = function(cameraNode) {
       y: 0.0,
       z: 1.0
     }
-  }, cameraNode);
+  }, cameraNode, backgroundCameraNode);
   return this;
 };
 SceneLookAt.prototype.update = function() {
@@ -375,10 +375,27 @@ GUI.prototype.update = function() {
   return this.daises[1].update();
 };
 /*
+Background proxies
+*/
+BackgroundCamera = function(backgroundNode) {
+  this.config = {
+    optics: {
+      type: "perspective",
+      fovy: 30.0,
+      aspect: 1020.0 / 800.0,
+      near: 0.10,
+      far: 300.0
+    }
+  };
+  this.node = SceneJS.camera(this.config, SceneJS.stationary(backgroundNode));
+  return this;
+};
+/*
 Proxy instances
 */
 gui = new GUI();
 skybox = new Skybox();
 level = new Level();
 sceneCamera = new SceneCamera(level.node, skybox.node);
-sceneLookAt = new SceneLookAt(sceneCamera.node);
+backgroundCamera = new BackgroundCamera(skybox.node);
+sceneLookAt = new SceneLookAt(sceneCamera.node, backgroundCamera.node);
