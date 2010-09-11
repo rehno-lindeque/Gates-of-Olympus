@@ -198,6 +198,10 @@ canvas.addEventListener('mousedown', mouseDown, true)
 canvas.addEventListener('mousemove', mouseMove, true)
 canvas.addEventListener('mouseup', mouseUp, true)
 document.onkeydown = keyDown
+window.onresize = ->
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  canvasSize = [window.innerWidth, window.innerHeight]
 
 window.render = ->
   # Animate the gui diases

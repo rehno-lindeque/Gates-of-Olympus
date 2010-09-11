@@ -178,6 +178,12 @@
   canvas.addEventListener('mousemove', mouseMove, true);
   canvas.addEventListener('mouseup', mouseUp, true);
   document.onkeydown = keyDown;
+  window.onresize = function() {
+    var canvasSize;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    return (canvasSize = [window.innerWidth, window.innerHeight]);
+  };
   window.render = function() {
     var c;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
