@@ -18,23 +18,49 @@
   <script type="text/javascript" src="gui/numbereddais.js"></script>
   <script type="text/javascript" src="towers/Archer.js"></script>
   <script type="text/javascript" src="towers/Catapult.js"></script>
-    <script type="text/javascript" src="creatures/Scorpion.js"></script>
+  <script type="text/javascript" src="creatures/Scorpion.js"></script>
+  <style>
+    html, body {
+      border: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+    div#container {
+      height:auto !important;
+      min-height:100%;
+      position:relative; /* footer positioning. */
+      margin:0 auto;     /* center */
+    }
+    div#footer {
+      background: #2a2a2a;
+      color: #ccc;
+      font-size: smaller;
+      padding: 0 10px 0 10px;
+      position: absolute;
+      bottom: 0;
+    }
+    div#footer h1 {
+      
+      } 
+  </style>
 </head>
-<body style="background:#000;color:#fff">
-  <div style="float: right; margin-right:30px;">
-    <h1>Gates of Olympus</h1>
+<body>
+  <!--<div style="float: right; margin-right:30px;">-->
+  <div id="container">
+    <!-- width="1020" height="800" -->
+    <canvas style="width:100%" id="gameCanvas" width="1020" height="800"></canvas>
+  </div>
+  <div id="footer">
     <h2>Instructions</h2>
-    <p>To select a tower to place on a platform use the number keys:</p>
+    Drag the screen left and right to change the view.<br>
+    Select towers using the number keys:
     <ol>
       <li>Archer Tower</li>
       <li>Catapult Tower</li>
     </ol>
-    <p>Drag the screen left and right to change the view.</p>
+    <center><p>Copyright (C) 2010, Rehno Lindeque.</p></center>
   </div>
-  <center>
-    <canvas style="margin-top: 20px" id="gameCanvas" width="1020" height="800"></canvas>
-  </center>
-  <center><p>Copyright (C) 2010, Rehno Lindeque.</p></center>
   <script type="text/javascript" src="global.js"></script>
   <script type="text/javascript" src="resources.js"></script>
   <script type="text/javascript" src="creatures.js"></script>
