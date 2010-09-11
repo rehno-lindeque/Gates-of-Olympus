@@ -23,17 +23,28 @@
     body {
       margin:0;
       padding:0;
+      width: 100%;
       overflow:hidden;
     }
     div#container {
     }
     div#instructions {
-      background: #2a2a2a;
-      color: #ccc;
+      background: rgba(25, 20, 10, 0.8);
+      color: #cca;
       font-size: smaller;
-      padding: 0 10px 0 10px;
+      padding: 0 10px;
       position: absolute;
       bottom: 0;
+      margin: 5px 5px;
+    }
+    div#instructionsbg {
+    }
+    div#copyright {
+      font-size: x-small;
+      font-weight: bold;
+      text-align: center;
+      padding-top: 4px;
+      width: 100%;
     }
     canvas#gameCanvas {
     }
@@ -47,14 +58,17 @@
     <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
   <div id="instructions">
-    <h2>Instructions</h2>
-    Drag the screen left and right to change the view.<br>
-    Select towers using the number keys:
-    <ol>
-      <li>Archer Tower</li>
-      <li>Catapult Tower</li>
-    </ol>
-    <center><p>Copyright (C) 2010, Rehno Lindeque.</p></center>
+    <div id="instructionsbg"></div>
+    <div id="instructionscontent">
+      <h2>Instructions</h2>
+      Drag the screen left and right to change the view.<br>
+      Select towers using the number keys:
+      <ol>
+        <li>Archer Tower</li>
+        <li>Catapult Tower</li>
+      </ol>
+      <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
+    </div>
   </div>
   <script type="text/javascript" src="global.js"></script>
   <script type="text/javascript" src="resources.js"></script>
