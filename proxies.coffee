@@ -177,15 +177,7 @@ The camera proxy
 
 class LevelCamera
   constructor: (levelNode) ->
-    @config =
-      optics:
-        type:   "ortho"
-        left:   -12.5 * (canvasSize[0] / canvasSize[1])
-        right:   12.5 * (canvasSize[0] / canvasSize[1])
-        bottom: -12.5
-        top:     12.5
-        near:    0.1
-        far:     300.0
+    @reconfigure()
     @node = 
       SceneJS.camera(
         @config
@@ -202,6 +194,18 @@ class LevelCamera
         #)
         levelNode
       ) # camera
+  
+  reconfigure: ->
+    @config =
+      optics:
+        type:   "ortho"
+        left:   -12.5 * (canvasSize[0] / canvasSize[1])
+        right:   12.5 * (canvasSize[0] / canvasSize[1])
+        bottom: -12.5
+        top:     12.5
+        near:    0.1
+        far:     300.0
+    if @node then @node.setOptics(@config.optics)
 
 ###
 The look-at proxy for the main game scene

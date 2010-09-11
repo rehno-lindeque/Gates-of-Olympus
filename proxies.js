@@ -215,17 +215,7 @@ Level.prototype.update = function() {
 The camera proxy
 */
 LevelCamera = function(levelNode) {
-  this.config = {
-    optics: {
-      type: "ortho",
-      left: -12.5 * (canvasSize[0] / canvasSize[1]),
-      right: 12.5 * (canvasSize[0] / canvasSize[1]),
-      bottom: -12.5,
-      top: 12.5,
-      near: 0.1,
-      far: 300.0
-    }
-  };
+  this.reconfigure();
   this.node = SceneJS.camera(this.config, SceneJS.light({
     type: "dir",
     color: {
@@ -242,6 +232,20 @@ LevelCamera = function(levelNode) {
     }
   }), levelNode);
   return this;
+};
+LevelCamera.prototype.reconfigure = function() {
+  this.config = {
+    optics: {
+      type: "ortho",
+      left: -12.5 * (canvasSize[0] / canvasSize[1]),
+      right: 12.5 * (canvasSize[0] / canvasSize[1]),
+      bottom: -12.5,
+      top: 12.5,
+      near: 0.1,
+      far: 300.0
+    }
+  };
+  return this.node ? this.node.setOptics(this.config.optics) : null;
 };
 /*
 The look-at proxy for the main game scene

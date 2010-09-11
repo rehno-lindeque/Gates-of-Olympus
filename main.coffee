@@ -201,7 +201,8 @@ document.onkeydown = keyDown
 window.onresize = ->
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  canvasSize = [window.innerWidth, window.innerHeight]
+  canvasSize[0] = window.innerWidth
+  canvasSize[1] = window.innerHeight
 
 window.render = ->
   # Animate the gui diases

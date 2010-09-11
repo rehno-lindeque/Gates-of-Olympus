@@ -179,10 +179,10 @@
   canvas.addEventListener('mouseup', mouseUp, true);
   document.onkeydown = keyDown;
   window.onresize = function() {
-    var canvasSize;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    return (canvasSize = [window.innerWidth, window.innerHeight]);
+    canvasSize[0] = window.innerWidth;
+    return (canvasSize[1] = window.innerHeight);
   };
   window.render = function() {
     var c;
