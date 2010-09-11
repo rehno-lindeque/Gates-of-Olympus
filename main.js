@@ -10,8 +10,10 @@
   /*
   Initialization and rendering loop
   */
-  gameScene.render();
   canvas = document.getElementById(gameScene.getCanvasId());
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gameScene.render();
   /*
   Game logic
   */
