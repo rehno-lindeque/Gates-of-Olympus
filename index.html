@@ -28,16 +28,21 @@
     }
     div#container {
     }
-    div#instructions {
+    div#hints {
       background: rgba(25, 20, 10, 0.8);
       color: #cca;
       font-size: smaller;
+      font-family: "Arial", Sans-serif;
       padding: 0 10px;
       position: absolute;
       bottom: 0;
       margin: 5px 5px;
     }
-    div#instructionsbg {
+    div#hints ul {
+      padding: 0px 0px 0px 20px;
+    }
+    div#hints ol {
+      padding: 0px 0px 0px 20px;
     }
     div#copyright {
       font-size: x-small;
@@ -57,18 +62,19 @@
     <!--<canvas style="width:100%;height:100%" id="gameCanvas"></canvas>-->
     <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
-  <div id="instructions">
-    <div id="instructionsbg"></div>
-    <div id="instructionscontent">
-      <h2>Instructions</h2>
-      Drag the screen left and right to change the view.<br>
-      Select towers using the number keys:
-      <ol>
-        <li>Archer Tower</li>
-        <li>Catapult Tower</li>
-      </ol>
-      <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
-    </div>
+  <div id="hints">
+    <h2>Hints</h2>
+    <ul>
+      <li>Press <strong>F11</strong> to go fullscreen.</li>
+      <li>Drag the screen left and right to change the view.</li>
+      <li>Select towers using the number keys:
+        <ol>
+          <li>Archer Tower</li>
+          <li>Catapult Tower</li>
+        </ol>
+      </li>
+    </ul>
+    <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
   </div>
   <script type="text/javascript" src="global.js"></script>
   <script type="text/javascript" src="resources.js"></script>
