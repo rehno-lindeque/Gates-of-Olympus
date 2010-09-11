@@ -182,7 +182,10 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvasSize[0] = window.innerWidth;
-    return (canvasSize[1] = window.innerHeight);
+    canvasSize[1] = window.innerHeight;
+    backgroundCamera.reconfigure();
+    levelCamera.reconfigure();
+    return guiCamera.reconfigure();
   };
   window.render = function() {
     var c;

@@ -13,6 +13,7 @@ backgroundCamera = new BackgroundCamera skybox.node
 level = new Level
 levelCamera = new LevelCamera(level.node)
 levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
+guiCamera = new GUICamera(gui, levelCamera)
 
 ###
 The main scene definition
@@ -31,11 +32,7 @@ gameScene = SceneJS.scene(
     clearColor: { r: 0.7, g: 0.7, b: 0.7 }
     SceneJS.lookAt(
       gui.lookAtConfig
-      SceneJS.camera(
-        levelCamera.config
-        SceneJS.light(gui.lightConfig)
-        gui.node
-      ) # camera
+      guiCamera.node
     ) # lookAt
     levelLookAt.node
     levelLookAt.backgroundLookAtNode

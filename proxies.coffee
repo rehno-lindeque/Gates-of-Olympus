@@ -325,19 +325,26 @@ class GUI
     @daises[0].update()
     @daises[1].update()
 
+class GUICamera
+  constructor: (gui, referenceCamera) ->
+    @referenceCamera = referenceCamera
+    @node =
+      SceneJS.camera(
+        levelCamera.config
+        SceneJS.light(gui.lightConfig)
+        gui.node
+      ) # camera
+  
+  reconfigure: ->
+    if @node then @node.setOptics @referenceCamera.config.optics
+
 ###
 Background proxies
 ###
 
 class BackgroundCamera
   constructor: (backgroundNode) ->
-    @config =
-      optics:
-        type:   "perspective"
-        fovy:   25.0
-        aspect: 1020.0 / 800.0
-        near:   0.10
-        far:    300.0
+    @reconfigure()
     @node = 
       SceneJS.camera(
         @config
@@ -346,4 +353,14 @@ class BackgroundCamera
           SceneJS.stationary backgroundNode
         ) # cloudDome
       ) # camera
+  
+  reconfigure: ->
+    @config =
+      optics:
+        type:   "perspective"
+        fovy:   25.0
+        aspect: canvasSize[0] / canvasSize[1]
+        near:   0.10
+        far:    300.0
+    if @node then @node.setOptics(@config.optics)
 
