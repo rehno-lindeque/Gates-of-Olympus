@@ -19,18 +19,24 @@
   <script type="text/javascript" src="towers/Archer.js"></script>
   <script type="text/javascript" src="towers/Catapult.js"></script>
   <script type="text/javascript" src="creatures/Scorpion.js"></script>
-  <style>
-    html, body {
+  <style type="text/css" media="screen">
+    /*html, body {
       border: 0;
       margin: 0;
       width: 100%;
       height: 100%;
+    }*/
+    body {
+      margin:0;
+      padding:0;
+      overflow:hidden;
     }
     div#container {
-      height:auto !important;
+      height:auto;
+      /*height:auto !important;
       min-height:100%;
-      position:relative; /* footer positioning. */
-      margin:0 auto;     /* center */
+      position:relative; * footer positioning. *
+      margin:0 auto;     * center */
     }
     div#footer {
       background: #2a2a2a;
@@ -40,16 +46,18 @@
       position: absolute;
       bottom: 0;
     }
-    div#footer h1 {
-      
-      } 
+    canvas#gameCanvas {
+      width:100%;
+      height:100%;
+    }
   </style>
 </head>
 <body>
   <!--<div style="float: right; margin-right:30px;">-->
   <div id="container">
     <!-- width="1020" height="800" -->
-    <canvas style="width:100%" id="gameCanvas" width="1020" height="800"></canvas>
+    <!--<canvas style="width:100%;height:100%" id="gameCanvas"></canvas>-->
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
   <div id="footer">
     <h2>Instructions</h2>

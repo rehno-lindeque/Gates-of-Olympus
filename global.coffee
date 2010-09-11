@@ -34,7 +34,9 @@ key9   = 48+9
 mouseSpeed = 0.005
 
 # Canvas
-canvasSize = [1020.0, 800.0]
+#canvasSize = [1020.0, 800.0]
+canvasSize = [window.innerWidth, window.innerHeight]
+idealAspectRatio = 1020.0 / 800.0
 gameSceneOffset = [3.0, 0.0, 0.0]
 
 # Platforms

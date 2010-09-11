@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDiasRotPosition, guiDiasRotVelocity, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeights, platformLengths, platformScales, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDiasRotPosition, guiDiasRotVelocity, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeights, platformLengths, platformScales, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -36,7 +36,8 @@ key7 = 48 + 7;
 key8 = 48 + 8;
 key9 = 48 + 9;
 mouseSpeed = 0.005;
-canvasSize = [1020.0, 800.0];
+canvasSize = [window.innerWidth, window.innerHeight];
+idealAspectRatio = 1020.0 / 800.0;
 gameSceneOffset = [3.0, 0.0, 0.0];
 gridSize = 12;
 gridHalfSize = gridSize / 2;
