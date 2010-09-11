@@ -15,6 +15,47 @@ canvas = null
 shaderProgram = null
 vertexBuffer = null
 
+compileShader = (gl, id) ->
+  # Get the associated html script element
+  scriptElement = document.getElementById(id)
+  if not scriptElement then return null
+  
+  # Determine the type of shader
+  if scriptElement.type == "x-shader/x-fragment" 
+    shaderType = gl.FRAGMENT_SHADER
+  else if scriptElement.type == "x-shader/x-vertex" 
+    shaderType = gl.VERTEX_SHADER
+  else 
+    return null
+  
+  # Load the shader into a string
+  str = ""
+  if scriptElement.src
+    if window.XMLHttpRequest
+      httpRequest = new XMLHttpRequest()
+    else # for IE 5/6
+      # We could use httpRequest=new ActiveXObject("Microsoft.XMLHTTP"); but IE 5/6 won't support WebGL anyway and is broken anyway.
+      return null
+    httpRequest.open("GET", scriptElement.src, false)
+    httpRequest.overrideMimeType('text/plain; charset=utf-8'); 
+    httpRequest.send()
+    str = httpRequest.responseText
+  else
+    child = scriptElement.firstChild
+    while child
+      if child.nodeType == 3
+        str += child.textContent
+      child = child.nextSibling
+
+  # Create / compile the shader
+  shader = gl.createShader(shaderType)
+  gl.shaderSource(shader, str)
+  gl.compileShader(shader)
+  if not gl.getShaderParameter(shader, gl.COMPILE_STATUS)
+    alert(gl.getShaderInfoLog(shader))
+    return null
+  return shader
+
 createResources = ->
   gl = canvas.context
   
@@ -30,12 +71,12 @@ createResources = ->
   
   # Create shader program
   shaderProgram = gl.createProgram()
-  fragmentShader = "" # TODO: Shader source input
-  vertexShader = ""   # TODO: Shader source input
-  #gl.attachShader(shaderProgram, vertexShader)
-  #gl.attachShader(shaderProgram, fragmentShader)
-  #gl.linkProgram(shaderProgram)
-  #if not gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+  fragmentShader = compileShader(gl, "clouddome-fs")
+  vertexShader = compileShader(gl, "clouddome-vs")
+  gl.attachShader(shaderProgram, vertexShader)
+  gl.attachShader(shaderProgram, fragmentShader)
+  gl.linkProgram(shaderProgram)
+  if not gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
   
 destroyResources = ->
   if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
@@ -89,9 +130,7 @@ SceneJS.CloudDome.prototype.getColor = ->
 SceneJS.CloudDome.prototype.renderClouds = ->
   gl.useProgram(shaderProgram)
   gl.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer)
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0)
-  #gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(pMatrix.flatten()))
-  #gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(mvMatrix.flatten()))
+  gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
 
 SceneJS.CloudDome.prototype._render = (traversalContext) ->

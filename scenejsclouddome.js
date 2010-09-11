@@ -1,4 +1,4 @@
-var canvas, createResources, destroyResources, shaderProgram, vertexBuffer;
+var canvas, compileShader, createResources, destroyResources, shaderProgram, vertexBuffer;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -12,6 +12,48 @@ Globals
 canvas = null;
 shaderProgram = null;
 vertexBuffer = null;
+compileShader = function(gl, id) {
+  var child, httpRequest, scriptElement, shader, shaderType, str;
+  scriptElement = document.getElementById(id);
+  if (!scriptElement) {
+    return null;
+  }
+  if (scriptElement.type === "x-shader/x-fragment") {
+    shaderType = gl.FRAGMENT_SHADER;
+  } else if (scriptElement.type === "x-shader/x-vertex") {
+    shaderType = gl.VERTEX_SHADER;
+  } else {
+    return null;
+  }
+  str = "";
+  if (scriptElement.src) {
+    if (window.XMLHttpRequest) {
+      httpRequest = new XMLHttpRequest();
+    } else {
+      return null;
+    }
+    httpRequest.open("GET", scriptElement.src, false);
+    httpRequest.overrideMimeType('text/plain; charset=utf-8');
+    httpRequest.send();
+    str = httpRequest.responseText;
+  } else {
+    child = scriptElement.firstChild;
+    while (child) {
+      if (child.nodeType === 3) {
+        str += child.textContent;
+      }
+      child = child.nextSibling;
+    }
+  }
+  shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, str);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+  return shader;
+};
 createResources = function() {
   var fragmentShader, gl, vertexShader, vertices;
   gl = canvas.context;
@@ -20,8 +62,12 @@ createResources = function() {
   vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   shaderProgram = gl.createProgram();
-  fragmentShader = "";
-  return (vertexShader = "");
+  fragmentShader = compileShader(gl, "clouddome-fs");
+  vertexShader = compileShader(gl, "clouddome-vs");
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+  return !gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) ? alert("Could not initialise shaders") : null;
 };
 destroyResources = function() {
   if (document.getElementById(canvas.canvasId)) {
@@ -68,7 +114,7 @@ SceneJS.CloudDome.prototype.getColor = function() {
 SceneJS.CloudDome.prototype.renderClouds = function() {
   gl.useProgram(shaderProgram);
   gl.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
   return gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
 SceneJS.CloudDome.prototype._render = function(traversalContext) {

@@ -26,8 +26,8 @@ gameScene = SceneJS.scene(
   BlenderExport.CatapultTower()
   SceneJS.renderer(
     clear:
-      depth :   true
-      color :   true
+      depth:    true
+      color:    true
       stencil:  false
     clearColor: { r: 0.7, g: 0.7, b: 0.7 }
     SceneJS.lookAt(
