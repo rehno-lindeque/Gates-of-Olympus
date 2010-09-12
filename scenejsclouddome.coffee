@@ -41,11 +41,13 @@ createResources = ->
   gl.useProgram(shaderProgram)
   shaderProgram.vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition")
   gl.enableVertexAttribArray(shaderProgram.vertexPosition)
+  null
   
 destroyResources = ->
   if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
     if shaderProgram then shaderProgram.destroy()
     if vertexBuffer then vertexBuffer.destroy()
+  null
 
 ###
 SceneJS listeners
@@ -113,6 +115,7 @@ SceneJS.CloudDome.prototype.renderClouds = ->
   # Restore gl state
   if not saveState.blend then gl.disable(gl.BLEND)
   #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+  null
 
 SceneJS.CloudDome.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER

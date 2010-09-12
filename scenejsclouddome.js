@@ -30,15 +30,19 @@ createResources = function() {
   }
   gl.useProgram(shaderProgram);
   shaderProgram.vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition");
-  return gl.enableVertexAttribArray(shaderProgram.vertexPosition);
+  gl.enableVertexAttribArray(shaderProgram.vertexPosition);
+  return null;
 };
 destroyResources = function() {
   if (document.getElementById(canvas.canvasId)) {
     if (shaderProgram) {
       shaderProgram.destroy();
     }
-    return vertexBuffer ? vertexBuffer.destroy() : null;
+    if (vertexBuffer) {
+      vertexBuffer.destroy();
+    }
   }
+  return null;
 };
 /*
 SceneJS listeners
@@ -87,7 +91,10 @@ SceneJS.CloudDome.prototype.renderClouds = function() {
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  return !saveState.blend ? gl.disable(gl.BLEND) : null;
+  if (!saveState.blend) {
+    gl.disable(gl.BLEND);
+  }
+  return null;
 };
 SceneJS.CloudDome.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
