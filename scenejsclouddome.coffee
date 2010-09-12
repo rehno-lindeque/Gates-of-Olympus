@@ -61,7 +61,7 @@ createResources = ->
   
   # Create the vertex buffer
   vertexBuffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
   vertices = [
      1.0,  1.0
     -1.0,  1.0
@@ -71,12 +71,17 @@ createResources = ->
   
   # Create shader program
   shaderProgram = gl.createProgram()
-  fragmentShader = compileShader(gl, "clouddome-fs")
   vertexShader = compileShader(gl, "clouddome-vs")
+  fragmentShader = compileShader(gl, "clouddome-fs")
   gl.attachShader(shaderProgram, vertexShader)
   gl.attachShader(shaderProgram, fragmentShader)
   gl.linkProgram(shaderProgram)
   if not gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+  
+  # Set shader parameters
+  gl.useProgram(shaderProgram)
+  shaderProgram.vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition")
+  gl.enableVertexAttribArray(shaderProgram.vertexPosition)
   
 destroyResources = ->
   if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
@@ -128,14 +133,19 @@ SceneJS.CloudDome.prototype.getColor = ->
   radius: @radius
 
 SceneJS.CloudDome.prototype.renderClouds = ->
+  gl = canvas.context
+  #gl.disable(gl.DEPTH_TEST)
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  gl.enable(gl.BLEND);
   gl.useProgram(shaderProgram)
-  gl.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer)
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
   gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+  gl.disable(gl.BLEND);
 
 SceneJS.CloudDome.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
     if not vertexBuffer then createResources()
-    #TODO: @renderClouds
+    @renderClouds()
   null

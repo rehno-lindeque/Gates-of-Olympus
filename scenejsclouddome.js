@@ -58,16 +58,21 @@ createResources = function() {
   var fragmentShader, gl, vertexShader, vertices;
   gl = canvas.context;
   vertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   shaderProgram = gl.createProgram();
-  fragmentShader = compileShader(gl, "clouddome-fs");
   vertexShader = compileShader(gl, "clouddome-vs");
+  fragmentShader = compileShader(gl, "clouddome-fs");
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
-  return !gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) ? alert("Could not initialise shaders") : null;
+  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    alert("Could not initialise shaders");
+  }
+  gl.useProgram(shaderProgram);
+  shaderProgram.vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition");
+  return gl.enableVertexAttribArray(shaderProgram.vertexPosition);
 };
 destroyResources = function() {
   if (document.getElementById(canvas.canvasId)) {
@@ -112,10 +117,15 @@ SceneJS.CloudDome.prototype.getColor = function() {
   };
 };
 SceneJS.CloudDome.prototype.renderClouds = function() {
+  var gl;
+  gl = canvas.context;
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.enable(gl.BLEND);
   gl.useProgram(shaderProgram);
-  gl.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-  return gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  return gl.disable(gl.BLEND);
 };
 SceneJS.CloudDome.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
@@ -123,6 +133,7 @@ SceneJS.CloudDome.prototype._render = function(traversalContext) {
     if (!vertexBuffer) {
       createResources();
     }
+    this.renderClouds();
   }
   return null;
 };
