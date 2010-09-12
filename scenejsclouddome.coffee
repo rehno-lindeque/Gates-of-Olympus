@@ -134,14 +134,26 @@ SceneJS.CloudDome.prototype.getColor = ->
 
 SceneJS.CloudDome.prototype.renderClouds = ->
   gl = canvas.context
-  #gl.disable(gl.DEPTH_TEST)
+  
+  # Change gl state
+  saveState =
+    blend:     gl.getParameter(gl.BLEND)
+    depthTest: gl.getParameter(gl.DEPTH_TEST)    
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-  gl.enable(gl.BLEND);
+  gl.enable(gl.BLEND)
+  #gl.disable(gl.DEPTH_TEST)
+  
+  # Bind shaders and parameters
   gl.useProgram(shaderProgram)
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
   gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+  
+  # Draw geometry
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  gl.disable(gl.BLEND);
+  
+  # Restore gl state
+  if not saveState.blend then gl.disable(gl.BLEND)
+  #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
 
 SceneJS.CloudDome.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER

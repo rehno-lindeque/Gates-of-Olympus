@@ -117,15 +117,19 @@ SceneJS.CloudDome.prototype.getColor = function() {
   };
 };
 SceneJS.CloudDome.prototype.renderClouds = function() {
-  var gl;
+  var gl, saveState;
   gl = canvas.context;
+  saveState = {
+    blend: gl.getParameter(gl.BLEND),
+    depthTest: gl.getParameter(gl.DEPTH_TEST)
+  };
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.enable(gl.BLEND);
   gl.useProgram(shaderProgram);
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  return gl.disable(gl.BLEND);
+  return !saveState.blend ? gl.disable(gl.BLEND) : null;
 };
 SceneJS.CloudDome.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
