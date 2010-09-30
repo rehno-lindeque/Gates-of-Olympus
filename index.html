@@ -56,6 +56,17 @@
     canvas#gameCanvas {
     }
   </style>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18079282-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
 </head>
 <body>
   <!--<div style="float: right; margin-right:30px;">-->
@@ -67,6 +78,7 @@
   <div id="hints">
     <h2>Hints</h2>
     <ul>
+      <li>Use a WebGL enabled browser (such as <a href="http://www.mozilla.com/en-US/firefox/beta/">Firefox 4</a>)!</li>
       <li>Press <strong>F11</strong> to go fullscreen.</li>
       <li>Drag the screen left and right to change the view.</li>
       <li>Select towers using the number keys:
