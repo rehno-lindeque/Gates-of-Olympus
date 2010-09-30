@@ -22,44 +22,6 @@ Game logic
 # Logical inputs
 currentTowerSelection = -1
 
-# Platforms
-level.towers[0] = 0
-level.towers[1] = 0
-level.towers[2] = 0
-level.towers[3] = 1
-level.towers[4] = 1
-level.towers[5] = 1
-level.towers[6] = 0
-level.towers[7] = 1
-level.towers[8] = 0
-level.towers[9] = 0
-level.towers[10] = 0
-level.towers[11] = 0
-
-level.towers[sqrGridSize+0] = 0
-level.towers[sqrGridSize+1] = 1
-level.towers[sqrGridSize+2] = 0
-level.towers[sqrGridSize+3] = 0
-level.towers[sqrGridSize+4] = 0
-level.towers[sqrGridSize+5] = 1
-level.towers[sqrGridSize+6] = 0
-level.towers[sqrGridSize+7] = 1
-level.towers[sqrGridSize+8] = 0
-level.towers[sqrGridSize+9] = 0
-level.towers[sqrGridSize+10] = 0
-level.towers[sqrGridSize+11] = 0
-
-level.towers[290] = 0
-level.towers[291] = 0
-level.towers[292] = 1
-level.towers[293] = 0
-level.towers[294] = 0
-level.towers[295] = 0
-level.towers[296] = 0
-level.towers[297] = 1
-level.towers[298] = 1
-level.towers[299] = 0
-
 level.createTowers level.towers
 
 # Creatures
