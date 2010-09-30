@@ -10,6 +10,7 @@ class Timeline
   constructor: ->
     @events = new Array()
     @time = 0.0
+    @index = 0
     null
   
   addEvent: (time, handler) ->
@@ -18,10 +19,10 @@ class Timeline
   
   update: (time) ->
     @time = time
-    while @events[0][0] <= @time
+    while @index < @events.length and @events[@index][0] <= @time
       # Run the event before removing it from the queue
-      @events[0][1](@time)
-      @events.remove(0)
+      @events[@index][1](@time)
+      @index = @index + 1
     null
   
   isFinished: ->

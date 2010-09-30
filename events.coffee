@@ -13,7 +13,7 @@ Setup game events
 timeline = new Timeline
 
 spawnScorpions = (time) ->
-  alert "Spawn scorpions"
+  #alert "Spawn scorpions"
   null
 
 timeline.addEvent(1.0, spawnScorpions)

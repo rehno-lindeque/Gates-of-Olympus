@@ -169,6 +169,7 @@
     }
     gui.update();
     level.update();
+    timeline.update(timeline.time + 0.1);
     return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);

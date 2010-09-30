@@ -11,7 +11,6 @@ Setup game events
 */
 timeline = new Timeline();
 spawnScorpions = function(time) {
-  alert("Spawn scorpions");
   return null;
 };
 timeline.addEvent(1.0, spawnScorpions);

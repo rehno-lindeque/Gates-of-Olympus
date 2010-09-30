@@ -183,6 +183,9 @@ window.render = ->
   gui.update()
   level.update()
   
+  # Update game events
+  timeline.update (timeline.time + 0.1)
+  
   # Render the scene
   gameScene.render();
 
