@@ -6,6 +6,7 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 # Compose SceneJS nodes using the JSON API
 addChildren = (parent, children...) ->
   parent.nodes = Array.concat(parent.nodes, children)
+  parent
 
 # Compile a WebGL shader
 compileShader = (gl, id) ->
@@ -30,7 +31,7 @@ compileShader = (gl, id) ->
       # We could use httpRequest=new ActiveXObject("Microsoft.XMLHTTP"); but IE 5/6 won't support WebGL anyway and is broken anyway.
       return null
     httpRequest.open("GET", scriptElement.src, false)
-    httpRequest.overrideMimeType('text/plain; charset=utf-8'); 
+    httpRequest.overrideMimeType('text/plain; charset=utf-8')
     httpRequest.send()
     str = httpRequest.responseText
   else
