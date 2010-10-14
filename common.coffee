@@ -4,8 +4,7 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 ###
 
 # Compose SceneJS nodes using the JSON API
-
-addChild = (parent, children...) ->
+addChildren = (parent, children...) ->
   parent.nodes = Array.concat(parent.nodes, children)
 
 # Compile a WebGL shader
