@@ -1,8 +1,14 @@
-var compileShader;
+var addChild, compileShader;
+var __slice = Array.prototype.slice;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
+addChild = function(parent) {
+  var children;
+  children = __slice.call(arguments, 1);
+  return (parent.nodes = Array.concat(parent.nodes, children));
+};
 compileShader = function(gl, id) {
   var child, httpRequest, scriptElement, shader, shaderType, str;
   scriptElement = document.getElementById(id);

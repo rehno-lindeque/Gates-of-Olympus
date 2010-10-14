@@ -3,6 +3,12 @@ Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
+# Compose SceneJS nodes using the JSON API
+
+addChild = (parent, children...) ->
+  parent.nodes = Array.concat(parent.nodes, children)
+
+# Compile a WebGL shader
 compileShader = (gl, id) ->
   # Get the associated html script element
   scriptElement = document.getElementById(id)
