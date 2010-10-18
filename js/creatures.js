@@ -58,28 +58,24 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
   creature = new CreaturePrototype();
   this.creatures[this.creatures.length] = creature;
-  SceneJS.fireEvent("configure", "creatures", {
-    cfg: {
-      "+node": {
-        type: "translate",
-        x: creature.pos[0],
-        y: creature.pos[1],
-        z: creature.pos[2],
+  SceneJS.withNode("creatures").add("nodes", {
+    type: "translate",
+    x: creature.pos[0],
+    y: creature.pos[1],
+    z: creature.pos[2],
+    nodes: [
+      {
+        type: "rotate",
+        angle: 0,
+        z: 1,
         nodes: [
           {
-            type: "rotate",
-            angle: 0,
-            z: 1,
-            nodes: [
-              {
-                type: "instance",
-                target: "Scorpion"
-              }
-            ]
+            type: "instance",
+            target: "Scorpion"
           }
         ]
       }
-    }
+    ]
   });
   return creature;
 };

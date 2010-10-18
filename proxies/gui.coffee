@@ -8,14 +8,15 @@ class GUI
     @daises[0] = new GUIDais 0
     @daises[1] = new GUIDais 1
     @daisGeometry = SceneJS.createNode BlenderExport.NumberedDais
-    @lightConfig =
-      type:      "dir"
+    @lightNode =
+      type:      "light"
+      mode:      "dir"
       color:     { r: 1.0, g: 1.0, b: 1.0 }
       diffuse:   true
       specular:  false
       dir:       { x: 1.0, y: 1.0, z: -1.0 }
-    @lookAt =
-      type: "lookat"
+    @lookAtNode =
+      type: "lookAt"
       eye:  { x: 0.0, y: -10.0, z: 4.0 }
       look: { x: 0.0, y: 0.0 }
       up:   { z: 1.0 }

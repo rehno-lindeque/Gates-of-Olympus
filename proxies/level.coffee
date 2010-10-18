@@ -14,7 +14,7 @@ towerNode = (index, sid) ->
       layers: [ uri: towerTextureURI[index] ]
     ]
 
-towerPlacementNode = () ->
+towerPlacementNode = ->
   type: "translate"
   id: "placementTower" 
   z: platformHeights[1]
@@ -56,63 +56,16 @@ class Level
     for c in [0...(sqrGridSize * levels)]
       @towers[c] = -1
     
-    @node = 
-      type: "material"
-      #baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-      baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
-      specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
-      specular:       0.9
-      shine:          6.0
-      nodes: [
-          type: "translate"
-          z: platformHeights[1]
-          nodes: [ @creatures.node ]
-        ,
-          towerPlacementNode()
-        ,
-          type: "translate"
-          z: platformHeights[0]
-          nodes: [
-              type: "scale"
-              x: 0.78
-              y: 0.78
-              z: 0.78
-              nodes: [
-                  platformGeometry("level0")
-                  @towerNodes[0].archerTowers
-                  @towerNodes[0].catapultTowers
-                ]
-            ]
-          ,
-          type: "translate"
-          z: platformHeights[1]
-          nodes: [
-              platformGeometry("level1")
-              @towerNodes[1].archerTowers
-              @towerNodes[1].catapultTowers 
-            ]
-          ,
-          type: "translate"
-          z: platformHeights[2]
-          nodes: [
-              type: "scale"
-              x: 1.22
-              y: 1.22
-              z: 1.22
-              nodes: [
-                  platformGeometry("level2")
-                  @towerNodes[2].archerTowers
-                  @towerNodes[2].catapultTowers
-                ]
-            ]
-        ]
+    @node = @createNode()
   
+  # Get the root node for placing towers
   getTowerRoot: (level, towerType) ->
     switch towerType
       when 0 then @towerNodes[level].archerTowers
       when 1 then @towerNodes[level].catapultTowers
       else null
   
+  # Add a tower of the specified type at the position indicated by the tower placement
   addTower: (towerPlacement, towerType) ->
     index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x
     #alert towerPlacement.cell.x + " " + towerPlacement.cell.y
@@ -129,6 +82,7 @@ class Level
           node
         ) # translate
       ) # addNode
+    null
   
   createTowers: (towers) ->
     for cz in [0...levels]
@@ -151,7 +105,45 @@ class Level
             ) # addNode
     null
   
-  update: () ->
+  # Update the game logic related to the level
+  update: ->
     @creatures.update()
-
+  
+  # Create the node hierarchy for the level
+  createNode: ->
+    type: "material"
+    #baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
+    baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
+    specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
+    specular:       0.9
+    shine:          6.0
+    nodes: [
+        type: "translate"
+        z: platformHeights[1]
+        nodes: [ @creatures.node ]
+      ,
+        towerPlacementNode()
+      ,
+        @createPlatformNode(0)
+      ,
+        @createPlatformNode(1)
+      ,
+        @createPlatformNode(2)
+      ]
+  
+  # Create the node hierarchy for one platform
+  createPlatformNode: (k) ->
+    type: "translate"
+    z: platformHeights[k]
+    nodes: [
+        type: "scale"
+        x: 0.78
+        y: 0.78
+        z: 0.78
+        nodes: [
+            platformGeometry("level" + k)
+            @towerNodes[k].archerTowers
+            @towerNodes[k].catapultTowers
+          ]
+      ]
 

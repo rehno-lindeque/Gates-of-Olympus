@@ -15,20 +15,19 @@ levelCamera = new LevelCamera(level.node)
 #todo levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
 guiCamera = new GUICamera(gui, levelCamera)
 
-
 ###
 The main scene definition
 ###
 
-gameSceneDef =
+sceneNode =
   type: "scene"
   id: "gameScene"
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
   nodes: [
-      BlenderExport.ArcherTower()
+      BlenderExport.ArcherTower
     ,
-      BlenderExport.CatapultTower()
+      BlenderExport.CatapultTower
     ,
       type: "renderer"
       clear:
@@ -37,7 +36,7 @@ gameSceneDef =
         stencil:  false
       clearColor: { r: 0.7, g: 0.7, b: 0.7 }
       nodes: [
-          addChildren(gui.lookAt, guiCamera.node)
+          addChildren(gui.lookAtNode, guiCamera.node)
         #todo ,
         #todo   levelLookAt.node
         #todo ,
@@ -45,8 +44,7 @@ gameSceneDef =
         ]
     ]
 
-gameScene = SceneJS.createNode(gameSceneDef)
+gameScene = SceneJS.createNode(sceneNode)
 
 
 
-###

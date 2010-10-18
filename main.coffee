@@ -10,7 +10,8 @@ Copyright 2010, Rehno Lindeque.
 Initialization and rendering loop
 ###
 
-canvas = document.getElementById(gameScene.getCanvasId())
+
+canvas = document.getElementById(sceneNode.canvasId)
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 gameScene.render()

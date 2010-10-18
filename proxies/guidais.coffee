@@ -38,16 +38,14 @@ class GUIDais
     @node = guiDaisNode(@id, index)
   
   update: () ->
-    SceneJS.fireEvent(
-      "configure"
-      @id
-      cfg:
-        "#rotZ":
-          angle: guiDiasRotPosition[@index*2]
-          z: 1.0
-          "#rotX":
-            angle: guiDiasRotPosition[@index*2+1]
-            x: 1.0
+    SceneJS.withNode(@id).node(0).set(
+      angle: guiDiasRotPosition[@index*2]
+      z: 1.0
     )
+    #todo:
+    #SceneJS.withNode(@id).node(0).node(0).set(
+    #  angle: guiDiasRotPosition[@index*2+1]
+    #  x: 1.0
+    #)
 
 

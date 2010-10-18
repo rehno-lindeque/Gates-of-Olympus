@@ -1,4 +1,4 @@
-var backgroundCamera, gameScene, gameSceneDef, gui, guiCamera, level, levelCamera, skybox;
+var backgroundCamera, gameScene, gui, guiCamera, level, levelCamera, sceneNode, skybox;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -15,13 +15,13 @@ guiCamera = new GUICamera(gui, levelCamera);
 /*
 The main scene definition
 */
-gameSceneDef = {
+sceneNode = {
   type: "scene",
   id: "gameScene",
   canvasId: "gameCanvas",
   loggingElementId: "scenejsLog",
   nodes: [
-    BlenderExport.ArcherTower(), BlenderExport.CatapultTower(), {
+    BlenderExport.ArcherTower, BlenderExport.CatapultTower, {
       type: "renderer",
       clear: {
         depth: true,
@@ -33,8 +33,8 @@ gameSceneDef = {
         g: 0.7,
         b: 0.7
       },
-      nodes: [addChildren(gui.lookAt, guiCamera.node)]
+      nodes: [addChildren(gui.lookAtNode, guiCamera.node)]
     }
   ]
 };
-gameScene = SceneJS.createNode(gameSceneDef);
+gameScene = SceneJS.createNode(sceneNode);

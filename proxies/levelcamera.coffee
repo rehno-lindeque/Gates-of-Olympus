@@ -6,16 +6,17 @@ The camera proxy
 class LevelCamera
   constructor: (levelNode) ->
     @reconfigure()
+    @optics = 
+      type:   "ortho"
+      left:   -12.5 * (canvasSize[0] / canvasSize[1])
+      right:   12.5 * (canvasSize[0] / canvasSize[1])
+      bottom: -12.5
+      top:     12.5
+      near:    0.1
+      far:     300.0
     @node = 
       type: "camera"
-      optics:
-        type:   "ortho"
-        left:   -12.5 * (canvasSize[0] / canvasSize[1])
-        right:   12.5 * (canvasSize[0] / canvasSize[1])
-        bottom: -12.5
-        top:     12.5
-        near:    0.1
-        far:     300.0
+      optics: @optics
       nodes: [
           type:      "light"
           mode:      "dir"

@@ -126,7 +126,75 @@ Level = function() {
   for (c = 0; (0 <= _ref ? c < _ref : c > _ref); (0 <= _ref ? c += 1 : c -= 1)) {
     this.towers[c] = -1;
   }
-  this.node = {
+  this.node = this.createNode();
+  return this;
+};
+Level.prototype.getTowerRoot = function(level, towerType) {
+  switch (towerType) {
+    case 0:
+      return this.towerNodes[level].archerTowers;
+    case 1:
+      return this.towerNodes[level].catapultTowers;
+    default:
+      return null;
+  }
+};
+Level.prototype.addTower = function(towerPlacement, towerType) {
+  var cx, cy, cz, index, node, parentNode;
+  index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
+  if (this.towers[index] === -1) {
+    this.towers[index] = towerType;
+    parentNode = this.getTowerRoot(towerPlacement.level, towerType);
+    node = {
+      type: "instance",
+      target: towerIds[towerType]
+    };
+    cx = towerPlacement.cell.x;
+    cy = towerPlacement.cell.y;
+    cz = towerPlacement.level;
+    parentNode.addNode(SceneJS.translate({
+      x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+      y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+    }, node));
+  }
+  return null;
+};
+Level.prototype.createTowers = function(towers) {
+  var cx, cy, cz, node, parentNode, t;
+  for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
+    for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
+      for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
+        t = towers[cz * sqrGridSize + cy * gridSize + cx];
+        if (t !== -1) {
+          switch (t) {
+            case 0:
+              node = SceneJS.instance({
+                target: towerIds[0]
+              });
+              parentNode = this.towerNodes[cz].archerTowers;
+              break;
+            case 1:
+              node = SceneJS.instance({
+                target: towerIds[1]
+              });
+              parentNode = this.towerNodes[cz].catapultTowers;
+              break;
+          }
+          parentNode.addNode(SceneJS.translate({
+            x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+            y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+          }, node));
+        }
+      }
+    }
+  }
+  return null;
+};
+Level.prototype.update = function() {
+  return this.creatures.update();
+};
+Level.prototype.createNode = function() {
+  return {
     type: "material",
     baseColor: {
       r: 0.75,
@@ -145,119 +213,42 @@ Level = function() {
         type: "translate",
         z: platformHeights[1],
         nodes: [this.creatures.node]
-      }, towerPlacementNode(), {
-        type: "translate",
-        z: platformHeights[0],
-        nodes: [
-          {
-            type: "scale",
-            x: 0.78,
-            y: 0.78,
-            z: 0.78,
-            nodes: [platformGeometry("level0"), this.towerNodes[0].archerTowers, this.towerNodes[0].catapultTowers]
-          }
-        ]
-      }, {
-        type: "translate",
-        z: platformHeights[1],
-        nodes: [platformGeometry("level1"), this.towerNodes[1].archerTowers, this.towerNodes[1].catapultTowers],
-        type: "translate",
-        z: platformHeights[2],
-        nodes: [
-          {
-            type: "scale",
-            x: 1.22,
-            y: 1.22,
-            z: 1.22,
-            nodes: [platformGeometry("level2"), this.towerNodes[2].archerTowers, this.towerNodes[2].catapultTowers]
-          }
-        ]
+      }, towerPlacementNode(), this.createPlatformNode(0), this.createPlatformNode(1), this.createPlatformNode(2)
+    ]
+  };
+};
+Level.prototype.createPlatformNode = function(k) {
+  return {
+    type: "translate",
+    z: platformHeights[k],
+    nodes: [
+      {
+        type: "scale",
+        x: 0.78,
+        y: 0.78,
+        z: 0.78,
+        nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers]
       }
     ]
   };
-  return this;
-};
-({
-  getTowerRoot: function(level, towerType) {
-    switch (towerType) {
-      case 0:
-        return this.towerNodes[level].archerTowers;
-      case 1:
-        return this.towerNodes[level].catapultTowers;
-      default:
-        return null;
-    }
-  },
-  addTower: function(towerPlacement, towerType) {
-    var cx, cy, cz, index, node, parentNode;
-    index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
-    if (this.towers[index] === -1) {
-      this.towers[index] = towerType;
-      parentNode = this.getTowerRoot(towerPlacement.level, towerType);
-      node = {
-        type: "instance",
-        target: towerIds[towerType]
-      };
-      cx = towerPlacement.cell.x;
-      cy = towerPlacement.cell.y;
-      cz = towerPlacement.level;
-      return parentNode.addNode(SceneJS.translate({
-        x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-        y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-      }, node));
-    }
-  },
-  createTowers: function(towers) {
-    var cx, cy, cz, node, parentNode, t;
-    for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
-      for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
-        for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
-          t = towers[cz * sqrGridSize + cy * gridSize + cx];
-          if (t !== -1) {
-            switch (t) {
-              case 0:
-                node = SceneJS.instance({
-                  target: towerIds[0]
-                });
-                parentNode = this.towerNodes[cz].archerTowers;
-                break;
-              case 1:
-                node = SceneJS.instance({
-                  target: towerIds[1]
-                });
-                parentNode = this.towerNodes[cz].catapultTowers;
-                break;
-            }
-            parentNode.addNode(SceneJS.translate({
-              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-            }, node));
-          }
-        }
-      }
-    }
-    return null;
-  },
-  update: function() {
-    return this.creatures.update();
-  }
-});var LevelCamera;
+};var LevelCamera;
 /*
 The camera proxy
 */
 LevelCamera = function(levelNode) {
   this.reconfigure();
+  this.optics = {
+    type: "ortho",
+    left: -12.5 * (canvasSize[0] / canvasSize[1]),
+    right: 12.5 * (canvasSize[0] / canvasSize[1]),
+    bottom: -12.5,
+    top: 12.5,
+    near: 0.1,
+    far: 300.0
+  };
   this.node = {
     type: "camera",
-    optics: {
-      type: "ortho",
-      left: -12.5 * (canvasSize[0] / canvasSize[1]),
-      right: 12.5 * (canvasSize[0] / canvasSize[1]),
-      bottom: -12.5,
-      top: 12.5,
-      near: 0.1,
-      far: 300.0
-    },
+    optics: this.optics,
     nodes: [
       {
         type: "light",
@@ -376,17 +367,9 @@ GUIDais = function(index) {
   return this;
 };
 GUIDais.prototype.update = function() {
-  return SceneJS.fireEvent("configure", this.id, {
-    cfg: {
-      "#rotZ": {
-        angle: guiDiasRotPosition[this.index * 2],
-        z: 1.0,
-        "#rotX": {
-          angle: guiDiasRotPosition[this.index * 2 + 1],
-          x: 1.0
-        }
-      }
-    }
+  return SceneJS.withNode(this.id).node(0).set({
+    angle: guiDiasRotPosition[this.index * 2],
+    z: 1.0
   });
 };var GUI;
 /*
@@ -397,8 +380,9 @@ GUI = function() {
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
   this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
-  this.lightConfig = {
-    type: "dir",
+  this.lightNode = {
+    type: "light",
+    mode: "dir",
     color: {
       r: 1.0,
       g: 1.0,
@@ -412,8 +396,8 @@ GUI = function() {
       z: -1.0
     }
   };
-  this.lookAt = {
-    type: "lookat",
+  this.lookAtNode = {
+    type: "lookAt",
     eye: {
       x: 0.0,
       y: -10.0,
@@ -457,7 +441,11 @@ GUI.prototype.update = function() {
 };var GUICamera;
 GUICamera = function(gui, referenceCamera) {
   this.referenceCamera = referenceCamera;
-  this.node = SceneJS.camera(levelCamera.config, SceneJS.light(gui.lightConfig), gui.node);
+  this.node = {
+    type: "camera",
+    optics: levelCamera.optics,
+    nodes: [gui.lightNode, gui.node]
+  };
   return this;
 };
 GUICamera.prototype.reconfigure = function() {

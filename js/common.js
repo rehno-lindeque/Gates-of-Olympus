@@ -5,9 +5,9 @@ Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
 addChildren = function(parent) {
-  var children;
+  var _ref, children;
   children = __slice.call(arguments, 1);
-  parent.nodes = Array.concat(parent.nodes, children);
+  parent.nodes = (typeof (_ref = parent.nodes) !== "undefined" && _ref !== null) ? Array.concat(parent.nodes, children) : children;
   return parent;
 };
 compileShader = function(gl, id) {
