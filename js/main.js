@@ -110,13 +110,16 @@
     return null;
   };
   keyDown = function(event) {
-    var _a;
-    if ((_a = event.keyCode) === key1) {
-      currentTowerSelection = 0;
-    } else if (_a === key2) {
-      currentTowerSelection = 1;
-    } else if (_a === keyESC) {
-      currentTowerSelection = -1;
+    switch (event.keyCode) {
+      case key1:
+        currentTowerSelection = 0;
+        break;
+      case key2:
+        currentTowerSelection = 1;
+        break;
+      case keyESC:
+        currentTowerSelection = -1;
+        break;
     }
     return updateTowerPlacement();
   };
@@ -173,4 +176,4 @@
     return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);
-})();
+}).call(this);

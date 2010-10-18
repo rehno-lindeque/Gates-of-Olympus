@@ -1,13 +1,12 @@
-var BackgroundCamera, GUI, GUICamera, GUIDais, Level, LevelCamera, LevelLookAt, Skybox, guiDaisNode, towerNode, towerPlacementNode;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
-*/
+*/var Skybox;
 /*
 A proxy for the skybox
 */
 Skybox = function() {
-  this.node = SceneJS.createNode({
+  this.node = {
     type: "scale",
     x: 100.0,
     y: 100.0,
@@ -48,22 +47,15 @@ Skybox = function() {
         ]
       }
     ]
-  });
+  };
   return this;
-};
+};var Level, towerNode, towerPlacementNode;
 /*
 Tower scene graph nodes
 */
 towerNode = function(index, sid) {
-  var tex;
-  tex = SceneJS.texture({
-    layers: [
-      {
-        uri: towerTextureURI[index]
-      }
-    ]
-  });
-  SceneJS.material({
+  return {
+    type: "material",
     baseColor: {
       r: 1.0,
       g: 1.0,
@@ -75,53 +67,67 @@ towerNode = function(index, sid) {
       b: 1.0
     },
     specular: 0.0,
-    shine: 0.0
-  }, tex);
-  return tex;
+    shine: 0.0,
+    nodes: [
+      {
+        type: "texture",
+        layers: [
+          {
+            uri: towerTextureURI[index]
+          }
+        ]
+      }
+    ]
+  };
 };
 towerPlacementNode = function() {
-  var tower1, tower2;
-  tower1 = towerNode(0, "placementTower" + 0);
-  tower1.addNode(SceneJS.instance({
-    target: towerIds[0]
-  }));
-  tower2 = towerNode(1, "placementTower" + 1);
-  tower2.addNode(SceneJS.instance({
-    target: towerIds[1]
-  }));
-  return SceneJS.translate({
+  return {
+    type: "translate",
     id: "placementTower",
-    z: platformHeights[1]
-  }, SceneJS.selector({
-    sid: "placementTowerModel",
-    selection: [0]
-  }, tower1, tower2));
+    z: platformHeights[1],
+    nodes: [
+      {
+        type: "selector",
+        sid: "placementTowerModel",
+        selection: [0],
+        nodes: [
+          addChildren(towerNode(0, "placementTower" + 0), {
+            type: "instance",
+            target: towerIds[0]
+          }), addChildren(towerNode(1, "placementTower" + 1), {
+            type: "instance",
+            target: towerIds[1]
+          })
+        ]
+      }
+    ]
+  };
 };
 /*
 A proxy for the whole level with platforms and creatures etc.
 */
 Level = function() {
-  var _a, c;
+  var _ref, c;
   this.creatures = new Creatures();
-  this.towerNodes = new Array(3);
-  this.towerNodes[0] = {
-    archerTowers: towerNode(0, "archerTowers0"),
-    catapultTowers: towerNode(1, "catapultTowers0")
-  };
-  this.towerNodes[1] = {
-    archerTowers: towerNode(0, "archerTowers1"),
-    catapultTowers: towerNode(1, "catapultTowers1")
-  };
-  this.towerNodes[2] = {
-    archerTowers: towerNode(0, "archerTowers2"),
-    catapultTowers: towerNode(1, "catapultTowers2")
-  };
+  this.towerNodes = [
+    {
+      archerTowers: towerNode(0, "archerTowers0"),
+      catapultTowers: towerNode(1, "catapultTowers0")
+    }, {
+      archerTowers: towerNode(0, "archerTowers1"),
+      catapultTowers: towerNode(1, "catapultTowers1")
+    }, {
+      archerTowers: towerNode(0, "archerTowers2"),
+      catapultTowers: towerNode(1, "catapultTowers2")
+    }
+  ];
   this.towers = new Array(sqrGridSize * levels);
-  _a = (sqrGridSize * levels);
-  for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {
+  _ref = (sqrGridSize * levels);
+  for (c = 0; (0 <= _ref ? c < _ref : c > _ref); (0 <= _ref ? c += 1 : c -= 1)) {
     this.towers[c] = -1;
   }
-  this.node = SceneJS.material({
+  this.node = {
+    type: "material",
     baseColor: {
       r: 0.75,
       g: 0.78,
@@ -133,108 +139,116 @@ Level = function() {
       b: 0.9
     },
     specular: 0.9,
-    shine: 6.0
-  }, SceneJS.translate({
-    z: platformHeights[1]
-  }, this.creatures.node), towerPlacementNode(), SceneJS.translate({
-    z: platformHeights[0]
-  }, SceneJS.scale({
-    x: 0.78,
-    y: 0.78,
-    z: 0.78
-  }, platformGeometry("level0"), this.towerNodes[0].archerTowers, this.towerNodes[0].catapultTowers)), SceneJS.translate({
-    z: platformHeights[1]
-  }, platformGeometry("level1"), this.towerNodes[1].archerTowers, this.towerNodes[1].catapultTowers), SceneJS.translate({
-    z: platformHeights[2]
-  }, SceneJS.scale({
-    x: 1.22,
-    y: 1.22,
-    z: 1.22
-  }, platformGeometry("level2"), this.towerNodes[2].archerTowers, this.towerNodes[2].catapultTowers)));
+    shine: 6.0,
+    nodes: [
+      {
+        type: "translate",
+        z: platformHeights[1],
+        nodes: [this.creatures.node]
+      }, towerPlacementNode(), {
+        type: "translate",
+        z: platformHeights[0],
+        nodes: [
+          {
+            type: "scale",
+            x: 0.78,
+            y: 0.78,
+            z: 0.78,
+            nodes: [platformGeometry("level0"), this.towerNodes[0].archerTowers, this.towerNodes[0].catapultTowers]
+          }
+        ]
+      }, {
+        type: "translate",
+        z: platformHeights[1],
+        nodes: [platformGeometry("level1"), this.towerNodes[1].archerTowers, this.towerNodes[1].catapultTowers],
+        type: "translate",
+        z: platformHeights[2],
+        nodes: [
+          {
+            type: "scale",
+            x: 1.22,
+            y: 1.22,
+            z: 1.22,
+            nodes: [platformGeometry("level2"), this.towerNodes[2].archerTowers, this.towerNodes[2].catapultTowers]
+          }
+        ]
+      }
+    ]
+  };
   return this;
 };
-Level.prototype.getTowerRoot = function(level, towerType) {
-  if (towerType === 0) {
-    return this.towerNodes[level].archerTowers;
-  } else if (towerType === 1) {
-    return this.towerNodes[level].catapultTowers;
-  } else {
-    return null;
-  }
-};
-Level.prototype.addTower = function(towerPlacement, towerType) {
-  var cx, cy, cz, index, node, parentNode;
-  index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
-  if (this.towers[index] === -1) {
-    this.towers[index] = towerType;
-    parentNode = this.getTowerRoot(towerPlacement.level, towerType);
-    node = SceneJS.instance({
-      target: towerIds[towerType]
-    });
-    cx = towerPlacement.cell.x;
-    cy = towerPlacement.cell.y;
-    cz = towerPlacement.level;
-    return parentNode.addNode(SceneJS.translate({
-      x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-      y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-    }, node));
-  }
-};
-Level.prototype.createTowers = function(towers) {
-  var cx, cy, cz, node, parentNode, t;
-  for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
-    for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
-      for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
-        t = towers[cz * sqrGridSize + cy * gridSize + cx];
-        if (t !== -1) {
-          if (t === 0) {
-            node = SceneJS.instance({
-              target: towerIds[0]
-            });
-            parentNode = this.towerNodes[cz].archerTowers;
-          } else if (t === 1) {
-            node = SceneJS.instance({
-              target: towerIds[1]
-            });
-            parentNode = this.towerNodes[cz].catapultTowers;
+({
+  getTowerRoot: function(level, towerType) {
+    switch (towerType) {
+      case 0:
+        return this.towerNodes[level].archerTowers;
+      case 1:
+        return this.towerNodes[level].catapultTowers;
+      default:
+        return null;
+    }
+  },
+  addTower: function(towerPlacement, towerType) {
+    var cx, cy, cz, index, node, parentNode;
+    index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
+    if (this.towers[index] === -1) {
+      this.towers[index] = towerType;
+      parentNode = this.getTowerRoot(towerPlacement.level, towerType);
+      node = {
+        type: "instance",
+        target: towerIds[towerType]
+      };
+      cx = towerPlacement.cell.x;
+      cy = towerPlacement.cell.y;
+      cz = towerPlacement.level;
+      return parentNode.addNode(SceneJS.translate({
+        x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+        y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+      }, node));
+    }
+  },
+  createTowers: function(towers) {
+    var cx, cy, cz, node, parentNode, t;
+    for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
+      for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
+        for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
+          t = towers[cz * sqrGridSize + cy * gridSize + cx];
+          if (t !== -1) {
+            switch (t) {
+              case 0:
+                node = SceneJS.instance({
+                  target: towerIds[0]
+                });
+                parentNode = this.towerNodes[cz].archerTowers;
+                break;
+              case 1:
+                node = SceneJS.instance({
+                  target: towerIds[1]
+                });
+                parentNode = this.towerNodes[cz].catapultTowers;
+                break;
+            }
+            parentNode.addNode(SceneJS.translate({
+              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+            }, node));
           }
-          parentNode.addNode(SceneJS.translate({
-            x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-            y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-          }, node));
         }
       }
     }
+    return null;
+  },
+  update: function() {
+    return this.creatures.update();
   }
-  return null;
-};
-Level.prototype.update = function() {
-  return this.creatures.update();
-};
+});var LevelCamera;
 /*
 The camera proxy
 */
 LevelCamera = function(levelNode) {
   this.reconfigure();
-  this.node = SceneJS.camera(this.config, SceneJS.light({
-    type: "dir",
-    color: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
-    },
-    diffuse: true,
-    specular: false,
-    dir: {
-      x: 1.0,
-      y: 1.0,
-      z: -1.0
-    }
-  }), levelNode);
-  return this;
-};
-LevelCamera.prototype.reconfigure = function() {
-  this.config = {
+  this.node = {
+    type: "camera",
     optics: {
       type: "ortho",
       left: -12.5 * (canvasSize[0] / canvasSize[1]),
@@ -243,10 +257,29 @@ LevelCamera.prototype.reconfigure = function() {
       top: 12.5,
       near: 0.1,
       far: 300.0
-    }
+    },
+    nodes: [
+      {
+        type: "light",
+        mode: "dir",
+        color: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        diffuse: true,
+        specular: false,
+        dir: {
+          x: 1.0,
+          y: 1.0,
+          z: -1.0
+        }
+      }, levelNode
+    ]
   };
-  return this.node ? this.node.setOptics(this.config.optics) : null;
+  return this;
 };
+LevelCamera.prototype.reconfigure = function() {};var LevelLookAt;
 /*
 The look-at proxy for the main game scene
 */
@@ -290,7 +323,7 @@ LevelLookAt.prototype.update = function() {
   };
   this.lookAtNode.setEye(cfg);
   return this.backgroundLookAtNode.setEye(cfg);
-};
+};var GUIDais, guiDaisNode;
 /*
 A proxy for dias tower selection gui element
 */
@@ -339,7 +372,7 @@ guiDaisNode = function(id, index) {
 GUIDais = function(index) {
   this.index = index;
   this.id = "dais" + index;
-  this.node = SceneJS.createNode(guiDaisNode(this.id, index));
+  this.node = guiDaisNode(this.id, index);
   return this;
 };
 GUIDais.prototype.update = function() {
@@ -355,7 +388,7 @@ GUIDais.prototype.update = function() {
       }
     }
   });
-};
+};var GUI;
 /*
 Top level GUI container
 */
@@ -363,7 +396,7 @@ GUI = function() {
   this.daises = new Array(2);
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
-  this.daisGeometry = BlenderExport.NumberedDais();
+  this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
   this.lightConfig = {
     type: "dir",
     color: {
@@ -379,7 +412,8 @@ GUI = function() {
       z: -1.0
     }
   };
-  this.lookAtConfig = {
+  this.lookAt = {
+    type: "lookat",
     eye: {
       x: 0.0,
       y: -10.0,
@@ -393,29 +427,34 @@ GUI = function() {
       z: 1.0
     }
   };
-  this.node = SceneJS.translate({
+  this.node = {
+    type: "translate",
     x: 8.0,
-    y: 4.0
-  }, SceneJS.material({
-    baseColor: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
-    },
-    specularColor: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
-    },
-    specular: 0.0,
-    shine: 0.0
-  }, this.daises[0].node, this.daises[1].node));
+    y: 4.0,
+    nodes: [
+      {
+        type: "material",
+        baseColor: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        specularColor: {
+          r: 1.0,
+          g: 1.0,
+          b: 1.0
+        },
+        specular: 0.0,
+        shine: 0.0
+      }, this.daises[0].node, this.daises[1].node
+    ]
+  };
   return this;
 };
 GUI.prototype.update = function() {
   this.daises[0].update();
   return this.daises[1].update();
-};
+};var GUICamera;
 GUICamera = function(gui, referenceCamera) {
   this.referenceCamera = referenceCamera;
   this.node = SceneJS.camera(levelCamera.config, SceneJS.light(gui.lightConfig), gui.node);
@@ -423,7 +462,7 @@ GUICamera = function(gui, referenceCamera) {
 };
 GUICamera.prototype.reconfigure = function() {
   return this.node ? this.node.setOptics(this.referenceCamera.config.optics) : null;
-};
+};var BackgroundCamera;
 /*
 Background proxies
 */

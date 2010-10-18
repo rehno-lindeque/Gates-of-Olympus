@@ -84,11 +84,11 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var _a, _b, _c, c, node;
+  var _i, _len, _ref, c, node;
   c = 0;
-  _b = SceneJS.getNode("creatures").getNodes();
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    node = _b[_a];
+  _ref = SceneJS.getNode("creatures").getNodes();
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    node = _ref[_i];
     node.setXYZ({
       x: this.creatures[c].pos[0],
       y: this.creatures[c].pos[1],
