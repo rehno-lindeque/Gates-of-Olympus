@@ -505,16 +505,24 @@ BackgroundCamera = function(backgroundNode) {
     optics: this.optics,
     nodes: [
       {
-        type: "stationary",
-        nodes: [backgroundNode]
+        type: "cloudDome",
+        radius: 100.0,
+        nodes: [
+          {
+            type: "stationary",
+            nodes: [backgroundNode]
+          }
+        ]
       }
     ]
   };
   return this;
 };
-BackgroundCamera.prototype.withNode = function() {
-  return SceneJS.withNode("backgroundCamera");
-};
-BackgroundCamera.prototype.reconfigure = function() {
-  return this.withNode().set("optics", this.optics);
-};
+({
+  withNode: function() {
+    return SceneJS.withNode("backgroundCamera");
+  },
+  reconfigure: function() {
+    return this.withNode().set("optics", this.optics);
+  }
+});
