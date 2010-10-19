@@ -4,23 +4,29 @@ Background proxies
 
 class BackgroundCamera
   constructor: (backgroundNode) ->
-    @reconfigure()
+    @optics = 
+      type:   "perspective"
+      fovy:   25.0
+      aspect: canvasSize[0] / canvasSize[1]
+      near:   0.10
+      far:    300.0
     @node = 
-      SceneJS.camera(
-        @config
-        SceneJS.cloudDome(
-          radius:  100.0
-          SceneJS.stationary backgroundNode
-        ) # cloudDome
-      ) # camera
+      type:   "camera"
+      id:     "backgroundCamera"
+      optics: @optics
+      nodes: [
+          type: "stationary"
+          nodes: [ backgroundNode ]
+          #type: "cloudDome"
+          #radius:  100.0
+          #nodes: [ 
+          #    type: "stationary"
+          #    nodes: [ backgroundNode ]
+          #  ]
+        ]
+      
+  withNode: -> SceneJS.withNode "backgroundCamera"
   
-  reconfigure: ->
-    @config =
-      optics:
-        type:   "perspective"
-        fovy:   25.0
-        aspect: canvasSize[0] / canvasSize[1]
-        near:   0.10
-        far:    300.0
-    if @node then @node.setOptics(@config.optics)
+  reconfigure: -> @withNode().set("optics", @optics)
+  
 

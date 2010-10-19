@@ -9,7 +9,7 @@ Proxies
 
 gui = new GUI
 skybox = new Skybox
-backgroundCamera = new BackgroundCamera skybox.node
+backgroundCamera = new BackgroundCamera(skybox.node)
 level = new Level
 levelCamera = new LevelCamera(level.node)
 levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)

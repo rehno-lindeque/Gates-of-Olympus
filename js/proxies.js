@@ -270,11 +270,11 @@ LevelCamera = function(levelNode) {
   };
   return this;
 };
-LevelCamera.prototype.withSceneCamera = function() {
+LevelCamera.prototype.withCamera = function() {
   return SceneJS.withNode("sceneCamera");
 };
 LevelCamera.prototype.reconfigure = function() {
-  return this.withSceneCamera().set("optics", this.optics);
+  return this.withCamera().set("optics", this.optics);
 };var LevelLookAt;
 /*
 The look-at proxy for the main game scene
@@ -488,21 +488,29 @@ GUICamera.prototype.reconfigure = function() {
 Background proxies
 */
 BackgroundCamera = function(backgroundNode) {
-  this.reconfigure();
-  this.node = SceneJS.camera(this.config, SceneJS.cloudDome({
-    radius: 100.0
-  }, SceneJS.stationary(backgroundNode)));
+  this.optics = {
+    type: "perspective",
+    fovy: 25.0,
+    aspect: canvasSize[0] / canvasSize[1],
+    near: 0.10,
+    far: 300.0
+  };
+  this.node = {
+    type: "camera",
+    id: "backgroundCamera",
+    optics: this.optics,
+    nodes: [
+      {
+        type: "stationary",
+        nodes: [backgroundNode]
+      }
+    ]
+  };
   return this;
 };
+BackgroundCamera.prototype.withNode = function() {
+  return SceneJS.withNode("backgroundCamera");
+};
 BackgroundCamera.prototype.reconfigure = function() {
-  this.config = {
-    optics: {
-      type: "perspective",
-      fovy: 25.0,
-      aspect: canvasSize[0] / canvasSize[1],
-      near: 0.10,
-      far: 300.0
-    }
-  };
-  return this.node ? this.node.setOptics(this.config.optics) : null;
+  return this.withNode().set("optics", this.optics);
 };

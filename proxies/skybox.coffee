@@ -3,7 +3,7 @@ A proxy for the skybox
 ###
 
 class Skybox
-  constructor: () ->
+  constructor: ->
     @node = 
       type: "scale"
       x: 100.0
