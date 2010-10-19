@@ -39,8 +39,8 @@ sceneNode =
           addChildren(gui.lookAtNode, guiCamera.node)
         ,
           levelLookAt.node
-        #todo ,
-        #todo   levelLookAt.backgroundLookAtNode
+        ,
+          levelLookAt.backgroundLookAtNode
         ]
     ]
 

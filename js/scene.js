@@ -34,7 +34,7 @@ sceneNode = {
         g: 0.7,
         b: 0.7
       },
-      nodes: [addChildren(gui.lookAtNode, guiCamera.node), levelLookAt.node]
+      nodes: [addChildren(gui.lookAtNode, guiCamera.node), levelLookAt.node, levelLookAt.backgroundLookAtNode]
     }
   ]
 };
