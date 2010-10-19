@@ -28,7 +28,7 @@ class LevelCamera
           levelNode
         ]
   
-  withCamera: -> SceneJS.withNode "sceneCamera"
+  withNode: -> SceneJS.withNode "sceneCamera"
   
-  reconfigure: -> @withCamera().set("optics", @optics)
+  reconfigure: -> @withNode().set("optics", @optics)
   

@@ -270,11 +270,11 @@ LevelCamera = function(levelNode) {
   };
   return this;
 };
-LevelCamera.prototype.withCamera = function() {
+LevelCamera.prototype.withNode = function() {
   return SceneJS.withNode("sceneCamera");
 };
 LevelCamera.prototype.reconfigure = function() {
-  return this.withCamera().set("optics", this.optics);
+  return this.withNode().set("optics", this.optics);
 };var LevelLookAt;
 /*
 The look-at proxy for the main game scene
