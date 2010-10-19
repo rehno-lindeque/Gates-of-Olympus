@@ -476,13 +476,17 @@ GUICamera = function(gui, referenceCamera) {
   this.referenceCamera = referenceCamera;
   this.node = {
     type: "camera",
+    id: "guiCamera",
     optics: levelCamera.optics,
     nodes: [gui.lightNode, gui.node]
   };
   return this;
 };
+GUICamera.prototype.withNode = function() {
+  return SceneJS.withNode("guiCamera");
+};
 GUICamera.prototype.reconfigure = function() {
-  return this.node ? this.node.setOptics(this.referenceCamera.config.optics) : null;
+  return this.withNode().set("optics", this.referenceCamera.optics);
 };var BackgroundCamera;
 /*
 Background proxies
