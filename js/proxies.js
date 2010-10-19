@@ -277,7 +277,8 @@ The look-at proxy for the main game scene
 LevelLookAt = function(cameraNode, backgroundCameraNode) {
   this.angle = 0.0;
   this.radius = 10.0;
-  this.config = {
+  this.lookAtNode = {
+    type: "lookAt",
     id: "SceneLookAt",
     eye: {
       x: 0.0,
@@ -293,27 +294,54 @@ LevelLookAt = function(cameraNode, backgroundCameraNode) {
       x: 0.0,
       y: 0.0,
       z: 1.0
-    }
+    },
+    nodes: [cameraNode]
   };
-  this.lookAtNode = SceneJS.lookAt(this.config, cameraNode);
-  this.backgroundLookAtNode = SceneJS.lookAt(this.config, backgroundCameraNode);
-  this.node = SceneJS.translate({
+  this.backgroundLookAtNode = {
+    type: "lookAt",
+    id: "BackgroundLookAt",
+    eye: {
+      x: 0.0,
+      y: -this.radius,
+      z: 7.0
+    },
+    look: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0
+    },
+    up: {
+      x: 0.0,
+      y: 0.0,
+      z: 1.0
+    },
+    nodes: [backgroundCameraNode]
+  };
+  this.node = {
+    type: "translate",
     x: gameSceneOffset[0],
     y: gameSceneOffset[1],
-    z: gameSceneOffset[2]
-  }, this.lookAtNode);
+    z: gameSceneOffset[2],
+    nodes: [this.lookAtNode]
+  };
   return this;
 };
+LevelLookAt.prototype.withSceneLookAt = function() {
+  return SceneJS.withNode("SceneLookAt");
+};
+LevelLookAt.prototype.withBackgroundLookAt = function() {
+  return SceneJS.withNode("BackgroundLookAt");
+};
 LevelLookAt.prototype.update = function() {
-  var cfg, cosAngle;
+  var cosAngle, eyeCfg;
   cosAngle = Math.cos(this.angle);
-  cfg = {
+  eyeCfg = {
     x: (Math.sin(this.angle)) * this.radius,
     y: cosAngle * -this.radius,
     z: 7.0
   };
-  this.lookAtNode.setEye(cfg);
-  return this.backgroundLookAtNode.setEye(cfg);
+  this.withSceneLookAt().set("eye", eyeCfg);
+  return this.withBackgroundLookAt().set("eye", eyeCfg);
 };var GUIDais, guiDaisNode;
 /*
 A proxy for dias tower selection gui element

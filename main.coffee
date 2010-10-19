@@ -10,7 +10,6 @@ Copyright 2010, Rehno Lindeque.
 Initialization and rendering loop
 ###
 
-
 canvas = document.getElementById(sceneNode.canvasId)
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
@@ -65,9 +64,10 @@ updateTowerPlacement = () ->
   mouseY -= canvasElement.offsetTop
   
   # Transform ray origin into world space
-  lookAtEye  = levelLookAt.lookAtNode.getEye()
-  lookAtUp   = levelLookAt.lookAtNode.getUp()
-  lookAtLook = levelLookAt.lookAtNode.getLook()
+  sceneLookAt = levelLookAt.withSceneLookAt()
+  lookAtEye  = sceneLookAt.get("eye")
+  lookAtUp   = sceneLookAt.get("up")
+  lookAtLook = sceneLookAt.get("look")
   rayOrigin  = [lookAtEye.x, lookAtEye.y, lookAtEye.z]
   yAxis      = [lookAtUp.x, lookAtUp.y, lookAtUp.z]
   zAxis      = [lookAtLook.x, lookAtLook.y, lookAtLook.z]

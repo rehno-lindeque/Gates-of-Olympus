@@ -43,15 +43,16 @@
     };
   };
   updateTowerPlacement = function() {
-    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
+    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, sceneLookAt, screenX, screenY, xAxis, yAxis, zAxis;
     mouseX = mouseLastX;
     mouseY = mouseLastY;
     canvasElement = document.getElementById("gameCanvas");
     mouseX -= canvasElement.offsetLeft;
     mouseY -= canvasElement.offsetTop;
-    lookAtEye = levelLookAt.lookAtNode.getEye();
-    lookAtUp = levelLookAt.lookAtNode.getUp();
-    lookAtLook = levelLookAt.lookAtNode.getLook();
+    sceneLookAt = levelLookAt.withSceneLookAt();
+    lookAtEye = sceneLookAt.get("eye");
+    lookAtUp = sceneLookAt.get("up");
+    lookAtLook = sceneLookAt.get("look");
     rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
     yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
     zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];

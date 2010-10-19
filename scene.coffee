@@ -12,7 +12,7 @@ skybox = new Skybox
 backgroundCamera = new BackgroundCamera skybox.node
 level = new Level
 levelCamera = new LevelCamera(level.node)
-#todo levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
+levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
 guiCamera = new GUICamera(gui, levelCamera)
 
 ###
@@ -37,8 +37,8 @@ sceneNode =
       clearColor: { r: 0.7, g: 0.7, b: 0.7 }
       nodes: [
           addChildren(gui.lookAtNode, guiCamera.node)
-        #todo ,
-        #todo   levelLookAt.node
+        ,
+          levelLookAt.node
         #todo ,
         #todo   levelLookAt.backgroundLookAtNode
         ]
