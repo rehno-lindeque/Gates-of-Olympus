@@ -5,7 +5,6 @@ The camera proxy
 
 class LevelCamera
   constructor: (levelNode) ->
-    @reconfigure()
     @optics = 
       type:   "ortho"
       left:   -12.5 * (canvasSize[0] / canvasSize[1])
@@ -16,6 +15,7 @@ class LevelCamera
       far:     300.0
     @node = 
       type: "camera"
+      id:   "sceneCamera"
       optics: @optics
       nodes: [
           type:      "light"
@@ -28,6 +28,7 @@ class LevelCamera
           levelNode
         ]
   
-  reconfigure: ->
-    #if @node then @node.setOptics(@config.optics)
-
+  withSceneCamera: -> SceneJS.withNode "sceneCamera"
+  
+  reconfigure: -> @withSceneCamera().set("optics", @optics)
+  

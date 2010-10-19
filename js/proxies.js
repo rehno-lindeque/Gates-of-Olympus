@@ -236,7 +236,6 @@ Level.prototype.createPlatformNode = function(k) {
 The camera proxy
 */
 LevelCamera = function(levelNode) {
-  this.reconfigure();
   this.optics = {
     type: "ortho",
     left: -12.5 * (canvasSize[0] / canvasSize[1]),
@@ -248,6 +247,7 @@ LevelCamera = function(levelNode) {
   };
   this.node = {
     type: "camera",
+    id: "sceneCamera",
     optics: this.optics,
     nodes: [
       {
@@ -270,7 +270,12 @@ LevelCamera = function(levelNode) {
   };
   return this;
 };
-LevelCamera.prototype.reconfigure = function() {};var LevelLookAt;
+LevelCamera.prototype.withSceneCamera = function() {
+  return SceneJS.withNode("sceneCamera");
+};
+LevelCamera.prototype.reconfigure = function() {
+  return this.withSceneCamera().set("optics", this.optics);
+};var LevelLookAt;
 /*
 The look-at proxy for the main game scene
 */
