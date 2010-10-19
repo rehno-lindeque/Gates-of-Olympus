@@ -88,7 +88,7 @@ towerPlacementNode = function() {
     nodes: [
       {
         type: "selector",
-        sid: "placementTowerModel",
+        id: "placementTowerModel",
         selection: [0],
         nodes: [
           addChildren(towerNode(0, "placementTower" + 0), {
