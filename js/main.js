@@ -89,24 +89,13 @@
       }
     }
     if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
-      SceneJS.fireEvent("configure", "placementTower", {
-        cfg: {
-          x: intersection[0],
-          y: intersection[1],
-          z: platformHeights[towerPlacement.level],
-          "#placementTowerModel": {
-            selection: [currentTowerSelection]
-          }
-        }
-      });
+      SceneJS.withNode("placementTower").set({
+        x: intersection[0],
+        y: intersection[1],
+        z: platformHeights[towerPlacement.level]
+      }).node("placementTowerModel").set("selection", [currentTowerSelection]);
     } else {
-      SceneJS.fireEvent("configure", "placementTower", {
-        cfg: {
-          "#placementTowerModel": {
-            selection: []
-          }
-        }
-      });
+      SceneJS.withNode("placementTower").node("placementTowerModel").set("selection", []);
     }
     return null;
   };
