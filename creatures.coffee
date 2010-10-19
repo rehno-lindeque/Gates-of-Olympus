@@ -56,8 +56,10 @@ class Creatures
   
   update: () ->
     c = 0
-    for node in SceneJS.getNode("creatures").getNodes()
-      node.setXYZ({x: @creatures[c].pos[0], y: @creatures[c].pos[1], z: @creatures[c].pos[2]})
-      node.getNodeAt(0).setAngle(@creatures[c].rot)
-      c += 1
+    SceneJS.withNode("creatures").eachNode(
+      () ->
+        this.setXYZ({x: @creatures[c].pos[0], y: @creatures[c].pos[1], z: @creatures[c].pos[2]})
+        this.getNodeAt(0).setAngle(@creatures[c].rot)
+        c += 1
+    )
     null
