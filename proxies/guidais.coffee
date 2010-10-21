@@ -17,8 +17,12 @@ guiDaisNode = (id, index) ->
           angle: guiDaisRotPosition[index*2]
           x: 1.0
           nodes: [
-              type: "instance"
-              target: "NumberedDais"
+              type: "texture"
+              layers: [{ uri: "textures/dais.jpg" }]
+              nodes: [
+                type: "instance"
+                target: "NumberedDais"
+              ]
             ,
               type: "texture"
               layers: [{uri: towerTextureURI[index]}]
