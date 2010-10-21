@@ -149,16 +149,16 @@
   window.render = function() {
     var c;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
-      guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1;
-      if (guiDiasRotPosition[c] > 0) {
-        guiDiasRotVelocity[c] -= 0.001;
+      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
+      if (guiDaisRotPosition[c] > 0) {
+        guiDaisRotVelocity[c] -= 0.001;
       }
-      if (guiDiasRotPosition[c] < 0) {
-        guiDiasRotVelocity[c] += 0.001;
+      if (guiDaisRotPosition[c] < 0) {
+        guiDaisRotVelocity[c] += 0.001;
       }
-      guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1);
-      guiDiasRotPosition[c] += guiDiasRotVelocity[c];
-      guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0);
+      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.1, 0.1);
+      guiDaisRotPosition[c] += guiDaisRotVelocity[c];
+      guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
     gui.update();
     level.update();

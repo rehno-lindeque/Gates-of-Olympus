@@ -360,13 +360,13 @@ guiDaisNode = function(id, index) {
       {
         type: "rotate",
         sid: "rotZ",
-        angle: guiDiasRotPosition[index * 2],
+        angle: guiDaisRotPosition[index * 2],
         z: 1.0,
         nodes: [
           {
             type: "rotate",
             sid: "rotX",
-            angle: guiDiasRotPosition[index * 2],
+            angle: guiDaisRotPosition[index * 2],
             x: 1.0,
             nodes: [
               {
@@ -401,10 +401,10 @@ GUIDais = function(index) {
 };
 GUIDais.prototype.update = function() {
   return SceneJS.withNode(this.id).node(0).set({
-    angle: guiDiasRotPosition[this.index * 2],
+    angle: guiDaisRotPosition[this.index * 2],
     z: 1.0
   }).node(0).set({
-    angle: guiDiasRotPosition[this.index * 2 + 1],
+    angle: guiDaisRotPosition[this.index * 2 + 1],
     x: 1.0
   });
 };var GUI;

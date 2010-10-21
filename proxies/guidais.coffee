@@ -9,12 +9,12 @@ guiDaisNode = (id, index) ->
   nodes: [
       type: "rotate"
       sid: "rotZ"
-      angle: guiDiasRotPosition[index*2]
+      angle: guiDaisRotPosition[index*2]
       z: 1.0
       nodes: [
           type: "rotate"
           sid: "rotX"
-          angle: guiDiasRotPosition[index*2]
+          angle: guiDaisRotPosition[index*2]
           x: 1.0
           nodes: [
               type: "instance"
@@ -40,10 +40,10 @@ class GUIDais
   update: () ->
     SceneJS.withNode(@id)
       .node(0).set(
-        angle: guiDiasRotPosition[@index*2]
+        angle: guiDaisRotPosition[@index*2]
         z: 1.0
       ).node(0).set(
-        angle: guiDiasRotPosition[@index*2+1]
+        angle: guiDaisRotPosition[@index*2+1]
         x: 1.0
       )
 

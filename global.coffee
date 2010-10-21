@@ -61,12 +61,12 @@ platformLengths = [
 numTowerTypes = 3
 
 # State
-guiDiasRotVelocity = [
+guiDaisRotVelocity = [
   0.0, 0.0
   0.0, 0.0
   0.0, 0.0 ]
 
-guiDiasRotPosition = [
+guiDaisRotPosition = [
   0.0, 0.0
   0.0, 0.0
   0.0, 0.0 ]
