@@ -11,13 +11,15 @@ towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lig
 /*
 Platform resources
 */
-platformGeometry = function(type) {
+platformGeometry = function(platformId) {
   var s;
   s = gridSize * cellScale * 0.5;
-  return SceneJS.geometry({
-    type: type,
+  return {
+    type: "geometry",
+    resource: platformId,
+    id: platformId,
     primitive: "triangles",
     positions: [-s, s, 0, s, s, 0, s, -s, 0, -s, -s, 0],
     indices: [0, 1, 2, 0, 2, 3]
-  });
+  };
 };

@@ -15,17 +15,18 @@ towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lig
 Platform resources
 ###
 
-platformGeometry = (type) -> 
+platformGeometry = (platformId) -> 
   s = gridSize * cellScale * 0.5  # scale size of the grid in world space
-  SceneJS.geometry({
-    type: type
-    primitive: "triangles"
-    positions: [
-        -s,  s,  0
-         s,  s,  0
-         s, -s,  0
-        -s, -s,  0
-      ]
-    indices: [0,  1,  2, 0, 2, 3]
-  })
+
+  type:   "geometry"
+  resource: platformId
+  id: platformId
+  primitive: "triangles"
+  positions: [
+      -s,  s,  0
+       s,  s,  0
+       s, -s,  0
+      -s, -s,  0
+    ]
+  indices: [0,  1,  2, 0, 2, 3]
 
