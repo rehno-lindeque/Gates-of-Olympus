@@ -494,6 +494,19 @@ GUICamera.prototype.reconfigure = function() {
 /*
 Background proxies
 */
+/*
+class A
+  constructor: ->
+    @x =
+      a: [
+        b: [
+          c: 1
+        ]
+      ]
+
+  foo: ->
+    alert "test"
+*/
 BackgroundCamera = function(backgroundNode) {
   this.optics = {
     type: "perspective",
@@ -502,7 +515,17 @@ BackgroundCamera = function(backgroundNode) {
     near: 0.10,
     far: 300.0
   };
-  this.node = {
+  this.node = this.createNode(backgroundNode);
+  return this;
+};
+BackgroundCamera.prototype.withNode = function() {
+  return SceneJS.withNode("backgroundCamera");
+};
+BackgroundCamera.prototype.reconfigure = function() {
+  return this.withNode().set("optics", this.optics);
+};
+BackgroundCamera.prototype.createNode = function(backgroundNode) {
+  return {
     type: "camera",
     id: "backgroundCamera",
     optics: this.optics,
@@ -519,13 +542,4 @@ BackgroundCamera = function(backgroundNode) {
       }
     ]
   };
-  return this;
 };
-({
-  withNode: function() {
-    return SceneJS.withNode("backgroundCamera");
-  },
-  reconfigure: function() {
-    return this.withNode().set("optics", this.optics);
-  }
-});
