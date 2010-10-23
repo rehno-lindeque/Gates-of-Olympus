@@ -3,36 +3,31 @@
 Tower scene graph nodes
 ###
 
-towerNode = (index, sid) -> 
+towerNode = (index, sid, instances) -> 
   type: "material"
-  baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+  baseColor:      { r: 0.0, g: 0.0, b: 0.0 }
   specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
   specular:       0.0
   shine:          0.0
   nodes: [
-      type: "texture"
-      layers: [ uri: towerTextureURI[index] ]
-    ]
+    type:   "texture"
+    layers: [ uri: towerTextureURI[index] ]
+    nodes:  instances
+  ]
 
 towerPlacementNode = ->
   type: "translate"
   id: "placementTower" 
   z: platformHeights[1]
   nodes: [
-      type: "selector"
-      id: "placementTowerModel"
-      selection: [0]
-      nodes: [
-          addChildren(towerNode(0, "placementTower"+0),
-            type: "instance"
-            target: towerIds[0]
-          )
-          addChildren(towerNode(1, "placementTower"+1),
-            type: "instance"
-            target: towerIds[1]
-          )
-        ]
+    type: "selector"
+    id: "placementTowerModel"
+    selection: [0]
+    nodes: [
+      towerNode(0, "placementTower"+0, [{ type: "instance", target: towerIds[0] }])
+      towerNode(1, "placementTower"+1, [{ type: "instance", target: towerIds[1] }])
     ]
+  ]
 
 ###
 A proxy for the whole level with platforms and creatures etc.
@@ -42,14 +37,14 @@ class Level
   constructor: () ->
     @creatures = new Creatures
     @towerNodes = [
-        archerTowers:   towerNode(0, "archerTowers0")
-        catapultTowers: towerNode(1, "catapultTowers0")
+        archerTowers:   towerNode(0, "archerTowers0", [])
+        catapultTowers: towerNode(1, "catapultTowers0", [])
       ,
-        archerTowers:   towerNode(0, "archerTowers1")
-        catapultTowers: towerNode(1, "catapultTowers1")
+        archerTowers:   towerNode(0, "archerTowers1", [])
+        catapultTowers: towerNode(1, "catapultTowers1", [])
       ,
-        archerTowers:   towerNode(0, "archerTowers2")
-        catapultTowers: towerNode(1, "catapultTowers2")
+        archerTowers:   towerNode(0, "archerTowers2", [])
+        catapultTowers: towerNode(1, "catapultTowers2", [])
       ]
     
     @towers = new Array (sqrGridSize * levels)

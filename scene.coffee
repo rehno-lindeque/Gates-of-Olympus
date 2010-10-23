@@ -36,7 +36,7 @@ sceneNode =
         stencil:  false
       clearColor: { r: 0.7, g: 0.7, b: 0.7 }
       nodes: [
-          addChildren(gui.lookAtNode, guiCamera.node)
+          graft(gui.lookAtNode, [guiCamera.node])
         ,
           levelLookAt.node
         ,

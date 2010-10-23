@@ -53,7 +53,7 @@ Skybox = function() {
 /*
 Tower scene graph nodes
 */
-towerNode = function(index, sid) {
+towerNode = function(index, sid, instances) {
   return {
     type: "material",
     baseColor: {
@@ -75,7 +75,8 @@ towerNode = function(index, sid) {
           {
             uri: towerTextureURI[index]
           }
-        ]
+        ],
+        nodes: instances
       }
     ]
   };
@@ -91,13 +92,17 @@ towerPlacementNode = function() {
         id: "placementTowerModel",
         selection: [0],
         nodes: [
-          addChildren(towerNode(0, "placementTower" + 0), {
-            type: "instance",
-            target: towerIds[0]
-          }), addChildren(towerNode(1, "placementTower" + 1), {
-            type: "instance",
-            target: towerIds[1]
-          })
+          towerNode(0, "placementTower" + 0, [
+            {
+              type: "instance",
+              target: towerIds[0]
+            }
+          ]), towerNode(1, "placementTower" + 1, [
+            {
+              type: "instance",
+              target: towerIds[1]
+            }
+          ])
         ]
       }
     ]
@@ -111,14 +116,14 @@ Level = function() {
   this.creatures = new Creatures();
   this.towerNodes = [
     {
-      archerTowers: towerNode(0, "archerTowers0"),
-      catapultTowers: towerNode(1, "catapultTowers0")
+      archerTowers: towerNode(0, "archerTowers0", []),
+      catapultTowers: towerNode(1, "catapultTowers0", [])
     }, {
-      archerTowers: towerNode(0, "archerTowers1"),
-      catapultTowers: towerNode(1, "catapultTowers1")
+      archerTowers: towerNode(0, "archerTowers1", []),
+      catapultTowers: towerNode(1, "catapultTowers1", [])
     }, {
-      archerTowers: towerNode(0, "archerTowers2"),
-      catapultTowers: towerNode(1, "catapultTowers2")
+      archerTowers: towerNode(0, "archerTowers2", []),
+      catapultTowers: towerNode(1, "catapultTowers2", [])
     }
   ];
   this.towers = new Array(sqrGridSize * levels);
