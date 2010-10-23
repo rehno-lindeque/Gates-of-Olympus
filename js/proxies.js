@@ -15,9 +15,9 @@ Skybox = function() {
       {
         type: "material",
         baseColor: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
+          r: 0.0,
+          g: 0.0,
+          b: 0.0
         },
         specularColor: {
           r: 1.0,
@@ -57,9 +57,9 @@ towerNode = function(index, sid) {
   return {
     type: "material",
     baseColor: {
-      r: 1.0,
-      g: 1.0,
-      b: 1.0
+      r: 0.0,
+      g: 0.0,
+      b: 0.0
     },
     specularColor: {
       r: 1.0,
@@ -504,19 +504,6 @@ GUICamera.prototype.reconfigure = function() {
 /*
 Background proxies
 */
-/*
-class A
-  constructor: ->
-    @x =
-      a: [
-        b: [
-          c: 1
-        ]
-      ]
-
-  foo: ->
-    alert "test"
-*/
 BackgroundCamera = function(backgroundNode) {
   this.optics = {
     type: "perspective",
@@ -525,17 +512,7 @@ BackgroundCamera = function(backgroundNode) {
     near: 0.10,
     far: 300.0
   };
-  this.node = this.createNode(backgroundNode);
-  return this;
-};
-BackgroundCamera.prototype.withNode = function() {
-  return SceneJS.withNode("backgroundCamera");
-};
-BackgroundCamera.prototype.reconfigure = function() {
-  return this.withNode().set("optics", this.optics);
-};
-BackgroundCamera.prototype.createNode = function(backgroundNode) {
-  return {
+  this.node = {
     type: "camera",
     id: "backgroundCamera",
     optics: this.optics,
@@ -552,4 +529,11 @@ BackgroundCamera.prototype.createNode = function(backgroundNode) {
       }
     ]
   };
+  return this;
+};
+BackgroundCamera.prototype.withNode = function() {
+  return SceneJS.withNode("backgroundCamera");
+};
+BackgroundCamera.prototype.reconfigure = function() {
+  return this.withNode().set("optics", this.optics);
 };

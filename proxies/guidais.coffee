@@ -25,7 +25,7 @@ guiDaisNode = (id, index) ->
               ]
             ,
               type: "texture"
-              layers: [{uri: towerTextureURI[index]}]
+              layers: [{ uri: towerTextureURI[index] }]
               nodes: [
                   type: "instance"
                   target: towerIds[index]
