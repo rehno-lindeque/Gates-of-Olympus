@@ -142,8 +142,8 @@
     canvas.height = window.innerHeight;
     canvasSize[0] = window.innerWidth;
     canvasSize[1] = window.innerHeight;
-    backgroundCamera.reconfigure();
-    levelCamera.reconfigure();
+    backgroundCamera.reconfigure(canvasSize);
+    levelCamera.reconfigure(canvasSize);
     return guiCamera.reconfigure();
   };
   window.render = function() {

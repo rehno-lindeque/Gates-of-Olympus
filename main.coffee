@@ -158,8 +158,8 @@ window.onresize = ->
   canvas.height = window.innerHeight
   canvasSize[0] = window.innerWidth
   canvasSize[1] = window.innerHeight
-  backgroundCamera.reconfigure()
-  levelCamera.reconfigure()
+  backgroundCamera.reconfigure(canvasSize)
+  levelCamera.reconfigure(canvasSize)
   guiCamera.reconfigure()
 
 window.render = ->

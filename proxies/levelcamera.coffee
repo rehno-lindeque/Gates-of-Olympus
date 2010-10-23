@@ -30,5 +30,8 @@ class LevelCamera
   
   withNode: -> SceneJS.withNode "sceneCamera"
   
-  reconfigure: -> @withNode().set("optics", @optics)
+  reconfigure: (canvasSize) -> 
+    @optics.left  = -12.5 * (canvasSize[0] / canvasSize[1])
+    @optics.right =  12.5 * (canvasSize[0] / canvasSize[1])
+    @withNode().set("optics", @optics)
   

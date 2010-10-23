@@ -113,32 +113,32 @@ class Level
     specular:       0.9
     shine:          6.0
     nodes: [
-        type: "translate"
-        z: platformHeights[1]
-        nodes: [ @creatures.node ]
-      ,
-        towerPlacementNode()
-      ,
-        @createPlatformNode(0)
-      ,
-        @createPlatformNode(1)
-      ,
-        @createPlatformNode(2)
-      ]
+      type: "translate"
+      z: platformHeights[1]
+      nodes: [ @creatures.node ]
+    ,
+      towerPlacementNode()
+    ,
+      @createPlatformNode(0)
+    ,
+      @createPlatformNode(1)
+    ,
+      @createPlatformNode(2)
+    ]
   
   # Create the node hierarchy for one platform
   createPlatformNode: (k) ->
     type: "translate"
     z: platformHeights[k]
     nodes: [
-        type: "scale"
-        x: 0.78 + (k * 0.12)
-        y: 0.78 + (k * 0.12)
-        z: 0.78 + (k * 0.12)
-        nodes: [
-            platformGeometry("level" + k)
-            @towerNodes[k].archerTowers
-            @towerNodes[k].catapultTowers
-          ]
-      ]
+      type: "scale"
+      x: 0.78 + (k * 0.12)
+      y: 0.78 + (k * 0.12)
+      z: 0.78 + (k * 0.12)
+      nodes: [
+          platformGeometry("level" + k)
+          @towerNodes[k].archerTowers
+          @towerNodes[k].catapultTowers
+        ]
+    ]
 

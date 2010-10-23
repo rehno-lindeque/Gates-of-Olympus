@@ -278,7 +278,9 @@ LevelCamera = function(levelNode) {
 LevelCamera.prototype.withNode = function() {
   return SceneJS.withNode("sceneCamera");
 };
-LevelCamera.prototype.reconfigure = function() {
+LevelCamera.prototype.reconfigure = function(canvasSize) {
+  this.optics.left = -12.5 * (canvasSize[0] / canvasSize[1]);
+  this.optics.right = 12.5 * (canvasSize[0] / canvasSize[1]);
   return this.withNode().set("optics", this.optics);
 };var LevelLookAt;
 /*
@@ -539,6 +541,7 @@ BackgroundCamera = function(backgroundNode) {
 BackgroundCamera.prototype.withNode = function() {
   return SceneJS.withNode("backgroundCamera");
 };
-BackgroundCamera.prototype.reconfigure = function() {
+BackgroundCamera.prototype.reconfigure = function(canvasSize) {
+  this.optics.aspect = canvasSize[0] / canvasSize[1];
   return this.withNode().set("optics", this.optics);
 };

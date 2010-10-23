@@ -25,5 +25,7 @@ class BackgroundCamera
   
   withNode: -> SceneJS.withNode "backgroundCamera"
   
-  reconfigure: -> @withNode().set("optics", @optics)
+  reconfigure: (canvasSize) -> 
+    @optics.aspect = canvasSize[0] / canvasSize[1]
+    @withNode().set("optics", @optics)
   
