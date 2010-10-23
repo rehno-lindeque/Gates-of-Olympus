@@ -3,7 +3,7 @@
 Tower scene graph nodes
 ###
 
-towerNode = (index, sid, instances) -> 
+towerNode = (index, id, instances) -> 
   type: "material"
   baseColor:      { r: 0.0, g: 0.0, b: 0.0 }
   specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
@@ -11,6 +11,7 @@ towerNode = (index, sid, instances) ->
   shine:          0.0
   nodes: [
     type:   "texture"
+    id:     id
     layers: [ uri: towerTextureURI[index] ]
     nodes:  instances
   ]
@@ -71,12 +72,13 @@ class Level
       cx = towerPlacement.cell.x
       cy = towerPlacement.cell.y
       cz = towerPlacement.level
-      parentNode.addNode(
-        SceneJS.translate(
-          {x: cellScale * (cx - gridSize / 2) + cellScale * 0.5, y: cellScale * (cy - gridSize / 2) + cellScale * 0.5}
-          node
-        ) # translate
-      ) # addNode
+      SceneJS.withNode(parentNode.nodes[0].id)
+        .add("nodes", [
+          type: "translate"
+          x: cellScale * (cx - gridSize / 2) + cellScale * 0.5
+          y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+          nodes: [ node ]
+        ])
     null
   
   createTowers: (towers) ->
@@ -87,17 +89,20 @@ class Level
           if t != -1
             switch t
               when 0 
-                node = SceneJS.instance  { target: towerIds[0] }
                 parentNode = @towerNodes[cz].archerTowers
               when 1 
-                node = SceneJS.instance  { target: towerIds[1] }
                 parentNode = @towerNodes[cz].catapultTowers
-            parentNode.addNode(
-              SceneJS.translate(
-                {x: cellScale * (cx - gridSize / 2) + cellScale * 0.5, y: cellScale * (cy - gridSize / 2) + cellScale * 0.5}
-                node
-              ) # translate
-            ) # addNode
+            
+            SceneJS.withNode(parentNode.nodes[0].id)
+              .add("nodes", [
+                type: "translate"
+                x: cellScale * (cx - gridSize / 2) + cellScale * 0.5
+                y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+                nodes: [
+                  type: "instance"
+                  target: towerIds[t]
+                ]
+              ])
     null
   
   # Update the game logic related to the level

@@ -53,7 +53,7 @@ Skybox = function() {
 /*
 Tower scene graph nodes
 */
-towerNode = function(index, sid, instances) {
+towerNode = function(index, id, instances) {
   return {
     type: "material",
     baseColor: {
@@ -71,6 +71,7 @@ towerNode = function(index, sid, instances) {
     nodes: [
       {
         type: "texture",
+        id: id,
         layers: [
           {
             uri: towerTextureURI[index]
@@ -157,15 +158,19 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
     cx = towerPlacement.cell.x;
     cy = towerPlacement.cell.y;
     cz = towerPlacement.level;
-    parentNode.addNode(SceneJS.translate({
-      x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-      y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-    }, node));
+    SceneJS.withNode(parentNode.nodes[0].id).add("nodes", [
+      {
+        type: "translate",
+        x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+        y: cellScale * (cy - gridSize / 2) + cellScale * 0.5,
+        nodes: [node]
+      }
+    ]);
   }
   return null;
 };
 Level.prototype.createTowers = function(towers) {
-  var cx, cy, cz, node, parentNode, t;
+  var cx, cy, cz, parentNode, t;
   for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
     for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
       for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
@@ -173,22 +178,25 @@ Level.prototype.createTowers = function(towers) {
         if (t !== -1) {
           switch (t) {
             case 0:
-              node = SceneJS.instance({
-                target: towerIds[0]
-              });
               parentNode = this.towerNodes[cz].archerTowers;
               break;
             case 1:
-              node = SceneJS.instance({
-                target: towerIds[1]
-              });
               parentNode = this.towerNodes[cz].catapultTowers;
               break;
           }
-          parentNode.addNode(SceneJS.translate({
-            x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-            y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-          }, node));
+          SceneJS.withNode(parentNode.nodes[0].id).add("nodes", [
+            {
+              type: "translate",
+              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
+              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5,
+              nodes: [
+                {
+                  type: "instance",
+                  target: towerIds[t]
+                }
+              ]
+            }
+          ]);
         }
       }
     }
