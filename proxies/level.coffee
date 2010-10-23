@@ -132,9 +132,9 @@ class Level
     z: platformHeights[k]
     nodes: [
         type: "scale"
-        x: 0.78
-        y: 0.78
-        z: 0.78
+        x: 0.78 + (k * 0.12)
+        y: 0.78 + (k * 0.12)
+        z: 0.78 + (k * 0.12)
         nodes: [
             platformGeometry("level" + k)
             @towerNodes[k].archerTowers
