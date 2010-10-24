@@ -25,7 +25,14 @@ class LevelCamera
           specular:  false
           dir:       { x: 1.0, y: 1.0, z: -1.0 }
         ,
-          levelNode
+          type: "matrix"
+          elements: [
+            1.0, 0.0, 0.0, 0.0
+            0.0, 1.0, 0.0, 0.0
+            0.0, 0.0, 1.0, 0.02
+            0.0, 0.0, 0.0, 1.0
+          ]
+          nodes: [ levelNode ]
         ]
   
   withNode: -> SceneJS.withNode "sceneCamera"

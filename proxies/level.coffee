@@ -136,14 +136,8 @@ class Level
     type: "translate"
     z: platformHeights[k]
     nodes: [
-      type: "scale"
-      x: 0.78 + (k * 0.12)
-      y: 0.78 + (k * 0.12)
-      z: 0.78 + (k * 0.12)
-      nodes: [
-          platformGeometry("level" + k)
-          @towerNodes[k].archerTowers
-          @towerNodes[k].catapultTowers
-        ]
+      platformGeometry("level" + k)
+      @towerNodes[k].archerTowers
+      @towerNodes[k].catapultTowers
     ]
 

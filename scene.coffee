@@ -36,12 +36,12 @@ sceneNode =
         stencil:  false
       clearColor: { r: 0.7, g: 0.7, b: 0.7 }
       nodes: [
-          graft(gui.lookAtNode, [guiCamera.node])
-        ,
-          levelLookAt.node
-        ,
-          levelLookAt.backgroundLookAtNode
-        ]
+        graft(gui.lookAtNode, [guiCamera.node])
+      ,
+        levelLookAt.node
+      ,
+        levelLookAt.backgroundLookAtNode
+      ]
     ]
 
 gameScene = SceneJS.createNode(sceneNode)

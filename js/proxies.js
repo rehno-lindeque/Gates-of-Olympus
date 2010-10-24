@@ -234,15 +234,7 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: [
-      {
-        type: "scale",
-        x: 0.78 + (k * 0.12),
-        y: 0.78 + (k * 0.12),
-        z: 0.78 + (k * 0.12),
-        nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers]
-      }
-    ]
+    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers]
   };
 };var LevelCamera;
 /*
@@ -278,7 +270,11 @@ LevelCamera = function(levelNode) {
           y: 1.0,
           z: -1.0
         }
-      }, levelNode
+      }, {
+        type: "matrix",
+        elements: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.02, 0.0, 0.0, 0.0, 1.0],
+        nodes: [levelNode]
+      }
     ]
   };
   return this;
@@ -338,11 +334,15 @@ LevelLookAt = function(cameraNode, backgroundCameraNode) {
     nodes: [backgroundCameraNode]
   };
   this.node = {
-    type: "translate",
-    x: gameSceneOffset[0],
-    y: gameSceneOffset[1],
-    z: gameSceneOffset[2],
-    nodes: [this.lookAtNode]
+    nodes: [
+      {
+        type: "translate",
+        x: gameSceneOffset[0],
+        y: gameSceneOffset[1],
+        z: gameSceneOffset[2],
+        nodes: [this.lookAtNode]
+      }
+    ]
   };
   return this;
 };

@@ -21,9 +21,11 @@ class LevelLookAt
       up:   { x: 0.0, y: 0.0, z: 1.0 }
       nodes: [ backgroundCameraNode ]
     @node = 
-      type: "translate"
-      x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2]
-      nodes: [ @lookAtNode ]
+      nodes: [
+        type: "translate"
+        x: gameSceneOffset[0], y: gameSceneOffset[1], z: gameSceneOffset[2]
+        nodes: [ @lookAtNode ]
+      ]
   
   withSceneLookAt: -> SceneJS.withNode "SceneLookAt"
   withBackgroundLookAt: -> SceneJS.withNode "BackgroundLookAt"
