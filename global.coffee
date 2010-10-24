@@ -55,16 +55,25 @@ platformHeights = [
 platformScaleFactor = 0.02
 
 platformScales = [
-  1.0 + platformScaleFactor * platformHeights[0]
-  1.0 + platformScaleFactor * platformHeights[1]
-  1.0 + platformScaleFactor * platformHeights[2]
+  1.0/(1.0 + platformScaleFactor * platformHeights[0])
+  1.0/(1.0 + platformScaleFactor * platformHeights[1])
+  1.0/(1.0 + platformScaleFactor * platformHeights[2])
+]
+
+platformScaleHeights = [
+  platformHeights[0] * platformScales[0]
+  platformHeights[1] * platformScales[1]
+  platformHeights[2] * platformScales[2]
 ]
   
-platformLengths = [
+platformScaleLengths = [
   platformScales[0] * 0.5 * cellScale * gridSize
   platformScales[1] * 0.5 * cellScale * gridSize
   platformScales[2] * 0.5 * cellScale * gridSize 
 ]
+
+alert platformScaleHeights
+alert platformScaleLengths
 
 # Towers
 numTowerTypes = 3

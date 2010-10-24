@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformLengths, platformScaleFactor, platformScales, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -47,8 +47,11 @@ cellScale = 0.9;
 platformHeightOffset = 1.75;
 platformHeights = [platformHeightOffset + cellScale * 12, platformHeightOffset, platformHeightOffset - cellScale * 10];
 platformScaleFactor = 0.02;
-platformScales = [1.0 + platformScaleFactor * platformHeights[0], 1.0 + platformScaleFactor * platformHeights[1], 1.0 + platformScaleFactor * platformHeights[2]];
-platformLengths = [platformScales[0] * 0.5 * cellScale * gridSize, platformScales[1] * 0.5 * cellScale * gridSize, platformScales[2] * 0.5 * cellScale * gridSize];
+platformScales = [1.0 / (1.0 + platformScaleFactor * platformHeights[0]), 1.0 / (1.0 + platformScaleFactor * platformHeights[1]), 1.0 / (1.0 + platformScaleFactor * platformHeights[2])];
+platformScaleHeights = [platformHeights[0] * platformScales[0], platformHeights[1] * platformScales[1], platformHeights[2] * platformScales[2]];
+platformScaleLengths = [platformScales[0] * 0.5 * cellScale * gridSize, platformScales[1] * 0.5 * cellScale * gridSize, platformScales[2] * 0.5 * cellScale * gridSize];
+alert(platformScaleHeights);
+alert(platformScaleLengths);
 numTowerTypes = 3;
 guiDaisRotVelocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 guiDaisRotPosition = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];

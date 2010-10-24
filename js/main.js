@@ -43,7 +43,7 @@
     };
   };
   updateTowerPlacement = function() {
-    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, sceneLookAt, screenX, screenY, xAxis, yAxis, zAxis;
+    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayDirection, rayOrigin, sceneLookAt, screenX, screenY, xAxis, yAxis, zAxis;
     mouseX = mouseLastX;
     mouseY = mouseLastY;
     canvasElement = document.getElementById("gameCanvas");
@@ -67,18 +67,19 @@
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, gameSceneOffset[0]));
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, gameSceneOffset[1]));
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(zAxis, gameSceneOffset[2]));
-    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
-    if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
+    rayDirection = zAxis;
+    intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[0]);
+    if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[0] && Math.abs(intersection[1]) < platformScaleLengths[0]) {
       towerPlacement.level = 0;
       towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
     } else {
-      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
-      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
+      intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[1]);
+      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[1] && Math.abs(intersection[1]) < platformScaleLengths[1]) {
         towerPlacement.level = 1;
         towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
       } else {
-        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
-        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
+        intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[2]);
+        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[2] && Math.abs(intersection[1]) < platformScaleLengths[2]) {
           towerPlacement.level = 2;
           towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
         } else {

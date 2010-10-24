@@ -56,7 +56,7 @@ calcTowerPlacement = (level, intersection) ->
   y: Math.floor(intersection[1] / (cellScale * platformScales[level]) + gridHalfSize)
 
 # Update the placement of the platform according to the mouse coordinates and tower selection
-updateTowerPlacement = () ->
+updateTowerPlacement = ->
   mouseX = mouseLastX
   mouseY = mouseLastY
   canvasElement = document.getElementById("gameCanvas");
@@ -82,23 +82,25 @@ updateTowerPlacement = () ->
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(xAxis, gameSceneOffset[0]))
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(yAxis, gameSceneOffset[1]))
   rayOrigin  = addVec3(rayOrigin, mulVec3Scalar(zAxis, gameSceneOffset[2]))
-
+  
+  rayDirection = zAxis
+  
   # Find the intersection with one of the platforms
-  intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0])
-  #alert intersection + " [" + rayOrigin + "] [" + zAxis + "] " + platformHeights[0]
-  if intersection? and Math.abs(intersection[0]) < platformLengths[0] and Math.abs(intersection[1]) < platformLengths[0]
+  intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[0])
+  #alert intersection + " [" + rayOrigin + "] [" + rayDirection + "] " + platformHeights[0]
+  if intersection? and Math.abs(intersection[0]) < platformScaleLengths[0] and Math.abs(intersection[1]) < platformScaleLengths[0]
     #alert "Platform 1 intersected (" + intersection[0] + "," + intersection[1] + ")"
     towerPlacement.level  = 0
     towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection)
   else 
-    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1])
-    if intersection? and Math.abs(intersection[0]) < platformLengths[1] and Math.abs(intersection[1]) < platformLengths[1]
+    intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[1])
+    if intersection? and Math.abs(intersection[0]) < platformScaleLengths[1] and Math.abs(intersection[1]) < platformScaleLengths[1]
       #alert "Platform 2 intersected (" + intersection[0] + "," + intersection[1] + ")"
       towerPlacement.level  = 1
       towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection)
     else
-      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2])
-      if intersection? and Math.abs(intersection[0]) < platformLengths[2] and Math.abs(intersection[1]) < platformLengths[2]
+      intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[2])
+      if intersection? and Math.abs(intersection[0]) < platformScaleLengths[2] and Math.abs(intersection[1]) < platformScaleLengths[2]
         #alert "Platform 3 intersected (" + intersection[0] + "," + intersection[1] + ")"
         towerPlacement.level  = 2
         towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection)
