@@ -13,7 +13,7 @@ DaisClouds = SceneJS.createNodeType("dais-clouds");
 DaisClouds.prototype._init = function(params) {
   return null;
 };
-SceneJS.CloudDome.prototype.renderClouds = function() {
+DaisClouds.prototype.renderClouds = function() {
   var gl, saveState;
   gl = canvas.context;
   saveState = {
@@ -31,7 +31,7 @@ SceneJS.CloudDome.prototype.renderClouds = function() {
   }
   return null;
 };
-SceneJS.CloudDome.prototype._render = function(traversalContext) {
+DaisClouds.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
     if (!vertexBuffer) {

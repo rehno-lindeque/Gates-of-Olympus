@@ -23,9 +23,9 @@ DaisClouds.prototype._init = (params) ->
 #  @_setDirty()
 #  this
 
-#SceneJS.CloudDome.prototype.getRadius = -> @radius
+#DaisClouds.prototype.getRadius = -> @radius
 
-SceneJS.CloudDome.prototype.renderClouds = ->
+DaisClouds.prototype.renderClouds = ->
   gl = canvas.context
   
   # Change gl state
@@ -49,7 +49,7 @@ SceneJS.CloudDome.prototype.renderClouds = ->
   #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
   null
 
-SceneJS.CloudDome.prototype._render = (traversalContext) ->
+DaisClouds.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
     if not vertexBuffer then createResources()
