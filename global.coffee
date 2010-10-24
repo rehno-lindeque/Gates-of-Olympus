@@ -72,9 +72,6 @@ platformScaleLengths = [
   platformScales[2] * 0.5 * cellScale * gridSize 
 ]
 
-alert platformScaleHeights
-alert platformScaleLengths
-
 # Towers
 numTowerTypes = 3
 
