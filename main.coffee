@@ -163,7 +163,7 @@ window.onresize = ->
   guiCamera.reconfigure()
 
 window.render = ->
-  # Animate the gui diases
+  # Animate the gui daises
   for c in [0...numTowerTypes]
     guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1
     guiDaisRotVelocity[c] -= 0.001 if guiDaisRotPosition[c] > 0

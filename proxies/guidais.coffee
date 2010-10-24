@@ -1,5 +1,5 @@
 ###
-A proxy for dias tower selection gui element
+A proxy for dais tower selection gui element
 ###
 
 guiDaisNode = (id, index) ->

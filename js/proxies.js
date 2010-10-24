@@ -364,7 +364,7 @@ LevelLookAt.prototype.update = function() {
   return this.withBackgroundLookAt().set("eye", eyeCfg);
 };var GUIDais, guiDaisNode;
 /*
-A proxy for dias tower selection gui element
+A proxy for dais tower selection gui element
 */
 guiDaisNode = function(id, index) {
   return {
