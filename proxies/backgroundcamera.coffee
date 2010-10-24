@@ -15,7 +15,7 @@ class BackgroundCamera
       id:     "backgroundCamera"
       optics: @optics
       nodes: [
-        type: "cloudDome"
+        type: "cloud-dome"
         radius:  100.0
         nodes: [ 
           type: "stationary"

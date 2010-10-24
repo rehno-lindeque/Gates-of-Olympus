@@ -533,7 +533,7 @@ BackgroundCamera = function(backgroundNode) {
     optics: this.optics,
     nodes: [
       {
-        type: "cloudDome",
+        type: "cloud-dome",
         radius: 100.0,
         nodes: [
           {
