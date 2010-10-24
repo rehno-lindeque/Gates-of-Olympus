@@ -81,8 +81,18 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var c, creatures;
-  c = 0;
+  var counter, creatures;
+  counter = {
+    c: 0
+  };
   creatures = this.creatures;
+  SceneJS.withNode("creatures").eachNode(function() {
+    this.set({
+      x: creatures[c].pos[0],
+      y: creatures[c].pos[1],
+      z: creatures[c].pos[2]
+    });
+    return this.node(0).set("angle", creatures[c].rot);
+  }, {});
   return null;
 };
