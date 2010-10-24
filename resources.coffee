@@ -10,7 +10,6 @@ Tower resources
 towerIds = ["ArcherTower", "CatapultTower", "LightningTower"]
 towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"]
 
-
 ###
 Platform resources
 ###

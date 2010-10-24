@@ -91,8 +91,8 @@
     }
     if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
       SceneJS.withNode("placementTower").set({
-        x: intersection[0],
-        y: intersection[1],
+        x: (towerPlacement.cell.x - gridSize * 0.5 + 0.5) * cellScale,
+        y: (towerPlacement.cell.y - gridSize * 0.5 + 0.5) * cellScale,
         z: platformHeights[towerPlacement.level]
       }).node("placementTowerModel").set("selection", [currentTowerSelection]);
     } else {
