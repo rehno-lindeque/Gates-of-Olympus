@@ -1,5 +1,4 @@
 #!/bin/sh
-coffee --no-wrap -c -o js scenejstopdownperspective.coffee
 coffee --no-wrap -c -o js scenejsclouddome.coffee
 coffee --no-wrap -c -o js global.coffee
 coffee --no-wrap -c -o js common.coffee
