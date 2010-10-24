@@ -81,10 +81,8 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var counter, creatures;
-  counter = {
-    c: 0
-  };
+  var c, creatures;
+  c = 0;
   creatures = this.creatures;
   SceneJS.withNode("creatures").eachNode(function() {
     this.set({
