@@ -113,7 +113,7 @@ towerPlacementNode = function() {
 A proxy for the whole level with platforms and creatures etc.
 */
 Level = function() {
-  var _ref, c;
+  this.towers = new Towers();
   this.creatures = new Creatures();
   this.towerNodes = [
     {
@@ -127,11 +127,6 @@ Level = function() {
       catapultTowers: towerNode(1, "catapultTowers2", [])
     }
   ];
-  this.towers = new Array(sqrGridSize * levels);
-  _ref = (sqrGridSize * levels);
-  for (c = 0; (0 <= _ref ? c < _ref : c > _ref); (0 <= _ref ? c += 1 : c -= 1)) {
-    this.towers[c] = -1;
-  }
   this.node = this.createNode();
   return this;
 };
@@ -148,8 +143,8 @@ Level.prototype.getTowerRoot = function(level, towerType) {
 Level.prototype.addTower = function(towerPlacement, towerType) {
   var cx, cy, cz, index, node, parentNode;
   index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
-  if (this.towers[index] === -1) {
-    this.towers[index] = towerType;
+  if (this.towers.towers[index] === -1) {
+    this.towers.towers[index] = towerType;
     parentNode = this.getTowerRoot(towerPlacement.level, towerType);
     node = {
       type: "instance",
@@ -166,40 +161,6 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
         nodes: [node]
       }
     ]);
-  }
-  return null;
-};
-Level.prototype.createTowers = function(towers) {
-  var cx, cy, cz, parentNode, t;
-  for (cz = 0; (0 <= levels ? cz < levels : cz > levels); (0 <= levels ? cz += 1 : cz -= 1)) {
-    for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
-      for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
-        t = towers[cz * sqrGridSize + cy * gridSize + cx];
-        if (t !== -1) {
-          switch (t) {
-            case 0:
-              parentNode = this.towerNodes[cz].archerTowers;
-              break;
-            case 1:
-              parentNode = this.towerNodes[cz].catapultTowers;
-              break;
-          }
-          SceneJS.withNode(parentNode.nodes[0].id).add("nodes", [
-            {
-              type: "translate",
-              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5,
-              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5,
-              nodes: [
-                {
-                  type: "instance",
-                  target: towerIds[t]
-                }
-              ]
-            }
-          ]);
-        }
-      }
-    }
   }
   return null;
 };

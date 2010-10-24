@@ -18,7 +18,6 @@
   Game logic
   */
   currentTowerSelection = -1;
-  level.createTowers(level.towers);
   level.creatures.addCreature(Scorpion);
   /*
   User input

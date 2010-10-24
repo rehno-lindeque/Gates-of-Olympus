@@ -22,7 +22,8 @@ Game logic
 # Logical inputs
 currentTowerSelection = -1
 
-level.createTowers level.towers
+# Towers
+#level.createTowers()
 
 # Creatures
 level.creatures.addCreature(Scorpion)

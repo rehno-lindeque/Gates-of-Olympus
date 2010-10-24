@@ -4,6 +4,7 @@ coffee --no-wrap -c -o js scenejsdaisclouds.coffee
 coffee --no-wrap -c -o js global.coffee
 coffee --no-wrap -c -o js common.coffee
 coffee --no-wrap -c -o js resources.coffee
+coffee --no-wrap -c -o js towers.coffee
 coffee --no-wrap -c -o js creatures.coffee
 coffee --no-wrap -c -o js scene.coffee
 coffee --no-wrap -c -o js timeline.coffee

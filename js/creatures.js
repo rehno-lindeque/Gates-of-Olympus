@@ -35,8 +35,8 @@ Collection of all creatures
 Creatures = function() {
   this.creatures = new Array();
   this.geometries = new Array();
-  this.geometries[0] = BlenderExport.Scorpion();
-  this.node = SceneJS.createNode({
+  this.geometries[0] = SceneJS.createNode(BlenderExport.Scorpion);
+  this.node = {
     type: "material",
     id: "creatures",
     baseColor: {
@@ -51,7 +51,7 @@ Creatures = function() {
     },
     specular: 0.0,
     shine: 0.0
-  });
+  };
   return this;
 };
 Creatures.prototype.addCreature = function(CreaturePrototype) {

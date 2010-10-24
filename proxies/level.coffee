@@ -36,6 +36,7 @@ A proxy for the whole level with platforms and creatures etc.
 
 class Level
   constructor: () ->
+    @towers = new Towers
     @creatures = new Creatures
     @towerNodes = [
         archerTowers:   towerNode(0, "archerTowers0", [])
@@ -47,11 +48,6 @@ class Level
         archerTowers:   towerNode(0, "archerTowers2", [])
         catapultTowers: towerNode(1, "catapultTowers2", [])
       ]
-    
-    @towers = new Array (sqrGridSize * levels)
-    for c in [0...(sqrGridSize * levels)]
-      @towers[c] = -1
-    
     @node = @createNode()
   
   # Get the root node for placing towers
@@ -65,8 +61,8 @@ class Level
   addTower: (towerPlacement, towerType) ->
     index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x
     #alert towerPlacement.cell.x + " " + towerPlacement.cell.y
-    if @towers[index] == -1
-      @towers[index] = towerType
+    if @towers.towers[index] == -1
+      @towers.towers[index] = towerType
       parentNode = @getTowerRoot(towerPlacement.level, towerType)
       node = { type: "instance", target: towerIds[towerType] }
       cx = towerPlacement.cell.x
@@ -81,29 +77,29 @@ class Level
         ])
     null
   
-  createTowers: (towers) ->
-    for cz in [0...levels]
-      for cy in [0...gridSize]
-        for cx in [0...gridSize]
-          t = towers[cz * sqrGridSize + cy * gridSize + cx]
-          if t != -1
-            switch t
-              when 0 
-                parentNode = @towerNodes[cz].archerTowers
-              when 1 
-                parentNode = @towerNodes[cz].catapultTowers
-            
-            SceneJS.withNode(parentNode.nodes[0].id)
-              .add("nodes", [
-                type: "translate"
-                x: cellScale * (cx - gridSize / 2) + cellScale * 0.5
-                y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
-                nodes: [
-                  type: "instance"
-                  target: towerIds[t]
-                ]
-              ])
-    null
+  #createTowers: ->
+  #  for cz in [0...levels]
+  #    for cy in [0...gridSize]
+  #      for cx in [0...gridSize]
+  #        t = @towers.towers[cz * sqrGridSize + cy * gridSize + cx]
+  #        if t != -1
+  #          switch t
+  #            when 0 
+  #              parentNode = @towerNodes[cz].archerTowers
+  #            when 1 
+  #              parentNode = @towerNodes[cz].catapultTowers
+  #          
+  #          SceneJS.withNode(parentNode.nodes[0].id)
+  #            .add("nodes", [
+  #              type: "translate"
+  #              x: cellScale * (cx - gridSize / 2) + cellScale * 0.5
+  #              y: cellScale * (cy - gridSize / 2) + cellScale * 0.5
+  #              nodes: [
+  #                type: "instance"
+  #                target: towerIds[t]
+  #              ]
+  #            ])
+  #  null
   
   # Update the game logic related to the level
   update: ->

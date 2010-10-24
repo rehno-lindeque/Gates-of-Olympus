@@ -25,24 +25,20 @@ sceneNode =
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
   nodes: [
-      BlenderExport.ArcherTower
+    type: "renderer"
+    clear:
+      depth:    true
+      color:    true
+      stencil:  false
+    clearColor: { r: 0.7, g: 0.7, b: 0.7 }
+    nodes: [
+      graft(gui.lookAtNode, [guiCamera.node])
     ,
-      BlenderExport.CatapultTower
+      levelLookAt.node
     ,
-      type: "renderer"
-      clear:
-        depth:    true
-        color:    true
-        stencil:  false
-      clearColor: { r: 0.7, g: 0.7, b: 0.7 }
-      nodes: [
-        graft(gui.lookAtNode, [guiCamera.node])
-      ,
-        levelLookAt.node
-      ,
-        levelLookAt.backgroundLookAtNode
-      ]
+      levelLookAt.backgroundLookAtNode
     ]
+  ]
 
 gameScene = SceneJS.createNode(sceneNode)
 

@@ -29,16 +29,14 @@ class Creatures
   constructor: () ->
     @creatures = new Array()
     @geometries = new Array()
-    @geometries[0] = BlenderExport.Scorpion()
+    @geometries[0] = SceneJS.createNode BlenderExport.Scorpion
     @node = 
-      SceneJS.createNode(
-        type:           "material"
-        id:             "creatures"
-        baseColor:      { r: 0.3, g: 0.1, b: 0.1 }
-        specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
-        specular:       0.0
-        shine:          0.0
-      )
+      type:           "material"
+      id:             "creatures"
+      baseColor:      { r: 0.3, g: 0.1, b: 0.1 }
+      specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
+      specular:       0.0
+      shine:          0.0
   
   addCreature: (CreaturePrototype) ->
     creature = new CreaturePrototype
