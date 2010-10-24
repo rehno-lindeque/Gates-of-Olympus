@@ -272,7 +272,7 @@ LevelCamera = function(levelNode) {
         }
       }, {
         type: "matrix",
-        elements: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.02, 0.0, 0.0, 0.0, 1.0],
+        elements: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, platformScaleFactor, 0.0, 0.0, 0.0, 1.0],
         nodes: [levelNode]
       }
     ]

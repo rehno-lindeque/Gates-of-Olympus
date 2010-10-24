@@ -47,16 +47,24 @@ cellScale = 0.9                 # size of a grid cell in world space
 
 platformHeightOffset = 1.75
 platformHeights = [
-    platformHeightOffset + cellScale*12
-    platformHeightOffset
-    platformHeightOffset - cellScale*10]
+  platformHeightOffset + cellScale*12
+  platformHeightOffset
+  platformHeightOffset - cellScale*10
+]
 
-platformScales = [0.78, 1.00, 1.22]
+platformScaleFactor = 0.02
+
+platformScales = [
+  1.0 + platformScaleFactor * platformHeights[0]
+  1.0 + platformScaleFactor * platformHeights[1]
+  1.0 + platformScaleFactor * platformHeights[2]
+]
   
 platformLengths = [
-    platformScales[0] * 0.5 * cellScale * gridSize
-    platformScales[1] * 0.5 * cellScale * gridSize
-    platformScales[2] * 0.5 * cellScale * gridSize ]
+  platformScales[0] * 0.5 * cellScale * gridSize
+  platformScales[1] * 0.5 * cellScale * gridSize
+  platformScales[2] * 0.5 * cellScale * gridSize 
+]
 
 # Towers
 numTowerTypes = 3
