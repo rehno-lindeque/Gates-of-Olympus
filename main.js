@@ -15,6 +15,20 @@
   canvas.height = window.innerHeight;
   gameScene.render();
   /*
+  Sound
+  */
+  /*
+  marchSound = document.getElementById('march')
+  marchSoundListener = () ->
+  	this.currentTime = 0
+  	this.pause()
+  	null
+  	this.play()
+  	null
+
+  marchSound.addEventListener('ended', marchSoundListener, false)
+  */
+  /*
   Game logic
   */
   currentTowerSelection = -1;
