@@ -45,28 +45,43 @@ sqrGridSize = square(gridSize)  # total number of grid cells
 levels = 3                      # number of platforms
 cellScale = 0.9                 # size of a grid cell in world space
 
+platformHeightOffset = 1.75
 platformHeights = [
-    cellScale*10 + 1.15
-    1.15
-    cellScale*-11 + 1.15 ]
+  platformHeightOffset + cellScale*12
+  platformHeightOffset
+  platformHeightOffset - cellScale*10
+]
 
-platformScales = [0.78, 1.00, 1.22]
+platformScaleFactor = 0.02
+
+platformScales = [
+  1.0/(1.0 + platformScaleFactor * platformHeights[0])
+  1.0/(1.0 + platformScaleFactor * platformHeights[1])
+  1.0/(1.0 + platformScaleFactor * platformHeights[2])
+]
+
+platformScaleHeights = [
+  platformHeights[0] * platformScales[0]
+  platformHeights[1] * platformScales[1]
+  platformHeights[2] * platformScales[2]
+]
   
-platformLengths = [
-    platformScales[0] * 0.5 * cellScale * gridSize
-    platformScales[1] * 0.5 * cellScale * gridSize
-    platformScales[2] * 0.5 * cellScale * gridSize ]
+platformScaleLengths = [
+  platformScales[0] * 0.5 * cellScale * gridSize
+  platformScales[1] * 0.5 * cellScale * gridSize
+  platformScales[2] * 0.5 * cellScale * gridSize 
+]
 
 # Towers
 numTowerTypes = 3
 
 # State
-guiDiasRotVelocity = [
+guiDaisRotVelocity = [
   0.0, 0.0
   0.0, 0.0
   0.0, 0.0 ]
 
-guiDiasRotPosition = [
+guiDaisRotPosition = [
   0.0, 0.0
   0.0, 0.0
   0.0, 0.0 ]

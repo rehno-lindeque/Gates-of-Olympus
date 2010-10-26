@@ -10,7 +10,7 @@
   /*
   Initialization and rendering loop
   */
-  canvas = document.getElementById(gameScene.getCanvasId());
+  canvas = document.getElementById(sceneNode.canvasId);
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   gameScene.render();
@@ -32,7 +32,6 @@
   Game logic
   */
   currentTowerSelection = -1;
-  level.createTowers(level.towers);
   level.creatures.addCreature(Scorpion);
   /*
   User input
@@ -57,15 +56,16 @@
     };
   };
   updateTowerPlacement = function() {
-    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayOrigin, screenX, screenY, xAxis, yAxis, zAxis;
+    var canvasElement, intersection, lookAtEye, lookAtLook, lookAtUp, mouseX, mouseY, rayDirection, rayOrigin, sceneLookAt, screenX, screenY, xAxis, yAxis, zAxis;
     mouseX = mouseLastX;
     mouseY = mouseLastY;
     canvasElement = document.getElementById("gameCanvas");
     mouseX -= canvasElement.offsetLeft;
     mouseY -= canvasElement.offsetTop;
-    lookAtEye = levelLookAt.lookAtNode.getEye();
-    lookAtUp = levelLookAt.lookAtNode.getUp();
-    lookAtLook = levelLookAt.lookAtNode.getLook();
+    sceneLookAt = levelLookAt.withSceneLookAt();
+    lookAtEye = sceneLookAt.get("eye");
+    lookAtUp = sceneLookAt.get("up");
+    lookAtLook = sceneLookAt.get("look");
     rayOrigin = [lookAtEye.x, lookAtEye.y, lookAtEye.z];
     yAxis = [lookAtUp.x, lookAtUp.y, lookAtUp.z];
     zAxis = [lookAtLook.x, lookAtLook.y, lookAtLook.z];
@@ -75,23 +75,24 @@
     yAxis = cross3Vec3(xAxis, zAxis);
     screenX = mouseX / canvasSize[0];
     screenY = 1.0 - mouseY / canvasSize[1];
-    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, levelCamera.config.optics.left, levelCamera.config.optics.right)));
-    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, levelCamera.config.optics.bottom, levelCamera.config.optics.top)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, lerp(screenX, levelCamera.optics.left, levelCamera.optics.right)));
+    rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, lerp(screenY, levelCamera.optics.bottom, levelCamera.optics.top)));
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(xAxis, gameSceneOffset[0]));
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(yAxis, gameSceneOffset[1]));
     rayOrigin = addVec3(rayOrigin, mulVec3Scalar(zAxis, gameSceneOffset[2]));
-    intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[0]);
-    if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[0] && Math.abs(intersection[1]) < platformLengths[0]) {
+    rayDirection = zAxis;
+    intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[0]);
+    if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[0] && Math.abs(intersection[1]) < platformScaleLengths[0]) {
       towerPlacement.level = 0;
       towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
     } else {
-      intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[1]);
-      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[1] && Math.abs(intersection[1]) < platformLengths[1]) {
+      intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[1]);
+      if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[1] && Math.abs(intersection[1]) < platformScaleLengths[1]) {
         towerPlacement.level = 1;
         towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
       } else {
-        intersection = intersectRayXYPlane(rayOrigin, zAxis, platformHeights[2]);
-        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformLengths[2] && Math.abs(intersection[1]) < platformLengths[2]) {
+        intersection = intersectRayXYPlane(rayOrigin, rayDirection, platformScaleHeights[2]);
+        if ((typeof intersection !== "undefined" && intersection !== null) && Math.abs(intersection[0]) < platformScaleLengths[2] && Math.abs(intersection[1]) < platformScaleLengths[2]) {
           towerPlacement.level = 2;
           towerPlacement.cell = calcTowerPlacement(towerPlacement.level, intersection);
         } else {
@@ -102,35 +103,27 @@
       }
     }
     if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
-      SceneJS.fireEvent("configure", "placementTower", {
-        cfg: {
-          x: intersection[0],
-          y: intersection[1],
-          z: platformHeights[towerPlacement.level],
-          "#placementTowerModel": {
-            selection: [currentTowerSelection]
-          }
-        }
-      });
+      SceneJS.withNode("placementTower").set({
+        x: (towerPlacement.cell.x - gridSize * 0.5 + 0.5) * cellScale,
+        y: (towerPlacement.cell.y - gridSize * 0.5 + 0.5) * cellScale,
+        z: platformHeights[towerPlacement.level]
+      }).node("placementTowerModel").set("selection", [currentTowerSelection]);
     } else {
-      SceneJS.fireEvent("configure", "placementTower", {
-        cfg: {
-          "#placementTowerModel": {
-            selection: []
-          }
-        }
-      });
+      SceneJS.withNode("placementTower").node("placementTowerModel").set("selection", []);
     }
     return null;
   };
   keyDown = function(event) {
-    var _a;
-    if ((_a = event.keyCode) === key1) {
-      currentTowerSelection = 0;
-    } else if (_a === key2) {
-      currentTowerSelection = 1;
-    } else if (_a === keyESC) {
-      currentTowerSelection = -1;
+    switch (event.keyCode) {
+      case key1:
+        currentTowerSelection = 0;
+        break;
+      case key2:
+        currentTowerSelection = 1;
+        break;
+      case keyESC:
+        currentTowerSelection = -1;
+        break;
     }
     return updateTowerPlacement();
   };
@@ -163,23 +156,23 @@
     canvas.height = window.innerHeight;
     canvasSize[0] = window.innerWidth;
     canvasSize[1] = window.innerHeight;
-    backgroundCamera.reconfigure();
-    levelCamera.reconfigure();
+    backgroundCamera.reconfigure(canvasSize);
+    levelCamera.reconfigure(canvasSize);
     return guiCamera.reconfigure();
   };
   window.render = function() {
     var c;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
-      guiDiasRotVelocity[c] += (Math.random() - 0.5) * 0.1;
-      if (guiDiasRotPosition[c] > 0) {
-        guiDiasRotVelocity[c] -= 0.001;
+      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
+      if (guiDaisRotPosition[c] > 0) {
+        guiDaisRotVelocity[c] -= 0.001;
       }
-      if (guiDiasRotPosition[c] < 0) {
-        guiDiasRotVelocity[c] += 0.001;
+      if (guiDaisRotPosition[c] < 0) {
+        guiDaisRotVelocity[c] += 0.001;
       }
-      guiDiasRotVelocity[c] = clamp(guiDiasRotVelocity[c], -0.1, 0.1);
-      guiDiasRotPosition[c] += guiDiasRotVelocity[c];
-      guiDiasRotPosition[c] = clamp(guiDiasRotPosition[c], -30.0, 30.0);
+      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.1, 0.1);
+      guiDaisRotPosition[c] += guiDaisRotVelocity[c];
+      guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
     gui.update();
     level.update();
@@ -187,4 +180,4 @@
     return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);
-})();
+}).call(this);

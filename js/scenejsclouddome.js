@@ -45,25 +45,9 @@ destroyResources = function() {
   return null;
 };
 /*
-SceneJS listeners
-*/
-SceneJS._eventModule.addListener(SceneJS._eventModule.SCENE_RENDERING, function() {
-  return (canvas = null);
-});
-SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_ACTIVATED, function(c) {
-  return (canvas = c);
-});
-SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_DEACTIVATED, function() {
-  return (canvas = null);
-});
-SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
-  destroyResources();
-  return (canvas = null);
-});
-/*
 Cloud dome node type
 */
-SceneJS.CloudDome = SceneJS.createNodeType("cloudDome");
+SceneJS.CloudDome = SceneJS.createNodeType("cloud-dome");
 SceneJS.CloudDome.prototype._init = function(params) {
   this.setRadius(params.radius);
   return null;
@@ -106,3 +90,19 @@ SceneJS.CloudDome.prototype._render = function(traversalContext) {
   }
   return null;
 };
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.SCENE_RENDERING, function() {
+  return (canvas = null);
+});
+SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_ACTIVATED, function(c) {
+  return (canvas = c);
+});
+SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_DEACTIVATED, function() {
+  return (canvas = null);
+});
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  destroyResources();
+  return (canvas = null);
+});

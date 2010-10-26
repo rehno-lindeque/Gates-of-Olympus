@@ -16,10 +16,10 @@ Creature types
 */
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.pos = [0, 0, 0];
-  this.rot = 0;
-  this.node = null;
-  return (this.health = 0);
+  this.pos = [0.0, 0.0, 0.0];
+  this.rot = 0.0;
+  this.health = 0;
+  return null;
 };
 Scorpion = function() {
   this.create();
@@ -33,10 +33,9 @@ Scorpion.prototype.create = function() {
 Collection of all creatures
 */
 Creatures = function() {
+  SceneJS.createNode(BlenderExport.Scorpion);
   this.creatures = new Array();
-  this.geometries = new Array();
-  this.geometries[0] = BlenderExport.Scorpion();
-  this.node = SceneJS.createNode({
+  this.node = {
     type: "material",
     id: "creatures",
     baseColor: {
@@ -51,51 +50,47 @@ Creatures = function() {
     },
     specular: 0.0,
     shine: 0.0
-  });
+  };
   return this;
 };
 Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
   creature = new CreaturePrototype();
   this.creatures[this.creatures.length] = creature;
-  SceneJS.fireEvent("configure", "creatures", {
-    cfg: {
-      "+node": {
-        type: "translate",
-        x: creature.pos[0],
-        y: creature.pos[1],
-        z: creature.pos[2],
-        nodes: [
-          {
-            type: "rotate",
-            angle: 0,
-            z: 1,
-            nodes: [
-              {
-                type: "instance",
-                target: "Scorpion"
-              }
-            ]
-          }
-        ]
-      }
+  SceneJS.withNode("creatures").add("nodes", [
+    {
+      type: "translate",
+      x: creature.pos[0],
+      y: creature.pos[1],
+      z: creature.pos[2],
+      nodes: [
+        {
+          type: "rotate",
+          angle: 0.0,
+          z: 1.0,
+          nodes: [
+            {
+              type: "instance",
+              target: "Scorpion"
+            }
+          ]
+        }
+      ]
     }
-  });
+  ]);
   return creature;
 };
 Creatures.prototype.update = function() {
-  var _a, _b, _c, c, node;
+  var c, creatures;
   c = 0;
-  _b = SceneJS.getNode("creatures").getNodes();
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    node = _b[_a];
-    node.setXYZ({
-      x: this.creatures[c].pos[0],
-      y: this.creatures[c].pos[1],
-      z: this.creatures[c].pos[2]
+  creatures = this.creatures;
+  SceneJS.withNode("creatures").eachNode(function() {
+    this.set({
+      x: creatures[c].pos[0],
+      y: creatures[c].pos[1],
+      z: creatures[c].pos[2]
     });
-    node.getNodeAt(0).setAngle(this.creatures[c].rot);
-    c += 1;
-  }
+    return this.node(0).set("angle", creatures[c].rot);
+  }, {});
   return null;
 };

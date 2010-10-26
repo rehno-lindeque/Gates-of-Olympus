@@ -1,8 +1,13 @@
-var compileShader;
+var compileShader, graft;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
+graft = function(parent, children) {
+  var _ref;
+  parent.nodes = (typeof (_ref = parent.nodes) !== "undefined" && _ref !== null) ? Array.concat(parent.nodes, children) : children;
+  return parent;
+};
 compileShader = function(gl, id) {
   var child, httpRequest, scriptElement, shader, shaderType, str;
   scriptElement = document.getElementById(id);
