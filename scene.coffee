@@ -25,6 +25,10 @@ sceneNode =
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
   nodes: [
+    BlenderExport.ArcherTower
+  ,
+    BlenderExport.CatapultTower
+  ,
     type: "renderer"
     clear:
       depth:    true
