@@ -12,42 +12,70 @@ Globals
 ###
 
 canvas = null
-shaderProgram = null
-vertexBuffer = null
+  
+CloudDomeModule =
+  vertexBuffer: null
+  shaderProgram: null
+  
+  createResources: ->
+    gl = canvas.context
+    
+    # Create the vertex buffer
+    @vertexBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    vertices = [
+       1.0,  1.0
+      -1.0,  1.0
+       1.0, -1.0
+      -1.0, -1.0 ]
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+    
+    # Create shader program
+    @shaderProgram = gl.createProgram()
+    vertexShader = compileShader(gl, "clouddome-vs")
+    fragmentShader = compileShader(gl, "clouddome-fs")
+    gl.attachShader(@shaderProgram, vertexShader)
+    gl.attachShader(@shaderProgram, fragmentShader)
+    gl.linkProgram(@shaderProgram)
+    if not gl.getProgramParameter(@shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+    
+    # Set shader parameters
+    gl.useProgram(@shaderProgram)
+    @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
+    gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    null
+  
+  destroyResources: ->
+    if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
+      if @shaderProgram then @shaderProgram.destroy()
+      if @vertexBuffer then @vertexBuffer.destroy()
+    null
 
-createResources = ->
-  gl = canvas.context
-  
-  # Create the vertex buffer
-  vertexBuffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-  vertices = [
-     1.0,  1.0
-    -1.0,  1.0
-     1.0, -1.0
-    -1.0, -1.0 ]
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-  
-  # Create shader program
-  shaderProgram = gl.createProgram()
-  vertexShader = compileShader(gl, "clouddome-vs")
-  fragmentShader = compileShader(gl, "clouddome-fs")
-  gl.attachShader(shaderProgram, vertexShader)
-  gl.attachShader(shaderProgram, fragmentShader)
-  gl.linkProgram(shaderProgram)
-  if not gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
-  
-  # Set shader parameters
-  gl.useProgram(shaderProgram)
-  shaderProgram.vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition")
-  gl.enableVertexAttribArray(shaderProgram.vertexPosition)
-  null
-  
-destroyResources = ->
-  if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
-    if shaderProgram then shaderProgram.destroy()
-    if vertexBuffer then vertexBuffer.destroy()
-  null
+###
+SceneJS listeners
+###
+
+SceneJS._eventModule.addListener(
+  SceneJS._eventModule.SCENE_RENDERING
+  () -> canvas = null
+)
+            
+SceneJS._eventModule.addListener(
+  SceneJS._eventModule.CANVAS_ACTIVATED
+  (c) -> canvas = c
+)
+
+SceneJS._eventModule.addListener(
+  SceneJS._eventModule.CANVAS_DEACTIVATED
+  () -> canvas = null
+)
+
+SceneJS._eventModule.addListener(
+  SceneJS._eventModule.RESET
+  () ->
+    destroyResources()
+    canvas = null
+)
 
 ###
 Cloud dome node type
@@ -79,9 +107,9 @@ SceneJS.CloudDome.prototype.renderClouds = ->
   #gl.disable(gl.DEPTH_TEST)
   
   # Bind shaders and parameters
-  gl.useProgram(shaderProgram)
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-  gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+  gl.useProgram(CloudDomeModule.shaderProgram)
+  gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer)
+  gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
   
   # Draw geometry
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
@@ -94,32 +122,7 @@ SceneJS.CloudDome.prototype.renderClouds = ->
 SceneJS.CloudDome.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
-    if not vertexBuffer then createResources()
+    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources()
     @renderClouds()
   null
 
-###
-SceneJS listeners
-###
-
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.SCENE_RENDERING
-  () -> canvas = null
-)
-            
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.CANVAS_ACTIVATED
-  (c) -> canvas = c
-)
-
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.CANVAS_DEACTIVATED
-  () -> canvas = null
-)
-
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.RESET
-  () ->
-    destroyResources()
-    canvas = null
-)
