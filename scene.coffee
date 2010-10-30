@@ -25,9 +25,11 @@ sceneNode =
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
   nodes: [
-    BlenderExport.ArcherTower
-  ,
-    BlenderExport.CatapultTower
+    type: "geometry"
+    resource: "tmp"
+    primitive: "triangles"
+    positions: [0.0, 0.0, 0.0]
+    indices: [0, 1, 2]
   ,
     type: "renderer"
     clear:
