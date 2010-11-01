@@ -16,6 +16,15 @@ canvas.height = window.innerHeight
 gameScene.render()
 
 ###
+Development
+###
+
+# Comment out these lines when pushing to the web (production environment)
+
+SceneJS.setDebugConfigs({ webgl: { logTrace: true } })
+
+
+###
 Game logic
 ###
 
@@ -187,4 +196,8 @@ window.render = ->
   gameScene.render();
 
 interval = window.setInterval("window.render()", 10);
+
+#SceneJS.withNode("gameScene").start({ fps: 100 });
+
+
 

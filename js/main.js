@@ -15,6 +15,14 @@
   canvas.height = window.innerHeight;
   gameScene.render();
   /*
+  Development
+  */
+  SceneJS.setDebugConfigs({
+    webgl: {
+      logTrace: true
+    }
+  });
+  /*
   Game logic
   */
   currentTowerSelection = -1;
