@@ -1,15 +1,16 @@
-var CloudDomeModule, canvas;
+var CloudDomeModule;
 /*
 Copyright 2010, Rehno Lindeque.
-This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
+
+ * This file is Dual licensed under the MIT or GPL Version 2 licenses.
+ * It is intended to be compatible with http://scenejs.org/license so that changes can be back-ported.
 */
 /*
 A scenejs extension that renders a cloud dome using a full-screen quad and some procedural shaders.
 */
 /*
-Globals
+Cloud Dome Module
 */
-canvas = null;
 CloudDomeModule = {
   vertexBuffer: null,
   shaderProgram: null,
@@ -49,18 +50,8 @@ CloudDomeModule = {
 /*
 SceneJS listeners
 */
-SceneJS._eventModule.addListener(SceneJS._eventModule.SCENE_RENDERING, function() {
-  return (canvas = null);
-});
-SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_ACTIVATED, function(c) {
-  return (canvas = c);
-});
-SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_DEACTIVATED, function() {
-  return (canvas = null);
-});
 SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
-  destroyResources();
-  return (canvas = null);
+  return CloudDomeModule.destroyResources();
 });
 /*
 Cloud dome node type

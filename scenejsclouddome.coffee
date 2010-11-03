@@ -1,6 +1,8 @@
 ###
 Copyright 2010, Rehno Lindeque.
-This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
+
+ * This file is Dual licensed under the MIT or GPL Version 2 licenses.
+ * It is intended to be compatible with http://scenejs.org/license so that changes can be back-ported.
 ###
 
 ###
@@ -8,10 +10,8 @@ A scenejs extension that renders a cloud dome using a full-screen quad and some 
 ###
 
 ###
-Globals
+Cloud Dome Module
 ###
-
-canvas = null
   
 CloudDomeModule =
   vertexBuffer: null
@@ -55,26 +55,26 @@ CloudDomeModule =
 SceneJS listeners
 ###
 
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.SCENE_RENDERING
-  () -> canvas = null
-)
-            
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.CANVAS_ACTIVATED
-  (c) -> canvas = c
-)
-
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.CANVAS_DEACTIVATED
-  () -> canvas = null
-)
+#SceneJS._eventModule.addListener(
+#  SceneJS._eventModule.SCENE_RENDERING
+#  () -> canvas = null
+#)
+# 
+#SceneJS._eventModule.addListener(
+#  SceneJS._eventModule.CANVAS_ACTIVATED
+#  (c) -> canvas = c
+#)
+# 
+#SceneJS._eventModule.addListener(
+#  SceneJS._eventModule.CANVAS_DEACTIVATED
+#  () -> canvas = null
+#)
 
 SceneJS._eventModule.addListener(
   SceneJS._eventModule.RESET
   () ->
-    destroyResources()
-    canvas = null
+    CloudDomeModule.destroyResources()
+    #canvas = null
 )
 
 ###
@@ -101,7 +101,7 @@ SceneJS.CloudDome.prototype.renderClouds = ->
   # Change gl state
   saveState =
     blend:     gl.getParameter(gl.BLEND)
-    depthTest: gl.getParameter(gl.DEPTH_TEST)    
+    depthTest: gl.getParameter(gl.DEPTH_TEST)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.enable(gl.BLEND)
   #gl.disable(gl.DEPTH_TEST)
