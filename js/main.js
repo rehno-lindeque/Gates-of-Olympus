@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, currentTowerSelection, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
+  var calcTowerPlacement, canvas, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -14,6 +14,7 @@
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   gameScene.render();
+  gui.initialize();
   /*
   Development
   */
@@ -25,7 +26,6 @@
   /*
   Game logic
   */
-  currentTowerSelection = -1;
   level.creatures.addCreature(Scorpion);
   /*
   User input
@@ -96,12 +96,12 @@
         }
       }
     }
-    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
+    if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
       SceneJS.withNode("placementTower").set({
         x: (towerPlacement.cell.x - gridSize * 0.5 + 0.5) * cellScale,
         y: (towerPlacement.cell.y - gridSize * 0.5 + 0.5) * cellScale,
         z: platformHeights[towerPlacement.level]
-      }).node("placementTowerModel").set("selection", [currentTowerSelection]);
+      }).node("placementTowerModel").set("selection", [gui.selectedDais]);
     } else {
       SceneJS.withNode("placementTower").node("placementTowerModel").set("selection", []);
     }
@@ -110,13 +110,13 @@
   keyDown = function(event) {
     switch (event.keyCode) {
       case key1:
-        currentTowerSelection = 0;
+        gui.selectDais(0);
         break;
       case key2:
-        currentTowerSelection = 1;
+        gui.selectDais(1);
         break;
       case keyESC:
-        currentTowerSelection = -1;
+        gui.deselectDais();
         break;
     }
     return updateTowerPlacement();
@@ -127,8 +127,8 @@
     return (mouseDragging = true);
   };
   mouseUp = function() {
-    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
-      level.addTower(towerPlacement, currentTowerSelection);
+    if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
+      level.addTower(towerPlacement, gui.selectedDais);
     }
     return (mouseDragging = false);
   };

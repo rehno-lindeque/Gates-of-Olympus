@@ -40,8 +40,8 @@ class GUIDais
     @id = "dais" + index
     # @node = SceneJS.createNode guiDaisNode(@id, index)
     @node = guiDaisNode(@id, index)
-  
-  update: () ->
+    
+  update: ->
     SceneJS.withNode(@id)
       .node(0).set(
         angle: guiDaisRotPosition[@index*2]

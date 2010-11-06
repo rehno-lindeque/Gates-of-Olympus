@@ -402,6 +402,7 @@ GUI = function() {
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
   this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
+  this.selectedDais = -1;
   this.lightNode = {
     type: "light",
     mode: "dir",
@@ -457,9 +458,33 @@ GUI = function() {
   };
   return this;
 };
+GUI.prototype.initialize = function() {
+  SceneJS.withNode(this.daises[0].id).bind("picked", function(event) {
+    return alert("#0 picked!");
+  });
+  return SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
+    return alert("#1 picked!");
+  });
+};
 GUI.prototype.update = function() {
   this.daises[0].update();
   return this.daises[1].update();
+};
+GUI.prototype.selectDais = function(daisNumber) {
+  if (this.selectedDais >= 0) {
+    $("#daisStats #daisStats" + this.selectedDais).removeClass("enabled");
+    $("#daisStats #daisStats" + this.selectedDais).addClass("disabled");
+  }
+  this.selectedDais = daisNumber;
+  $("#daisStats #daisStats" + daisNumber).removeClass("disabled");
+  return $("#daisStats #daisStats" + daisNumber).addClass("enabled");
+};
+GUI.prototype.deselectDais = function() {
+  if (this.selectedDais >= 0) {
+    $("#daisStats #daisStats" + this.selectedDais).removeClass("enabled");
+    $("#daisStats #daisStats" + this.selectedDais).addClass("disabled");
+  }
+  return (this.selectedDais = -1);
 };var GUICamera;
 GUICamera = function(gui, referenceCamera) {
   this.referenceCamera = referenceCamera;
