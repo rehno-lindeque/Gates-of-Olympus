@@ -24,9 +24,11 @@
   <script type="application/javascript" src="towers/Catapult.js"></script>
   <script type="application/javascript" src="creatures/Scorpion.js"></script>
   <style type="text/css" media="screen">
+    * {
+      margin: 0;
+      padding: 0;
+    }
     body {
-      margin:0;
-      padding:0;
       width: 100%;
       overflow:hidden;
     }
@@ -37,19 +39,34 @@
       color: #cca;
       font-size: smaller;
       font-family: "Arial", Sans-serif;
-      padding: 0 10px;
+      padding: 10px;
       position: absolute;
       bottom: 0;
-      margin: 5px 5px;
+      margin: 5px;
     }
     div#hints ul {
-      padding: 0px 0px 0px 20px;
+      padding: 10px 0px 10px 20px;
     }
     div#hints ol {
       padding: 0px 0px 0px 20px;
     }
     div#hints a {
       color: #cca;
+    }
+    div#daisStats .disabled {
+      display: none;
+    }
+    div#daisStats .enabled {
+      background: rgba(70, 65, 50, 0.6);
+      border: 1px solid rgba(70, 65, 50, 0.8);
+      color: #cca;
+      padding: 10px;
+      position: absolute;
+      top: 10%;
+      right: 20%;
+      margin: 5px;
+      font-size: 10px;
+      font-family: "Arial", Sans-serif;
     }
     div#copyright {
       font-size: x-small;
@@ -88,6 +105,36 @@
   <div id="container">
     <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
+  <div id="daisStats">
+  
+    <div id="ballistaStats" class="disabled">
+      <h2>Ballista Tower</h2>
+      <div>
+        Damage: 10<br/>
+        Level: 1
+      </div>
+    </div>
+    <div id="catapultStats" class="disabled">
+      <h2>Catapult Tower</h2>
+    </div>    
+    <div id="lightningStats" class="disabled">
+      <h2>Lightning Tower</h2>
+    </div>
+    
+    <div id="zeusStats" class="disabled">
+      <h2>Shrine of Zeus</h2>
+    </div>
+    <div id="apolloStats" class="disabled">
+      <h2>Shrine of Apollo</h2>
+    </div>    
+    <div id="hadesStats" class="disabled">
+      <h2>Shrine of Hades</h2>
+    </div>
+    <div id="poseidonStats" class="disabled">
+      <h2>Shrine of Poseidon</h2>
+    </div>
+    
+  </div>
   <div id="hints">
     <h2>Hints</h2>
     <ul>
@@ -96,7 +143,7 @@
       <li>Drag the screen left and right to change the view.</li>
       <li>Select towers using the number keys:
         <ol>
-          <li>Archer Tower</li>
+          <li>Ballista Tower</li>
           <li>Catapult Tower</li>
         </ol>
       </li>
