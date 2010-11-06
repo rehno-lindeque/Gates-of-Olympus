@@ -26,7 +26,7 @@ sceneNode = {
       type: "geometry",
       resource: "tmp",
       primitive: "triangles",
-      positions: [0.0, 0.0, 0.0],
+      positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       indices: [0, 1, 2]
     }, {
       type: "renderer",
