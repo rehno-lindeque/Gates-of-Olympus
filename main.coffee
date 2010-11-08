@@ -15,6 +15,7 @@ canvas = document.getElementById(sceneNode.canvasId)
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 gameScene.render()
+gui.initialize()
 
 
 ###
@@ -30,11 +31,17 @@ marchSoundListener = () ->
 marchSound.addEventListener('ended', marchSoundListener, false)
 ###
 ###
-Game logic
+Development
 ###
 
-# Logical inputs
-currentTowerSelection = -1
+# Comment out these lines when pushing to the web (production environment)
+
+SceneJS.setDebugConfigs({ webgl: { logTrace: true } })
+
+
+###
+Game logic
+###
 
 # Towers
 #level.createTowers()
@@ -127,7 +134,7 @@ updateTowerPlacement = ->
         towerPlacement.cell.y = -1
         
   # Update the placement tower node
-  if towerPlacement.level != -1 and currentTowerSelection != -1
+  if towerPlacement.level != -1 and gui.selectedDais != -1
     SceneJS.withNode("placementTower")
       .set(
         #x: intersection[0]
@@ -137,7 +144,7 @@ updateTowerPlacement = ->
         z:  platformHeights[towerPlacement.level]
 		  )
       .node("placementTowerModel")
-      .set("selection", [currentTowerSelection])
+      .set("selection", [gui.selectedDais])
   else
     SceneJS.withNode("placementTower").node("placementTowerModel").set("selection", [])
   null
@@ -145,9 +152,9 @@ updateTowerPlacement = ->
 keyDown = (event) ->
   #switch String.fromCharCode(event.keyCode)
   switch event.keyCode
-    when key1   then currentTowerSelection =  0
-    when key2   then currentTowerSelection =  1
-    when keyESC then currentTowerSelection = -1
+    when key1   then gui.selectDais(0)
+    when key2   then gui.selectDais(1)
+    when keyESC then gui.deselectDais()
   updateTowerPlacement()
 
 mouseDown = (event) ->
@@ -156,9 +163,9 @@ mouseDown = (event) ->
   mouseDragging = true
   
 mouseUp = ->
-  #alert "Up! " + mouseDragging + " " + towerPlacement + " " + currentTowerSelection
-  if towerPlacement.level != -1 and currentTowerSelection != -1
-    level.addTower(towerPlacement, currentTowerSelection)
+  #alert "Up! " + mouseDragging + " " + towerPlacement + " " + gui.selectedDais
+  if towerPlacement.level != -1 and gui.selectedDais != -1
+    level.addTower(towerPlacement, gui.selectedDais)
   mouseDragging = false
 
 mouseMove = (event) ->
@@ -204,6 +211,8 @@ window.render = ->
   gameScene.render();
 
 interval = window.setInterval("window.render()", 10);
+
+#SceneJS.withNode("gameScene").start({ fps: 100 });
 
 
 

@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, currentTowerSelection, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
+  var calcTowerPlacement, canvas, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -14,6 +14,7 @@
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   gameScene.render();
+  gui.initialize();
   /*
   Sound
   */
@@ -27,9 +28,16 @@
   marchSound.addEventListener('ended', marchSoundListener, false)
   */
   /*
+  Development
+  */
+  SceneJS.setDebugConfigs({
+    webgl: {
+      logTrace: true
+    }
+  });
+  /*
   Game logic
   */
-  currentTowerSelection = -1;
   level.creatures.addCreature(Scorpion);
   floydInit();
   /*
@@ -101,12 +109,12 @@
         }
       }
     }
-    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
+    if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
       SceneJS.withNode("placementTower").set({
         x: (towerPlacement.cell.x - gridSize * 0.5 + 0.5) * cellScale,
         y: (towerPlacement.cell.y - gridSize * 0.5 + 0.5) * cellScale,
         z: platformHeights[towerPlacement.level]
-      }).node("placementTowerModel").set("selection", [currentTowerSelection]);
+      }).node("placementTowerModel").set("selection", [gui.selectedDais]);
     } else {
       SceneJS.withNode("placementTower").node("placementTowerModel").set("selection", []);
     }
@@ -115,11 +123,11 @@
   keyDown = function(event) {
     var _a;
     if ((_a = event.keyCode) === key1) {
-      currentTowerSelection = 0;
+      gui.selectDais(0);
     } else if (_a === key2) {
-      currentTowerSelection = 1;
+      gui.selectDais(1);
     } else if (_a === keyESC) {
-      currentTowerSelection = -1;
+      gui.deselectDais();
     }
     return updateTowerPlacement();
   };
@@ -129,8 +137,8 @@
     return (mouseDragging = true);
   };
   mouseUp = function() {
-    if (towerPlacement.level !== -1 && currentTowerSelection !== -1) {
-      level.addTower(towerPlacement, currentTowerSelection);
+    if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
+      level.addTower(towerPlacement, gui.selectedDais);
     }
     return (mouseDragging = false);
   };

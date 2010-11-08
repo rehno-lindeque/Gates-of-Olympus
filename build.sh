@@ -1,4 +1,5 @@
 #!/bin/sh
+coffee --no-wrap -c -o js scenejsext.coffee
 coffee --no-wrap -c -o js scenejsclouddome.coffee
 coffee --no-wrap -c -o js scenejsdaisclouds.coffee
 coffee --no-wrap -c -o js global.coffee
