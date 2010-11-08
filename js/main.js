@@ -20,11 +20,9 @@
   /*
   marchSound = document.getElementById('march')
   marchSoundListener = () ->
-  	this.currentTime = 0
   	this.pause()
-  	null
+  	this.currentTime = 0
   	this.play()
-  	null
 
   marchSound.addEventListener('ended', marchSoundListener, false)
   */
@@ -33,6 +31,7 @@
   */
   currentTowerSelection = -1;
   level.creatures.addCreature(Scorpion);
+  floydInit();
   /*
   User input
   */
@@ -114,16 +113,13 @@
     return null;
   };
   keyDown = function(event) {
-    switch (event.keyCode) {
-      case key1:
-        currentTowerSelection = 0;
-        break;
-      case key2:
-        currentTowerSelection = 1;
-        break;
-      case keyESC:
-        currentTowerSelection = -1;
-        break;
+    var _a;
+    if ((_a = event.keyCode) === key1) {
+      currentTowerSelection = 0;
+    } else if (_a === key2) {
+      currentTowerSelection = 1;
+    } else if (_a === keyESC) {
+      currentTowerSelection = -1;
     }
     return updateTowerPlacement();
   };
@@ -180,4 +176,4 @@
     return gameScene.render();
   };
   interval = window.setInterval("window.render()", 10);
-}).call(this);
+})();

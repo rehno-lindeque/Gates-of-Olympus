@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, edgeCost, floyd, floydInit, gameSceneOffset, getPath, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, i, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, next, numTowerTypes, path, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -20,6 +20,73 @@ clamp = function(x, y, z) {
 };
 lerp = function(t, x, y) {
   return x * (1.0 - t) + y * t;
+};
+/*
+Pathfinding - Floyd warshall for now, might be slow
+*/
+edgeCost = function(i, j) {
+  if (i === j) {
+    return 0;
+  }
+  if (level.towers.towers[i] !== -1 || level.towers.towers[j] !== -1) {
+    return Infinity;
+  }
+  if (j === i - 1 || j === i + 1 || j === i - gridSize || j === i + gridSize) {
+    return 1;
+  }
+  if (j === i - gridSize - 1 || j === i - gridSize + 1 || j === i + gridSize - 1 || j === i + gridSize + 1) {
+    return 2;
+  }
+  return Infinity;
+};
+floydInit = function() {
+  var _a, _b, i, j;
+  _a = [];
+  for (i = 0; (0 <= sqrGridSize - 1 ? i <= sqrGridSize - 1 : i >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? i += 1 : i -= 1)) {
+    _a.push((function() {
+      _b = [];
+      for (j = 0; (0 <= sqrGridSize - 1 ? j <= sqrGridSize - 1 : j >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? j += 1 : j -= 1)) {
+        _b.push((function() {
+          path[i][j] = edgeCost(i, j);
+          return (next[i][j] = null);
+        })());
+      }
+      return _b;
+    })());
+  }
+  return _a;
+};
+floyd = function() {
+  var _a, _b, i, j, k;
+  _a = [];
+  for (k = 0; (0 <= sqrGridSize - 1 ? k <= sqrGridSize - 1 : k >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? k += 1 : k -= 1)) {
+    _a.push((function() {
+      _b = [];
+      for (i = 0; (0 <= sqrGridSize - 1 ? i <= sqrGridSize - 1 : i >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? i += 1 : i -= 1)) {
+        _b.push((function() {
+          for (j = 0; (0 <= sqrGridSize - 1 ? j <= sqrGridSize - 1 : j >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? j += 1 : j -= 1)) {
+            if (path[i][k] + path[k][j] < path[i][j]) {
+              path[i][j] = path[i][k] + path[k][j];
+            }
+          }
+          return (next[i][j] = k);
+        })());
+      }
+      return _b;
+    })());
+  }
+  return _a;
+};
+getPath = function(i, j) {
+  var intermediate;
+  if (path[i][j] === Infinity) {
+    return null;
+  }
+  intermediate = next[i][j];
+  if (typeof intermediate !== "undefined" && intermediate !== null) {
+    return getPath(i(intermediate + intermediate + getPath(intermediate(j))));
+  }
+  return null;
 };
 /*
 Globals
@@ -60,3 +127,9 @@ towerPlacement = {
     y: -1
   }
 };
+path = new Array(sqrGridSize);
+next = new Array(sqrGridSize);
+for (i = 0; (0 <= sqrGridSize - 1 ? i <= sqrGridSize - 1 : i >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? i += 1 : i -= 1)) {
+  path[i] = new Array(sqrGridSize);
+  next[i] = new Array(sqrGridSize);
+}

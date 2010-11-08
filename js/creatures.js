@@ -84,6 +84,7 @@ Creatures.prototype.update = function() {
   var c, creatures;
   c = 0;
   creatures = this.creatures;
+  floyd();
   SceneJS.withNode("creatures").eachNode(function() {
     this.set({
       x: creatures[c].pos[0],

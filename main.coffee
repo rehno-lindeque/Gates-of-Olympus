@@ -6,6 +6,7 @@ Copyright 2010, Rehno Lindeque.
 * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
+
 ###
 Initialization and rendering loop
 ###
@@ -22,11 +23,9 @@ Sound
 ###
 marchSound = document.getElementById('march')
 marchSoundListener = () ->
-	this.currentTime = 0
 	this.pause()
-	null
+	this.currentTime = 0
 	this.play()
-	null
 	
 marchSound.addEventListener('ended', marchSoundListener, false)
 ###
@@ -42,6 +41,8 @@ currentTowerSelection = -1
 
 # Creatures
 level.creatures.addCreature(Scorpion)
+
+floydInit()
 
 ###
 User input 
@@ -133,7 +134,8 @@ updateTowerPlacement = ->
         #y: intersection[1]
         x: (towerPlacement.cell.x - gridSize * 0.5 + 0.5) * cellScale
         y: (towerPlacement.cell.y - gridSize * 0.5 + 0.5) * cellScale
-        z: platformHeights[towerPlacement.level])
+        z:  platformHeights[towerPlacement.level]
+		  )
       .node("placementTowerModel")
       .set("selection", [currentTowerSelection])
   else
@@ -202,4 +204,6 @@ window.render = ->
   gameScene.render();
 
 interval = window.setInterval("window.render()", 10);
+
+
 

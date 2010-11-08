@@ -37,7 +37,6 @@ DaisClouds.prototype._render = function(traversalContext) {
     if (!vertexBuffer) {
       createResources();
     }
-    this.renderClouds();
   }
   return null;
 };

@@ -131,13 +131,12 @@ Level = function() {
   return this;
 };
 Level.prototype.getTowerRoot = function(level, towerType) {
-  switch (towerType) {
-    case 0:
-      return this.towerNodes[level].archerTowers;
-    case 1:
-      return this.towerNodes[level].catapultTowers;
-    default:
-      return null;
+  if (towerType === 0) {
+    return this.towerNodes[level].archerTowers;
+  } else if (towerType === 1) {
+    return this.towerNodes[level].catapultTowers;
+  } else {
+    return null;
   }
 };
 Level.prototype.addTower = function(towerPlacement, towerType) {

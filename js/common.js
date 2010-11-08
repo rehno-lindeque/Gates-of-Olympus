@@ -4,8 +4,8 @@ Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
 graft = function(parent, children) {
-  var _ref;
-  parent.nodes = (typeof (_ref = parent.nodes) !== "undefined" && _ref !== null) ? Array.concat(parent.nodes, children) : children;
+  var _a;
+  parent.nodes = (typeof (_a = parent.nodes) !== "undefined" && _a !== null) ? Array.concat(parent.nodes, children) : children;
   return parent;
 };
 compileShader = function(gl, id) {

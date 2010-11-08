@@ -53,5 +53,5 @@ DaisClouds.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
     if not vertexBuffer then createResources()
-    @renderClouds()
+    #@renderClouds()
   null

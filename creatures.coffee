@@ -57,6 +57,7 @@ class Creatures
   update: ->
     c = 0
     creatures = @creatures
+    floyd()
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})

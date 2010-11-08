@@ -25,11 +25,17 @@ sceneNode =
   canvasId: "gameCanvas"
   loggingElementId: "scenejsLog"
   nodes: [
+    type: "geometry"
+    resource: "tmp"
+    primitive: "triangles"
+    positions: [0.0, 0.0, 0.0]
+    indices: [0, 1, 2]
+  ,
     type: "renderer"
     clear:
-      depth:    true
-      color:    true
-      stencil:  false
+      depth: true
+      color: true
+      stencil: false
     clearColor: { r: 0.7, g: 0.7, b: 0.7 }
     nodes: [
       graft(gui.lookAtNode, [guiCamera.node])
