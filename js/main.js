@@ -39,7 +39,7 @@
   Game logic
   */
   level.creatures.addCreature(Scorpion);
-  floydInit();
+  floodInit();
   /*
   User input
   */

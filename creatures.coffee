@@ -57,7 +57,11 @@ class Creatures
   update: ->
     c = 0
     creatures = @creatures
-    floyd()
+    #floyd()
+    floodInit()
+    floodFill(6+ 6*gridSize)
+    #floodFillDebug
+    floodFillGenPath(6,6+ 6*gridSize)
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})

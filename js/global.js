@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, edgeCost, floyd, floydInit, gameSceneOffset, getPath, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, i, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, next, numTowerTypes, path, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, edgeCost, floodFill, floodFillDebug, floodFillGenPath, floodInit, floyd, floydInit, gameSceneOffset, getPath, grid, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, i, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, next, numTowerTypes, path, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -88,6 +88,101 @@ getPath = function(i, j) {
   }
   return null;
 };
+floodInit = function() {
+  var _a, i;
+  _a = [];
+  for (i = 0; (0 <= sqrGridSize - 1 ? i <= sqrGridSize - 1 : i >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? i += 1 : i -= 1)) {
+    _a.push(grid[i] = 0);
+  }
+  return _a;
+};
+floodFill = function(goal) {
+  var Q, _a, _b, _c, f, i, index, j, l, pos, x, y;
+  Q = new Array();
+  f = 0;
+  l = 1;
+  Q[f] = goal;
+  _a = [];
+  while ((f <= l)) {
+    _a.push((function() {
+      pos = Q[f];
+      f++;
+      _b = [];
+      for (i = -1; i <= 1; i++) {
+        _b.push((function() {
+          _c = [];
+          for (j = -1; j <= 1; j++) {
+            if (i !== 0 || j !== 0) {
+              _c.push((function() {
+                x = Math.floor(pos % gridSize) + j;
+                y = Math.floor(pos / gridSize) + i;
+                if ((x >= 0) && x < gridSize && (y >= 0) && y < gridSize) {
+                  index = (x) + (y) * gridSize;
+                  if (level.towers.towers[index] === -1) {
+                    if (grid[index] === 0 && index !== goal) {
+                      grid[index] = grid[pos] + Math.abs(i) + Math.abs(j);
+                      Q[l] = index;
+                      return l++;
+                    }
+                  }
+                }
+              })());
+            }
+          }
+          return _c;
+        })());
+      }
+      return _b;
+    })());
+  }
+  return _a;
+};
+floodFillDebug = function() {
+  var _a, i, j;
+  _a = [];
+  for (i = 0; (0 <= gridSize - 1 ? i <= gridSize - 1 : i >= gridSize - 1); (0 <= gridSize - 1 ? i += 1 : i -= 1)) {
+    _a.push((function() {
+      for (j = 0; (0 <= gridSize - 1 ? j <= gridSize - 1 : j >= gridSize - 1); (0 <= gridSize - 1 ? j += 1 : j -= 1)) {
+        document.write(grid[i * gridSize + j]);
+      }
+      return document.writeln();
+    })());
+  }
+  return _a;
+};
+floodFillGenPath = function(start, goal) {
+  var _a, cur, i, index, j, shortest, shortestIndex, x, y;
+  cur = start;
+  shortest = Infinity;
+  shortestIndex = -1;
+  _a = [];
+  while ((cur !== goal)) {
+    _a.push((function() {
+      for (i = -1; i <= 1; i++) {
+        for (j = -1; j <= 1; j++) {
+          if (i !== 0 || j !== 0) {
+            x = Math.floor(cur % gridSize) + j;
+            y = Math.floor(cur / gridSize) + i;
+            if ((x >= 0) && x < gridSize && (y >= 0) && y < gridSize) {
+              index = (x) + (y) * gridSize;
+              if (level.towers.towers[index] === -1) {
+                if (grid[index] < shortest) {
+                  shortest = grid[index];
+                  shortestIndex = index;
+                }
+              }
+            }
+          }
+        }
+      }
+      next[shortestIndex][cur] = cur;
+      cur = shortestIndex;
+      shortest = Infinity;
+      return (shortestIndex = -1);
+    })());
+  }
+  return _a;
+};
 /*
 Globals
 */
@@ -129,6 +224,7 @@ towerPlacement = {
 };
 path = new Array(sqrGridSize);
 next = new Array(sqrGridSize);
+grid = new Array(sqrGridSize);
 for (i = 0; (0 <= sqrGridSize - 1 ? i <= sqrGridSize - 1 : i >= sqrGridSize - 1); (0 <= sqrGridSize - 1 ? i += 1 : i -= 1)) {
   path[i] = new Array(sqrGridSize);
   next[i] = new Array(sqrGridSize);

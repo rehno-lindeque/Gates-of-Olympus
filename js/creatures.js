@@ -84,7 +84,9 @@ Creatures.prototype.update = function() {
   var c, creatures;
   c = 0;
   creatures = this.creatures;
-  floyd();
+  floodInit();
+  floodFill(6 + 6 * gridSize);
+  floodFillGenPath(6, 6 + 6 * gridSize);
   SceneJS.withNode("creatures").eachNode(function() {
     this.set({
       x: creatures[c].pos[0],

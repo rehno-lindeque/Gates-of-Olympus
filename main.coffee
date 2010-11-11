@@ -49,7 +49,8 @@ Game logic
 # Creatures
 level.creatures.addCreature(Scorpion)
 
-floydInit()
+#floydInit()
+floodInit()
 
 ###
 User input 

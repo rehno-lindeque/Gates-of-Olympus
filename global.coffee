@@ -45,7 +45,7 @@ floyd = ->
       for j in [0..sqrGridSize-1]
         if path[i][k] + path[k][j] < path[i][j]
           path[i][j] = path[i][k] + path[k][j] 
-	     next[i][j] = k 
+	      next[i][j] = k 
 
 getPath = (i, j) ->
   if path[i][j] is Infinity
@@ -55,9 +55,64 @@ getPath = (i, j) ->
     return getPath i intermediate + intermediate + getPath intermediate j
   return null
 
+  # flood for now, maybe do hadlock
+floodInit = ->
+  for i in [0..sqrGridSize-1]
+    #for j in [0..gridSize-1]
+    grid[i] = 0
+  
+floodFill = (goal) ->
+  Q = new Array()
+  f = 0
+  l = 1
+  Q[f] = goal
+  #Q[l] = sqrGridSize-1
+  while (f<=l)
+    pos = Q[f]
+    f++
+    for i in [-1..1]
+      for j in [-1..1] when (i!= 0 || j!=0)
+        x = Math.floor(pos % gridSize) + j
+        y = Math.floor(pos / gridSize) + i
+        if (x>=0 && x < gridSize && y>=0 && y < gridSize)
+          index = (x) + (y)*gridSize
+          if (level.towers.towers[index] == -1)
+            if (grid[index] == 0 && index != goal)
+              grid[index] = grid[pos] + Math.abs(i) + Math.abs(j)
+              Q[l] = index
+              l++
+	
+  # end while f<=l
+  # now step back from goal and find path
+  
+floodFillDebug = ->
+  for i in [0..gridSize-1]
+    for j in [0..gridSize-1]
+      document.write(grid[i*gridSize+j])
+    document.writeln()
+      
 
-
-
+# backtracks from goal to start
+floodFillGenPath = (start,goal) ->
+  cur = start
+  shortest = Infinity
+  shortestIndex = -1
+  while (cur != goal)
+    for i in [-1..1]
+      for j in [-1..1] when (i!= 0 || j!=0)
+        x = Math.floor(cur % gridSize) + j
+        y = Math.floor(cur / gridSize) + i
+        if (x>=0 && x < gridSize && y>=0 && y < gridSize)
+          index = (x) + (y)*gridSize
+          if (level.towers.towers[index] == -1)
+            if (grid[index] < shortest) 
+              shortest = grid[index]
+              shortestIndex = index
+    next[shortestIndex][cur] = cur
+    cur = shortestIndex
+    shortest = Infinity
+    shortestIndex = -1
+  
 
 ###
 Globals
@@ -140,6 +195,7 @@ towerPlacement =
 # Pathfinding
 path = new Array (sqrGridSize)
 next = new Array (sqrGridSize)
+grid = new Array (sqrGridSize)
 
 for i in [0..sqrGridSize-1]
   path[i] = new Array (sqrGridSize)
