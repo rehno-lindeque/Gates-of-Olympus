@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
+  var calcTowerPlacement, canvas, customGL, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010, Rehno Lindeque.
@@ -15,6 +15,7 @@
   canvas.height = window.innerHeight;
   gameScene.render();
   gui.initialize();
+  customGL = canvas.getContext("experimental-webgl");
   /*
   Development
   */
@@ -171,7 +172,11 @@
     gui.update();
     level.update();
     timeline.update(timeline.time + 0.1);
-    return gameScene.render();
+    gameScene.render();
+    if (!CloudDomeModule.vertexBuffer) {
+      CloudDomeModule.createResources(customGL);
+    }
+    return CloudDomeModule.renderDome(customGL);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);

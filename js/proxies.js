@@ -516,19 +516,7 @@ BackgroundCamera = function(backgroundNode) {
   this.node = {
     type: "camera",
     id: "backgroundCamera",
-    optics: this.optics,
-    nodes: [
-      {
-        type: "cloud-dome",
-        radius: 100.0,
-        nodes: [
-          {
-            type: "stationary",
-            nodes: [backgroundNode]
-          }
-        ]
-      }
-    ]
+    optics: this.optics
   };
   return this;
 };

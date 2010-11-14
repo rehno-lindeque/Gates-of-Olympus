@@ -14,9 +14,8 @@ Cloud Dome Module
 CloudDomeModule = {
   vertexBuffer: null,
   shaderProgram: null,
-  createResources: function() {
-    var fragmentShader, gl, vertexShader, vertices;
-    gl = canvas.context;
+  createResources: function(gl) {
+    var fragmentShader, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
@@ -43,6 +42,23 @@ CloudDomeModule = {
       if (this.vertexBuffer) {
         this.vertexBuffer.destroy();
       }
+    }
+    return null;
+  },
+  renderDome: function(gl) {
+    var saveState;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.useProgram(CloudDomeModule.shaderProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
+    gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
     }
     return null;
   }
@@ -72,30 +88,15 @@ SceneJS.CloudDome.prototype.getColor = function() {
   };
 };
 SceneJS.CloudDome.prototype.renderClouds = function() {
-  var gl, saveState;
-  gl = canvas.context;
-  saveState = {
-    blend: gl.getParameter(gl.BLEND),
-    depthTest: gl.getParameter(gl.DEPTH_TEST)
-  };
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.enable(gl.BLEND);
-  gl.useProgram(CloudDomeModule.shaderProgram);
-  gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
-  gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  if (!saveState.blend) {
-    gl.disable(gl.BLEND);
-  }
-  return null;
+  return CloudDomeModule.renderDome;
 };
 SceneJS.CloudDome.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
     if (!CloudDomeModule.vertexBuffer) {
-      CloudDomeModule.createResources();
+      CloudDomeModule.createResources(canvas.context);
     }
-    this.renderClouds();
+    this.renderClouds(canvas.context);
   }
   return null;
 };

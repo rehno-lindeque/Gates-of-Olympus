@@ -17,9 +17,7 @@ CloudDomeModule =
   vertexBuffer: null
   shaderProgram: null
   
-  createResources: ->
-    gl = canvas.context
-    
+  createResources: (gl) ->
     # Create the vertex buffer
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
@@ -50,31 +48,37 @@ CloudDomeModule =
       if @shaderProgram then @shaderProgram.destroy()
       if @vertexBuffer then @vertexBuffer.destroy()
     null
+  
+  renderDome: (gl) ->
+    # Change gl state
+    saveState =
+      blend:     gl.getParameter(gl.BLEND)
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.enable(gl.BLEND)
+    #gl.disable(gl.DEPTH_TEST)
+    
+    # Bind shaders and parameters
+    gl.useProgram(CloudDomeModule.shaderProgram)
+    gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer)
+    gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    
+    # Draw geometry
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    
+    # Restore gl state
+    if not saveState.blend then gl.disable(gl.BLEND)
+    #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    null
 
 ###
 SceneJS listeners
 ###
 
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.SCENE_RENDERING
-#  () -> canvas = null
-#)
-# 
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.CANVAS_ACTIVATED
-#  (c) -> canvas = c
-#)
-# 
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.CANVAS_DEACTIVATED
-#  () -> canvas = null
-#)
-
 SceneJS._eventModule.addListener(
   SceneJS._eventModule.RESET
   () ->
     CloudDomeModule.destroyResources()
-    #canvas = null
 )
 
 ###
@@ -96,33 +100,12 @@ SceneJS.CloudDome.prototype.getColor = ->
   radius: @radius
 
 SceneJS.CloudDome.prototype.renderClouds = ->
-  gl = canvas.context
-  
-  # Change gl state
-  saveState =
-    blend:     gl.getParameter(gl.BLEND)
-    depthTest: gl.getParameter(gl.DEPTH_TEST)
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-  gl.enable(gl.BLEND)
-  #gl.disable(gl.DEPTH_TEST)
-  
-  # Bind shaders and parameters
-  gl.useProgram(CloudDomeModule.shaderProgram)
-  gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer)
-  gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
-  
-  # Draw geometry
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  
-  # Restore gl state
-  if not saveState.blend then gl.disable(gl.BLEND)
-  #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
-  null
+  CloudDomeModule.renderDome
 
 SceneJS.CloudDome.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
-    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources()
-    @renderClouds()
+    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(canvas.context)
+    @renderClouds(canvas.context)
   null
 

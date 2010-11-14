@@ -16,6 +16,9 @@ canvas.height = window.innerHeight
 gameScene.render()
 gui.initialize()
 
+# Manual webgl initialization (for rendering things stand-alone
+customGL = canvas.getContext("experimental-webgl");
+
 ###
 Development
 ###
@@ -192,6 +195,10 @@ window.render = ->
   
   # Render the scene
   gameScene.render();
+  
+  # Render the atmospheric dome
+  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL)
+  CloudDomeModule.renderDome(customGL)
 
 interval = window.setInterval("window.render()", 10);
 
