@@ -194,11 +194,29 @@ window.render = ->
   timeline.update (timeline.time + 0.1)
   
   # Render the scene
-  gameScene.render();
+  gameScene.render()
   
   # Render the atmospheric dome
   if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL)
-  CloudDomeModule.renderDome(customGL)
+  
+  optics = backgroundCamera.optics
+  invProjection = inverseMat4(perspectiveMatrix4(
+    optics.fovy * Math.PI / 180.0
+    optics.aspect
+    optics.near
+    optics.far
+  ))
+  
+  eye = levelLookAt.backgroundLookAtNode.eye
+  look = levelLookAt.backgroundLookAtNode.look
+  up = levelLookAt.backgroundLookAtNode.up
+  invView = inverseMat4(lookAtMat4c(
+    eye.x, eye.y, eye.z,
+    look.x, look.y, look.z,
+    up.x, up.y, up.z
+  ))
+  
+  CloudDomeModule.renderDome(customGL, invProjection, invView)
 
 interval = window.setInterval("window.render()", 10);
 

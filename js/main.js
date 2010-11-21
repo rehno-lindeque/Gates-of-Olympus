@@ -156,7 +156,7 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var c;
+    var c, eye, invProjection, invView, look, optics, up;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
       if (guiDaisRotPosition[c] > 0) {
@@ -176,7 +176,13 @@
     if (!CloudDomeModule.vertexBuffer) {
       CloudDomeModule.createResources(customGL);
     }
-    return CloudDomeModule.renderDome(customGL);
+    optics = backgroundCamera.optics;
+    invProjection = inverseMat4(perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far));
+    eye = levelLookAt.backgroundLookAtNode.eye;
+    look = levelLookAt.backgroundLookAtNode.look;
+    up = levelLookAt.backgroundLookAtNode.up;
+    invView = inverseMat4(lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z));
+    return CloudDomeModule.renderDome(customGL, invProjection, invView);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
