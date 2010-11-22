@@ -30,8 +30,8 @@ CloudDomeModule =
     
     # Create shader program
     @shaderProgram = gl.createProgram()
-    vertexShader = compileShader(gl, "clouddome-vs")
-    fragmentShader = compileShader(gl, "clouddome-fs")
+    vertexShader = compileShader(gl, "fullscreenquad-vs")
+    fragmentShader = compileShader(gl, "atmosphere-fs")
     gl.attachShader(@shaderProgram, vertexShader)
     gl.attachShader(@shaderProgram, fragmentShader)
     gl.linkProgram(@shaderProgram)

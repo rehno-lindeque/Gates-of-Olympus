@@ -21,8 +21,8 @@ CloudDomeModule = {
     vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
-    vertexShader = compileShader(gl, "clouddome-vs");
-    fragmentShader = compileShader(gl, "clouddome-fs");
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
     gl.linkProgram(this.shaderProgram);
