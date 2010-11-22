@@ -52,15 +52,16 @@ MoonModule =
     #gl.disable(gl.DEPTH_TEST)
     
     # Bind shaders and parameters
-    gl.useProgram(@shaderProgram)
+    shaderProgram = @shaderProgram
+    gl.useProgram(shaderProgram)
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
     
-    @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
-    @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
+    shaderProgram.view = gl.getUniformLocation(shaderProgram, "view")
+    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure")
     
-    gl.uniformMatrix4fv(@shaderProgram.view, false, new Float32Array(view))
-    gl.uniform1f(@shaderProgram.exposure, 0.4)
+    #gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
+    #gl.uniform1f(shaderProgram.exposure, 0.4)
     
     # Draw geometry
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)

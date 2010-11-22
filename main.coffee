@@ -207,7 +207,7 @@ window.render = ->
   )
 
   optics = backgroundCamera.optics
-  
+
   # Render the atmospheric dome
   if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL)
 

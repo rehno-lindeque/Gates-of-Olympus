@@ -53,6 +53,7 @@ CloudDomeModule = {
     };
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
+    gl.depthMask(false);
     shaderProgram = CloudDomeModule.shaderProgram;
     gl.useProgram(shaderProgram);
     gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
@@ -71,6 +72,7 @@ CloudDomeModule = {
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
     }
+    gl.depthMask(true);
     return null;
   }
 };

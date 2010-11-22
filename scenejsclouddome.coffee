@@ -57,6 +57,7 @@ CloudDomeModule =
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.enable(gl.BLEND)
     #gl.disable(gl.DEPTH_TEST)
+    gl.depthMask(false)
     
     # Bind shaders and parameters
     shaderProgram = CloudDomeModule.shaderProgram
@@ -94,6 +95,7 @@ CloudDomeModule =
     # Restore gl state
     if not saveState.blend then gl.disable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.depthMask(true)
     null
 
 ###

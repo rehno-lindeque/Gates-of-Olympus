@@ -568,20 +568,19 @@ MoonModule = {
     return null;
   },
   render: function(gl, view) {
-    var saveState;
+    var saveState, shaderProgram;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     };
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
-    gl.useProgram(this.shaderProgram);
+    shaderProgram = this.shaderProgram;
+    gl.useProgram(shaderProgram);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
-    this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
-    gl.uniformMatrix4fv(this.shaderProgram.view, false, new Float32Array(view));
-    gl.uniform1f(this.shaderProgram.exposure, 0.4);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    shaderProgram.view = gl.getUniformLocation(shaderProgram, "view");
+    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure");
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
