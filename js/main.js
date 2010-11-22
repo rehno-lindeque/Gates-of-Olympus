@@ -156,7 +156,7 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var c, eye, invProjection, invView, look, optics, up;
+    var c, eye, invProjection, invView, look, optics, up, view;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
       if (guiDaisRotPosition[c] > 0) {
@@ -173,16 +173,18 @@
     level.update();
     timeline.update(timeline.time + 0.1);
     gameScene.render();
-    if (!CloudDomeModule.vertexBuffer) {
-      CloudDomeModule.createResources(customGL);
-    }
-    optics = backgroundCamera.optics;
-    invProjection = inverseMat4(perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far));
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
-    invView = inverseMat4(lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z));
-    return CloudDomeModule.renderDome(customGL, invProjection, invView);
+    view = lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
+    optics = backgroundCamera.optics;
+    if (!CloudDomeModule.vertexBuffer) {
+      CloudDomeModule.createResources(customGL);
+    }
+    invView = inverseMat4(view);
+    invProjection = inverseMat4(perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far));
+    CloudDomeModule.renderDome(customGL, invProjection, invView);
+    return moon.render(customGL, view);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);

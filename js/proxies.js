@@ -604,5 +604,8 @@ Moon = function() {
   return this;
 };
 Moon.prototype.render = function(gl, view) {
+  if (!MoonModule.vertexBuffer) {
+    MoonModule.createResources(gl);
+  }
   return MoonModule.render(gl, view);
 };

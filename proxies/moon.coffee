@@ -110,5 +110,6 @@ class Moon
     @velocity = [0, 0]
   
   render: (gl, view) ->
+    if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
     MoonModule.render(gl, view)
 

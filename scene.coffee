@@ -14,6 +14,7 @@ level = new Level
 levelCamera = new LevelCamera(level.node)
 levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
 guiCamera = new GUICamera(gui, levelCamera)
+moon = new Moon
 
 ###
 The main scene definition

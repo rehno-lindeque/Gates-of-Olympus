@@ -1,4 +1,4 @@
-var backgroundCamera, gameScene, gui, guiCamera, level, levelCamera, levelLookAt, sceneNode, skybox;
+var backgroundCamera, gameScene, gui, guiCamera, level, levelCamera, levelLookAt, moon, sceneNode, skybox;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -13,6 +13,7 @@ level = new Level();
 levelCamera = new LevelCamera(level.node);
 levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node);
 guiCamera = new GUICamera(gui, levelCamera);
+moon = new Moon();
 /*
 The main scene definition
 */
