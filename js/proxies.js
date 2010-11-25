@@ -569,6 +569,7 @@ MoonModule = {
     this.shaderProgram.textureCoord = gl.getAttribLocation(this.shaderProgram, "textureCoord");
     gl.enableVertexAttribArray(this.shaderProgram.textureCoord);
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
     this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
     this.shaderProgram.colorSampler = gl.getUniformLocation(this.shaderProgram, "colorSampler");
     return null;
@@ -590,7 +591,7 @@ MoonModule = {
     }
     return null;
   },
-  render: function(gl, view) {
+  render: function(gl, view, projection) {
     var k, saveState, shaderProgram;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
@@ -613,6 +614,7 @@ MoonModule = {
     gl.enableVertexAttribArray(shaderProgram.textureCoord);
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.uniform1f(shaderProgram.exposure, 0.4);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.activeTexture(gl.TEXTURE0);
@@ -637,9 +639,9 @@ Moon = function() {
   this.velocity = [0, 0];
   return this;
 };
-Moon.prototype.render = function(gl, view) {
+Moon.prototype.render = function(gl, view, projection) {
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
-  return MoonModule.render(gl, view);
+  return MoonModule.render(gl, view, projection);
 };

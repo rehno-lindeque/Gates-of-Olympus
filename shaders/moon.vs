@@ -2,6 +2,7 @@ attribute vec2 vertexPosition;
 attribute vec2 textureCoord;
 
 uniform mat4 view;
+uniform mat4 projection;
 
 varying vec2 vTextureCoord;
 

@@ -57,6 +57,7 @@ MoonModule =
     gl.enableVertexAttribArray(@shaderProgram.textureCoord)
 
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
+    @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
     @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
     @shaderProgram.colorSampler = gl.getUniformLocation(@shaderProgram, "colorSampler")
     null
@@ -69,7 +70,7 @@ MoonModule =
       if @texture then @texture.destroy()
     null
   
-  render: (gl, view) ->
+  render: (gl, view, projection) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -100,6 +101,7 @@ MoonModule =
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0)
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
     gl.uniform1f(shaderProgram.exposure, 0.4)
     
@@ -154,7 +156,7 @@ class Moon
     @position = [0, 0]
     @velocity = [0, 0]
   
-  render: (gl, view) ->
+  render: (gl, view, projection) ->
     if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
-    MoonModule.render(gl, view)
+    MoonModule.render(gl, view, projection)
 
