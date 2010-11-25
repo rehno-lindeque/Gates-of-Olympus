@@ -183,7 +183,6 @@
     }
     invView = inverseMat4(view);
     invProjection = inverseMat4(perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far));
-    CloudDomeModule.renderDome(customGL, invProjection, invView);
     return moon.render(customGL, view);
   };
   interval = window.setInterval("window.render()", 10);
