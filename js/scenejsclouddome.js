@@ -14,16 +14,15 @@ Cloud Dome Module
 CloudDomeModule = {
   vertexBuffer: null,
   shaderProgram: null,
-  createResources: function() {
-    var fragmentShader, gl, vertexShader, vertices;
-    gl = canvas.context;
+  createResources: function(gl) {
+    var fragmentShader, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
-    vertexShader = compileShader(gl, "clouddome-vs");
-    fragmentShader = compileShader(gl, "clouddome-fs");
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
     gl.linkProgram(this.shaderProgram);
@@ -44,6 +43,36 @@ CloudDomeModule = {
         this.vertexBuffer.destroy();
       }
     }
+    return null;
+  },
+  renderDome: function(gl, invProjection, invView) {
+    var saveState, shaderProgram;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.depthMask(false);
+    shaderProgram = CloudDomeModule.shaderProgram;
+    gl.useProgram(shaderProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    shaderProgram.camera = gl.getUniformLocation(shaderProgram, "camera");
+    shaderProgram.sun = gl.getUniformLocation(shaderProgram, "sun");
+    shaderProgram.invProjection = gl.getUniformLocation(shaderProgram, "invProjection");
+    shaderProgram.invView = gl.getUniformLocation(shaderProgram, "invView");
+    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure");
+    gl.uniform3f(shaderProgram.camera, 0.0, 0.0, 1.0);
+    gl.uniform3f(shaderProgram.sun, 0.0, 0.0, 1.0);
+    gl.uniformMatrix4fv(shaderProgram.invProjection, false, new Float32Array(invProjection));
+    gl.uniformMatrix4fv(shaderProgram.invView, false, new Float32Array(invView));
+    gl.uniform1f(shaderProgram.exposure, 0.4);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
     return null;
   }
 };
@@ -71,31 +100,14 @@ SceneJS.CloudDome.prototype.getColor = function() {
     radius: this.radius
   };
 };
-SceneJS.CloudDome.prototype.renderClouds = function() {
-  var gl, saveState;
-  gl = canvas.context;
-  saveState = {
-    blend: gl.getParameter(gl.BLEND),
-    depthTest: gl.getParameter(gl.DEPTH_TEST)
-  };
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.enable(gl.BLEND);
-  gl.useProgram(CloudDomeModule.shaderProgram);
-  gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
-  gl.vertexAttribPointer(CloudDomeModule.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  if (!saveState.blend) {
-    gl.disable(gl.BLEND);
-  }
-  return null;
-};
+SceneJS.CloudDome.prototype.renderClouds = function() {};
 SceneJS.CloudDome.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
     if (!CloudDomeModule.vertexBuffer) {
-      CloudDomeModule.createResources();
+      CloudDomeModule.createResources(canvas.context);
     }
-    this.renderClouds();
+    this.renderClouds(canvas.context);
   }
   return null;
 };

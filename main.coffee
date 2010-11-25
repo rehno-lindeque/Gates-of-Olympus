@@ -30,6 +30,10 @@ marchSoundListener = () ->
 	
 marchSound.addEventListener('ended', marchSoundListener, false)
 ###
+
+# Manual webgl initialization (for rendering things stand-alone
+customGL = canvas.getContext("experimental-webgl");
+
 ###
 Development
 ###
@@ -210,7 +214,36 @@ window.render = ->
   timeline.update (timeline.time + 0.1)
   
   # Render the scene
-  gameScene.render();
+  gameScene.render()
+
+  # Calculate common rendering parameters
+  eye = levelLookAt.backgroundLookAtNode.eye
+  look = levelLookAt.backgroundLookAtNode.look
+  up = levelLookAt.backgroundLookAtNode.up
+  view = lookAtMat4c(
+    eye.x, eye.y, eye.z,
+    look.x, look.y, look.z,
+    up.x, up.y, up.z
+  )
+
+  optics = backgroundCamera.optics
+
+  # Render the atmospheric dome
+  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL)
+
+  invView = inverseMat4(view)
+  
+  invProjection = inverseMat4(perspectiveMatrix4(
+    optics.fovy * Math.PI / 180.0
+    optics.aspect
+    optics.near
+    optics.far
+  ))
+  
+  CloudDomeModule.renderDome(customGL, invProjection, invView)
+  
+  # Render astronomical objects
+  moon.render(customGL, view)
 
 interval = window.setInterval("window.render()", 10);
 

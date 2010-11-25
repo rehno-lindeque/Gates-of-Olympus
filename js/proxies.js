@@ -515,19 +515,7 @@ BackgroundCamera = function(backgroundNode) {
   this.node = {
     type: "camera",
     id: "backgroundCamera",
-    optics: this.optics,
-    nodes: [
-      {
-        type: "cloud-dome",
-        radius: 100.0,
-        nodes: [
-          {
-            type: "stationary",
-            nodes: [backgroundNode]
-          }
-        ]
-      }
-    ]
+    optics: this.optics
   };
   return this;
 };
@@ -537,4 +525,85 @@ BackgroundCamera.prototype.withNode = function() {
 BackgroundCamera.prototype.reconfigure = function(canvasSize) {
   this.optics.aspect = canvasSize[0] / canvasSize[1];
   return this.withNode().set("optics", this.optics);
+};var Moon, MoonModule;
+/*
+A proxy for the moon
+*/
+/*
+Moon Module
+*/
+MoonModule = {
+  vertexBuffer: null,
+  shaderProgram: null,
+  createResources: function(gl) {
+    var fragmentShader, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "moon-vs");
+    fragmentShader = compileShader(gl, "moon-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+    }
+    return null;
+  },
+  render: function(gl, view) {
+    var saveState, shaderProgram;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    shaderProgram = this.shaderProgram;
+    gl.useProgram(shaderProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    shaderProgram.view = gl.getUniformLocation(shaderProgram, "view");
+    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure");
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    return null;
+  }
+};
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  return MoonModule.destroyResources();
+});
+/*
+Moon proxy
+*/
+Moon = function() {
+  this.position = [0, 0];
+  this.velocity = [0, 0];
+  return this;
+};
+Moon.prototype.render = function(gl, view) {
+  if (!MoonModule.vertexBuffer) {
+    MoonModule.createResources(gl);
+  }
+  return MoonModule.render(gl, view);
 };

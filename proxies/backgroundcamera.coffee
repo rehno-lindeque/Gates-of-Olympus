@@ -14,14 +14,14 @@ class BackgroundCamera
       type:   "camera"
       id:     "backgroundCamera"
       optics: @optics
-      nodes: [
-        type: "cloud-dome"
-        radius:  100.0
-        nodes: [ 
-          type: "stationary"
-          nodes: [ backgroundNode ]  
-        ]
-      ]
+      #nodes: [
+      #  type: "cloud-dome"
+      #  radius:  100.0
+      #  nodes: [ 
+      #    type: "stationary"
+      #    nodes: [ backgroundNode ]  
+      #  ]
+      #]
   
   withNode: -> SceneJS.withNode "backgroundCamera"
   
