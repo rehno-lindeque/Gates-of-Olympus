@@ -8,6 +8,8 @@ uniform sampler2D colorSampler;
 uniform float exposure;
 
 void main(void) {
+  if(distance(vTextureCoord, vec2(0.5, 0.5)) > 0.5)
+    discard;
   //gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   //gl_FragColor = texture2D(colorSampler, vec2(vTextureCoord.s, vTextureCoord.t)) + vec4(0.5,0.0,0.0,1.0);
   //gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
