@@ -314,14 +314,15 @@ LevelLookAt.prototype.withBackgroundLookAt = function() {
   return SceneJS.withNode("BackgroundLookAt");
 };
 LevelLookAt.prototype.update = function() {
-  var cosAngle, eyeCfg;
+  var cosAngle;
   cosAngle = Math.cos(this.angle);
-  eyeCfg = {
+  this.lookAtNode.eye = {
     x: (Math.sin(this.angle)) * this.radius,
     y: cosAngle * -this.radius,
     z: 7.0
   };
-  this.withSceneLookAt().set("eye", eyeCfg);
+  this.backgroundLookAtNode.eye = this.lookAtNode.eye;
+  this.withSceneLookAt().set("eye", this.lookAtNode.eye);
   return this.withBackgroundLookAt().set("eye", eyeCfg);
 };var GUIDais, guiDaisNode;
 /*

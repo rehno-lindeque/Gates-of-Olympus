@@ -32,6 +32,7 @@ class LevelLookAt
   
   update: ->
     cosAngle = Math.cos @angle
-    eyeCfg = { x: (Math.sin @angle) * @radius, y: cosAngle * -@radius, z: 7.0 }
-    @withSceneLookAt().set("eye", eyeCfg)
+    @lookAtNode.eye = { x: (Math.sin @angle) * @radius, y: cosAngle * -@radius, z: 7.0 }
+    @backgroundLookAtNode.eye = @lookAtNode.eye
+    @withSceneLookAt().set("eye", @lookAtNode.eye)
     @withBackgroundLookAt().set("eye", eyeCfg)
