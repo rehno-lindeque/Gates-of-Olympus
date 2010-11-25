@@ -139,6 +139,7 @@
   mouseUp = function() {
     if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
       level.addTower(towerPlacement, gui.selectedDais);
+      dirtyLevel[towerPlacement.level] = true;
     }
     return (mouseDragging = false);
   };

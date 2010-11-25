@@ -167,6 +167,7 @@ mouseUp = ->
   #alert "Up! " + mouseDragging + " " + towerPlacement + " " + gui.selectedDais
   if towerPlacement.level != -1 and gui.selectedDais != -1
     level.addTower(towerPlacement, gui.selectedDais)
+    dirtyLevel[towerPlacement.level] = true
   mouseDragging = false
 
 mouseMove = (event) ->

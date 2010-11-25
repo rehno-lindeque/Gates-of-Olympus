@@ -11,6 +11,7 @@ class Creature
   create: () ->
     @pos = [0.0,0.0,0.0]
     @rot = 0.0
+    @level = 2
     #@node = null
     @health = 0
     null
@@ -47,21 +48,44 @@ class Creatures
       type: "translate"
       x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]
       nodes: [
-        type: "rotate"
+        type: "rotate",
         angle: 0.0, z: 1.0
         nodes: [ type: "instance", target:"Scorpion" ]
       ]
     ])
     creature
   
+
+  
   update: ->
     c = 0
     creatures = @creatures
     #floyd()
+    
     floodInit()
-    floodFill(6+ 6*gridSize)
-    #floodFillDebug
-    floodFillGenPath(6,6+ 6*gridSize)
+    start = 6+ 6*gridSize
+    goal  = 6+ 11*gridSize
+    x = creatures[c].pos[0]
+    y = creatures[c].pos[1]
+    #curPosX = Math.floor((x/cellScale) + gridSize/2)
+    #curPosY = Math.floor((y/cellScale) + gridSize/2)
+    index = positionToIndex(x,y) #curPosX + gridSize*curPosY
+    if (dirtyLevel[creatures[c].level])
+      floodFill(goal)
+      
+    if (index != goal)
+      vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
+      if (!vel? || dirtyLevel[creatures[c].level])
+        floodFillGenPath(index,goal)
+        vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
+      
+      creatures[c].pos[0] = x + vel.x*0.1
+      creatures[c].pos[1] = y + vel.y*0.1
+      creatures[c].rot = 180*Math.atan2(vel.y,vel.x)/Math.PI - 90
+    else 
+      resetPos = indexToPosition(6,6)
+      creatures[c].pos[0] = resetPos.x
+      creatures[c].pos[1] = resetPos.y
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
