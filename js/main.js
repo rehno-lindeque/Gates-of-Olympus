@@ -15,7 +15,6 @@
   canvas.height = window.innerHeight;
   gameScene.render();
   gui.initialize();
-  customGL = canvas.getContext("experimental-webgl");
   /*
   Sound
   */
@@ -28,6 +27,7 @@
 
   marchSound.addEventListener('ended', marchSoundListener, false)
   */
+  customGL = canvas.getContext("experimental-webgl");
   /*
   Development
   */

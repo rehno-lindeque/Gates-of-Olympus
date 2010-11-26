@@ -97,15 +97,15 @@ floodFill = (goal) ->
         if (x>=0 && x < gridSize && y>=0 && y < gridSize)
           index = (x) + (y)*gridSize
           if (index != goal) #grid[index] == 0 &&  this might not work in all situations, so lets see
-            if (level.towers.towers[index + sqrGridSize] != -1)
+            if (level.towers.towers[index] != -1) 
               grid[index] = Infinity
             else
-              shortestThroughNode = grid[pos] + Math.abs(i) + Math.abs(j)
+              shortestThroughNode = grid[pos] + Math.abs(i) + Math.abs(j)         #might not be necessary
               if (shortestThroughNode < grid[index] || grid[index] == 0)
                 if (grid[index] == 0)
                   Q[l] = index
                   l++
-                grid[index] = grid[pos] + Math.abs(i) + Math.abs(j)
+                grid[index] = shortestThroughNode
                
 	
   # end while f<=l
@@ -130,9 +130,12 @@ floodFillGenPath = (start,goal) ->
         y = Math.floor(cur / gridSize) + i
         if (x>=0 && x < gridSize && y>=0 && y < gridSize)
           index = (x) + (y)*gridSize
-          if (grid[index] < shortest && level.towers.towers[index + sqrGridSize] == -1) 
-            shortest = grid[index]
-            shortestIndex = index
+          if (grid[index] < shortest && level.towers.towers[index] == -1) 
+            if ((i+j != 1 && (level.towers.towers[index-j] != -1 || level.towers.towers[index-i*gridSize] != -1))) # corner
+              wow = true
+            else 
+              shortest = grid[index]
+              shortestIndex = index
     next[cur][goal] = shortestIndex
     cur = shortestIndex
     shortest = Infinity

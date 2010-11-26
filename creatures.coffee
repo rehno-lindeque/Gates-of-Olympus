@@ -9,9 +9,9 @@ Creature types
 
 class Creature
   create: () ->
-    @pos = [0.0,0.0,0.0]
+    @pos = [0.0,0.0,platformHeights[0]-1.75]
     @rot = 0.0
-    @level = 2
+    @level = 1
     #@node = null
     @health = 0
     null

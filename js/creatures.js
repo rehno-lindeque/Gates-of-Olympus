@@ -16,9 +16,9 @@ Creature types
 */
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.pos = [0.0, 0.0, 0.0];
+  this.pos = [0.0, 0.0, platformHeights[0] - 1.75];
   this.rot = 0.0;
-  this.level = 2;
+  this.level = 1;
   this.health = 0;
   return null;
 };
