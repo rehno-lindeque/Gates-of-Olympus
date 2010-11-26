@@ -70,7 +70,7 @@ MoonModule =
       if @texture then @texture.destroy()
     null
   
-  render: (gl, view, projection) ->
+  render: (gl, view, projection, position) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -154,9 +154,11 @@ class Moon
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
     @position = [0, 0]
-    @velocity = [0, 0]
+    @velocity = [0, 0.1]
   
-  render: (gl, view, projection) ->
+  render: (gl, view, projection, time) ->
+    @position[0] = @velocity[0] * time
+    @position[1] = @velocity[1] * time
     if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
-    MoonModule.render(gl, view, projection)
+    MoonModule.render(gl, view, projection, @position)
 

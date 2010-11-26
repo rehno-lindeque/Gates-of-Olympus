@@ -8,7 +8,7 @@ Copyright 2010, Rehno Lindeque.
 */
 Timeline = function() {
   this.events = new Array();
-  this.time = 0.0;
+  this.time = 0;
   this.index = 0;
   null;
   return this;
@@ -17,8 +17,8 @@ Timeline.prototype.addEvent = function(time, handler) {
   this.events[this.events.length] = [time, handler];
   return null;
 };
-Timeline.prototype.update = function(time) {
-  this.time = time;
+Timeline.prototype.update = function(deltaTime) {
+  this.time += deltaTime;
   while (this.index < this.events.length && (this.events[this.index][0] <= this.time)) {
     this.events[this.index][1](this.time);
     this.index = this.index + 1;

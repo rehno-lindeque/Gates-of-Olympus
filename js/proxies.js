@@ -590,7 +590,7 @@ MoonModule = {
     }
     return null;
   },
-  render: function(gl, view, projection) {
+  render: function(gl, view, projection, position) {
     var k, saveState, shaderProgram;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
@@ -635,12 +635,14 @@ Moon proxy
 */
 Moon = function() {
   this.position = [0, 0];
-  this.velocity = [0, 0];
+  this.velocity = [0, 0.1];
   return this;
 };
-Moon.prototype.render = function(gl, view, projection) {
+Moon.prototype.render = function(gl, view, projection, time) {
+  this.position[0] = this.velocity[0] * time;
+  this.position[1] = this.velocity[1] * time;
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
-  return MoonModule.render(gl, view, projection);
+  return MoonModule.render(gl, view, projection, this.position);
 };

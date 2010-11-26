@@ -171,7 +171,7 @@
     }
     gui.update();
     level.update();
-    timeline.update(timeline.time + 0.1);
+    timeline.update(1);
     gameScene.render();
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
@@ -183,7 +183,7 @@
       CloudDomeModule.createResources(customGL);
     }
     CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view));
-    return moon.render(customGL, view, projection);
+    return moon.render(customGL, view, projection, timeline.time);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
