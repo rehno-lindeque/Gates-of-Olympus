@@ -314,16 +314,14 @@ LevelLookAt.prototype.withBackgroundLookAt = function() {
   return SceneJS.withNode("BackgroundLookAt");
 };
 LevelLookAt.prototype.update = function() {
-  var cosAngle;
-  cosAngle = Math.cos(this.angle);
   this.lookAtNode.eye = {
     x: (Math.sin(this.angle)) * this.radius,
-    y: cosAngle * -this.radius,
+    y: (Math.cos(this.angle)) * -this.radius,
     z: 7.0
   };
   this.backgroundLookAtNode.eye = this.lookAtNode.eye;
   this.withSceneLookAt().set("eye", this.lookAtNode.eye);
-  return this.withBackgroundLookAt().set("eye", eyeCfg);
+  return this.withBackgroundLookAt().set("eye", this.lookAtNode.eye);
 };var GUIDais, guiDaisNode;
 /*
 A proxy for dais tower selection gui element

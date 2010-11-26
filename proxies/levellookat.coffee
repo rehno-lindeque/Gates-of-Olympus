@@ -31,8 +31,7 @@ class LevelLookAt
   withBackgroundLookAt: -> SceneJS.withNode "BackgroundLookAt"
   
   update: ->
-    cosAngle = Math.cos @angle
-    @lookAtNode.eye = { x: (Math.sin @angle) * @radius, y: cosAngle * -@radius, z: 7.0 }
+    @lookAtNode.eye = { x: (Math.sin @angle) * @radius, y: (Math.cos @angle) * -@radius, z: 7.0 }
     @backgroundLookAtNode.eye = @lookAtNode.eye
     @withSceneLookAt().set("eye", @lookAtNode.eye)
-    @withBackgroundLookAt().set("eye", eyeCfg)
+    @withBackgroundLookAt().set("eye", @lookAtNode.eye)
