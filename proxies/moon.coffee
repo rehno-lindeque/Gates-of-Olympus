@@ -56,6 +56,7 @@ MoonModule =
     @shaderProgram.textureCoord = gl.getAttribLocation(@shaderProgram, "textureCoord")
     gl.enableVertexAttribArray(@shaderProgram.textureCoord)
 
+    @shaderProgram.orbit = gl.getUniformLocation(@shaderProgram, "orbit")
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
     @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
@@ -70,7 +71,7 @@ MoonModule =
       if @texture then @texture.destroy()
     null
   
-  render: (gl, view, projection, position) ->
+  render: (gl, view, projection, orbit) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -100,6 +101,7 @@ MoonModule =
     gl.enableVertexAttribArray(shaderProgram.textureCoord)
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0)
     
+    gl.uniformMatrix4fv(shaderProgram.orbit, false, new Float32Array(orbit))
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
