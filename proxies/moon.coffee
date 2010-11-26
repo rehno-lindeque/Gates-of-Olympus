@@ -8,10 +8,18 @@ Moon Module
 
 MoonModule =
   vertexBuffer: null
+  textureCoordBuffer: null
   shaderProgram: null
+  texture: null
   
   createResources: (gl) ->
-    # Create the vertex buffer
+    # Create the texture
+    tex = @texture = gl.createTexture()
+    tex.image = new Image()
+    tex.image.src = "textures/moon.png"
+    tex.image.onload = -> configureTexture(gl, tex)
+
+    # Create the position & texture coordinate buffers
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     vertices = [
@@ -20,6 +28,15 @@ MoonModule =
        1.0, -1.0
       -1.0, -1.0 ]
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+    @textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, @textureCoordBuffer);
+    textureCoords = [
+      1.0, 0.0
+      0.0, 0.0
+      1.0, 1.0
+      0.0, 1.0 ]
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
@@ -32,17 +49,28 @@ MoonModule =
     
     # Set shader parameters
     gl.useProgram(@shaderProgram)
+    
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    
+    @shaderProgram.textureCoord = gl.getAttribLocation(@shaderProgram, "textureCoord")
+    gl.enableVertexAttribArray(@shaderProgram.textureCoord)
+
+    @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
+    @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
+    @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
+    @shaderProgram.colorSampler = gl.getUniformLocation(@shaderProgram, "colorSampler")
     null
 
   destroyResources: ->
     if document.getElementById(canvas.canvasId)
       if @shaderProgram then @shaderProgram.destroy()
       if @vertexBuffer then @vertexBuffer.destroy()
+      if @textureCoordBuffer then @textureCoordBuffer.destroy()
+      if @texture then @texture.destroy()
     null
   
-  render: (gl, view) ->
+  render: (gl, view, projection) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -50,25 +78,43 @@ MoonModule =
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.enable(gl.BLEND)
     #gl.disable(gl.DEPTH_TEST)
+    #gl.depthMask(false)
+    #gl.clearDepth(10000.0)
+    #gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
     gl.useProgram(shaderProgram)
+
+    gl.disableVertexAttribArray(k) for k in [2..7]
+    
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, @texture)
+    gl.uniform1i(shaderProgram.colorSampler, 0)
+
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition)
     gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, @textureCoordBuffer)
+    gl.enableVertexAttribArray(shaderProgram.textureCoord)
+    gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0)
     
-    shaderProgram.view = gl.getUniformLocation(shaderProgram, "view")
-    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure")
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
-    #gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
-    #gl.uniform1f(shaderProgram.exposure, 0.4)
+    gl.uniform1f(shaderProgram.exposure, 0.4)
     
     # Draw geometry
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     
     # Restore gl state
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, null)
+
     if not saveState.blend then gl.disable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    #gl.depthMask(true)
     null
 
 ###
@@ -110,7 +156,7 @@ class Moon
     @position = [0, 0]
     @velocity = [0, 0]
   
-  render: (gl, view) ->
+  render: (gl, view, projection) ->
     if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
-    MoonModule.render(gl, view)
+    MoonModule.render(gl, view, projection)
 

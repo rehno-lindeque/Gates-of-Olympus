@@ -227,23 +227,19 @@ window.render = ->
   )
 
   optics = backgroundCamera.optics
-
-  # Render the atmospheric dome
-  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL)
-
-  invView = inverseMat4(view)
-  
-  invProjection = inverseMat4(perspectiveMatrix4(
+  projection = perspectiveMatrix4(
     optics.fovy * Math.PI / 180.0
     optics.aspect
     optics.near
     optics.far
-  ))
-  
-  CloudDomeModule.renderDome(customGL, invProjection, invView)
+  )
+
+  # Render the atmospheric dome
+  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
+  CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
   
   # Render astronomical objects
-  moon.render(customGL, view)
+  moon.render(customGL, view, projection)
 
 interval = window.setInterval("window.render()", 10);
 

@@ -313,14 +313,15 @@ LevelLookAt.prototype.withBackgroundLookAt = function() {
   return SceneJS.withNode("BackgroundLookAt");
 };
 LevelLookAt.prototype.update = function() {
-  var cosAngle, eyeCfg;
+  var cosAngle;
   cosAngle = Math.cos(this.angle);
-  eyeCfg = {
+  this.lookAtNode.eye = {
     x: (Math.sin(this.angle)) * this.radius,
     y: cosAngle * -this.radius,
     z: 7.0
   };
-  this.withSceneLookAt().set("eye", eyeCfg);
+  this.backgroundLookAtNode.eye = this.lookAtNode.eye;
+  this.withSceneLookAt().set("eye", this.lookAtNode.eye);
   return this.withBackgroundLookAt().set("eye", eyeCfg);
 };var GUIDais, guiDaisNode;
 /*
@@ -534,13 +535,25 @@ Moon Module
 */
 MoonModule = {
   vertexBuffer: null,
+  textureCoordBuffer: null,
   shaderProgram: null,
+  texture: null,
   createResources: function(gl) {
-    var fragmentShader, vertexShader, vertices;
+    var fragmentShader, tex, textureCoords, vertexShader, vertices;
+    tex = (this.texture = gl.createTexture());
+    tex.image = new Image();
+    tex.image.src = "textures/moon.png";
+    tex.image.onload = function() {
+      return configureTexture(gl, tex);
+    };
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    textureCoords = [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
     vertexShader = compileShader(gl, "moon-vs");
     fragmentShader = compileShader(gl, "moon-fs");
@@ -553,6 +566,12 @@ MoonModule = {
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.shaderProgram.textureCoord = gl.getAttribLocation(this.shaderProgram, "textureCoord");
+    gl.enableVertexAttribArray(this.shaderProgram.textureCoord);
+    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
+    this.shaderProgram.colorSampler = gl.getUniformLocation(this.shaderProgram, "colorSampler");
     return null;
   },
   destroyResources: function() {
@@ -563,11 +582,17 @@ MoonModule = {
       if (this.vertexBuffer) {
         this.vertexBuffer.destroy();
       }
+      if (this.textureCoordBuffer) {
+        this.textureCoordBuffer.destroy();
+      }
+      if (this.texture) {
+        this.texture.destroy();
+      }
     }
     return null;
   },
-  render: function(gl, view) {
-    var saveState, shaderProgram;
+  render: function(gl, view, projection) {
+    var k, saveState, shaderProgram;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -576,11 +601,24 @@ MoonModule = {
     gl.enable(gl.BLEND);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
+    for (k = 2; k <= 7; k++) {
+      gl.disableVertexAttribArray(k);
+    }
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.uniform1i(shaderProgram.colorSampler, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
     gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    shaderProgram.view = gl.getUniformLocation(shaderProgram, "view");
-    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure");
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    gl.enableVertexAttribArray(shaderProgram.textureCoord);
+    gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.uniform1f(shaderProgram.exposure, 0.4);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, null);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
     }
@@ -601,9 +639,9 @@ Moon = function() {
   this.velocity = [0, 0];
   return this;
 };
-Moon.prototype.render = function(gl, view) {
+Moon.prototype.render = function(gl, view, projection) {
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
-  return MoonModule.render(gl, view);
+  return MoonModule.render(gl, view, projection);
 };
