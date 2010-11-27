@@ -567,7 +567,7 @@ MoonModule = {
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
     this.shaderProgram.textureCoord = gl.getAttribLocation(this.shaderProgram, "textureCoord");
     gl.enableVertexAttribArray(this.shaderProgram.textureCoord);
-    this.shaderProgram.orbit = gl.getUniformLocation(this.shaderProgram, "orbit");
+    this.shaderProgram.pos = gl.getUniformLocation(this.shaderProgram, "pos");
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
     this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
     this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
@@ -592,7 +592,7 @@ MoonModule = {
     return null;
   },
   render: function(gl, view, projection, orbit) {
-    var k, saveState, shaderProgram;
+    var cosAzim, cosIncl, k, pos, saveState, shaderProgram, sinAzim, sinIncl;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -613,7 +613,12 @@ MoonModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
     gl.enableVertexAttribArray(shaderProgram.textureCoord);
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0);
-    gl.uniformMatrix4fv(shaderProgram.orbit, false, new Float32Array(orbit));
+    cosIncl = Math.cos(orbit[0]);
+    sinIncl = Math.sin(orbit[0]);
+    cosAzim = Math.cos(orbit[1]);
+    sinAzim = Math.sin(orbit[1]);
+    pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl];
+    gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.uniform1f(shaderProgram.exposure, 0.4);
@@ -637,7 +642,7 @@ Moon proxy
 */
 Moon = function() {
   this.position = [0, 0];
-  this.velocity = [0, 0.1];
+  this.velocity = [0.05, 0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {

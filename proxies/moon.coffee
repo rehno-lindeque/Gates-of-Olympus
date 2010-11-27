@@ -56,7 +56,8 @@ MoonModule =
     @shaderProgram.textureCoord = gl.getAttribLocation(@shaderProgram, "textureCoord")
     gl.enableVertexAttribArray(@shaderProgram.textureCoord)
 
-    @shaderProgram.orbit = gl.getUniformLocation(@shaderProgram, "orbit")
+    #@shaderProgram.orbit = gl.getUniformLocation(@shaderProgram, "orbit")
+    @shaderProgram.pos = gl.getUniformLocation(@shaderProgram, "pos")
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
     @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
@@ -100,8 +101,19 @@ MoonModule =
     gl.bindBuffer(gl.ARRAY_BUFFER, @textureCoordBuffer)
     gl.enableVertexAttribArray(shaderProgram.textureCoord)
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0)
+
+    # Since gates of olympus uses a left-handed coordinate system with
+    # y as the "up" vector, the inclination starts at (1,0,0) and goes up to (0,1,0)
+    cosIncl = Math.cos(orbit[0])
+    sinIncl = Math.sin(orbit[0])
+    cosAzim = Math.cos(orbit[1])
+    sinAzim = Math.sin(orbit[1])
+    pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
+    #pos = [sinIncl * cosAzim, sinIncl * sinAzim, cosIncl]
+    #pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
+    gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2])
     
-    gl.uniformMatrix4fv(shaderProgram.orbit, false, new Float32Array(orbit))
+    #gl.uniformMatrix4fv(shaderProgram.orbit, false, new Float32Array(orbit))
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
@@ -156,7 +168,7 @@ class Moon
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
     @position = [0, 0]
-    @velocity = [0.1, 0]
+    @velocity = [0.05, 0]
   
   render: (gl, view, projection, time) ->
     @position[0] = @velocity[0] * time
