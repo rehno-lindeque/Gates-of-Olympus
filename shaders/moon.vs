@@ -10,8 +10,17 @@ const float scale = 0.04;
 varying vec2 vTextureCoord;
 
 void main(void) {
-  
-  vec4 p = view * vec4(1.0,0.0,0.0,0.0);
+
+  /* Since gates of olympus uses a left-handed coordinate system with
+     z as the "up" vector, the inclination starts at (1,0,0) and goes up to (0,0,1)
+  */
+
+  float cosIncl = cos(orbit[0]);
+  float sinIncl = sin(orbit[0]);
+  float cosAzim = cos(orbit[1]);
+  float sinAzim = sin(orbit[1]);
+  vec4 pos = vec4(cosIncl * cosAzim, cosIncl * sinAzim, sinIncl, 0.0);
+  vec4 p = view * pos;
   p.z = p.z > 0.0? -10.0 : 0.0;
   gl_Position = vec4(
     p.x + vertexPosition.x * projection[0][0] * scale, 
