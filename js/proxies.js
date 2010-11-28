@@ -651,4 +651,115 @@ Moon.prototype.render = function(gl, view, projection, time) {
   sinAzim = Math.sin(orbit[1]);
   position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
   return MoonModule.render(gl, view, projection, position);
+};var Sun, SunModule;
+/*
+A proxy for the sun
+*/
+/*
+Sun Module
+*/
+SunModule = {
+  vertexBuffer: null,
+  textureCoordBuffer: null,
+  shaderProgram: null,
+  texture: null,
+  createResources: function(gl) {
+    var fragmentShader, textureCoords, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    textureCoords = [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "sun-vs");
+    fragmentShader = compileShader(gl, "sun-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.shaderProgram.textureCoord = gl.getAttribLocation(this.shaderProgram, "textureCoord");
+    gl.enableVertexAttribArray(this.shaderProgram.textureCoord);
+    this.shaderProgram.pos = gl.getUniformLocation(this.shaderProgram, "pos");
+    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+      if (this.textureCoordBuffer) {
+        this.textureCoordBuffer.destroy();
+      }
+    }
+    return null;
+  },
+  render: function(gl, view, projection, pos) {
+    var k, saveState, shaderProgram;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    shaderProgram = this.shaderProgram;
+    gl.useProgram(shaderProgram);
+    for (k = 2; k <= 7; k++) {
+      gl.disableVertexAttribArray(k);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    gl.enableVertexAttribArray(shaderProgram.textureCoord);
+    gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2]);
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.uniform1f(shaderProgram.exposure, 0.4);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    return null;
+  }
+};
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  return SunModule.destroyResources();
+});
+/*
+Sun proxy
+*/
+Sun = function() {
+  this.velocity = [0.01, 0.0];
+  return this;
+};
+Sun.prototype.render = function(gl, view, projection, time) {
+  var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
+  orbit = [Math.PI * 0.3 + this.velocity[0] * time, this.velocity[1] * time];
+  if (!SunModule.vertexBuffer) {
+    SunModule.createResources(gl);
+  }
+  cosIncl = Math.cos(orbit[0]);
+  sinIncl = Math.sin(orbit[0]);
+  cosAzim = Math.cos(orbit[1]);
+  sinAzim = Math.sin(orbit[1]);
+  position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
+  return SunModule.render(gl, view, projection, position);
 };
