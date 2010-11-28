@@ -213,7 +213,7 @@ window.render = ->
     optics.near
     optics.far
   )
-
+  
   # Render the atmospheric dome
   if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
   CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))

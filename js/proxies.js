@@ -636,7 +636,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [0.05, 0.0];
+  this.velocity = [0.01, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {

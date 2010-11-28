@@ -157,7 +157,7 @@ class Moon
     
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @velocity = [0.05, 0.0]
+    @velocity = [0.01, 0.0]
   
   render: (gl, view, projection, time) ->
     #orbit = [ @velocity[0] * time, Math.PI * 0.5 + @velocity[1] * time ]
