@@ -9,7 +9,7 @@ Copyright 2010, Rehno Lindeque.
 class Timeline
   constructor: ->
     @events = new Array()
-    @time = 0.0
+    @time = 0
     @index = 0
     null
   
@@ -17,8 +17,8 @@ class Timeline
     @events[@events.length] = [time, handler]
     null
   
-  update: (time) ->
-    @time = time
+  update: (deltaTime) ->
+    @time += deltaTime
     while @index < @events.length and @events[@index][0] <= @time
       # Run the event before removing it from the queue
       @events[@index][1](@time)

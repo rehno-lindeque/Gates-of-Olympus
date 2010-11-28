@@ -213,8 +213,8 @@ window.render = ->
   level.update()
   
   # Update game events
-  timeline.update (timeline.time + 0.1)
-  
+  timeline.update(1);
+ 
   # Render the scene
   gameScene.render()
 
@@ -235,13 +235,13 @@ window.render = ->
     optics.near
     optics.far
   )
-
+  
   # Render the atmospheric dome
   if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
   CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
   
   # Render astronomical objects
-  moon.render(customGL, view, projection)
+  moon.render(customGL, view, projection, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
 
