@@ -72,7 +72,7 @@ MoonModule =
       if @texture then @texture.destroy()
     null
   
-  render: (gl, view, projection, orbit) ->
+  render: (gl, view, projection, pos) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -102,17 +102,7 @@ MoonModule =
     gl.enableVertexAttribArray(shaderProgram.textureCoord)
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0)
 
-    # Since gates of olympus uses a left-handed coordinate system with
-    # y as the "up" vector, the inclination starts at (1,0,0) and goes up to (0,1,0)
-    cosIncl = Math.cos(orbit[0])
-    sinIncl = Math.sin(orbit[0])
-    cosAzim = Math.cos(orbit[1])
-    sinAzim = Math.sin(orbit[1])
-    pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
-    #pos = [sinIncl * cosAzim, sinIncl * sinAzim, cosIncl]
-    #pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
-    gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2])
-    
+    gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2])   
     #gl.uniformMatrix4fv(shaderProgram.orbit, false, new Float32Array(orbit))
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
@@ -167,12 +157,22 @@ class Moon
     
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @position = [0, 0]
-    @velocity = [0.05, 0]
+    @velocity = [0.05, 0.0]
   
   render: (gl, view, projection, time) ->
-    @position[0] = @velocity[0] * time
-    @position[1] = @velocity[1] * time
+    #orbit = [ @velocity[0] * time, Math.PI * 0.5 + @velocity[1] * time ]
+    orbit = [ @velocity[0] * time, @velocity[1] * time ]
     if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
-    MoonModule.render(gl, view, projection, @position)
+    
+    # Since gates of olympus uses a left-handed coordinate system with
+    # y as the "up" vector, the inclination starts at (0,0,1) and goes up to (0,1,0)
+    cosIncl = Math.cos(orbit[0])
+    sinIncl = Math.sin(orbit[0])
+    cosAzim = Math.cos(orbit[1])
+    sinAzim = Math.sin(orbit[1])
+    #position = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
+    #position = [cosIncl * sinAzim, sinIncl, cosIncl * cosAzim]
+    position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
+    
+    MoonModule.render(gl, view, projection, position)
 

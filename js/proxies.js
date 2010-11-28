@@ -591,8 +591,8 @@ MoonModule = {
     }
     return null;
   },
-  render: function(gl, view, projection, orbit) {
-    var cosAzim, cosIncl, k, pos, saveState, shaderProgram, sinAzim, sinIncl;
+  render: function(gl, view, projection, pos) {
+    var k, saveState, shaderProgram;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -613,11 +613,6 @@ MoonModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
     gl.enableVertexAttribArray(shaderProgram.textureCoord);
     gl.vertexAttribPointer(shaderProgram.textureCoord, 2, gl.FLOAT, false, 0, 0);
-    cosIncl = Math.cos(orbit[0]);
-    sinIncl = Math.sin(orbit[0]);
-    cosAzim = Math.cos(orbit[1]);
-    sinAzim = Math.sin(orbit[1]);
-    pos = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl];
     gl.uniform3f(shaderProgram.pos, pos[0], pos[1], pos[2]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
@@ -641,15 +636,19 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.position = [0, 0];
-  this.velocity = [0.05, 0];
+  this.velocity = [0.05, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
-  this.position[0] = this.velocity[0] * time;
-  this.position[1] = this.velocity[1] * time;
+  var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
+  orbit = [this.velocity[0] * time, this.velocity[1] * time];
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
-  return MoonModule.render(gl, view, projection, this.position);
+  cosIncl = Math.cos(orbit[0]);
+  sinIncl = Math.sin(orbit[0]);
+  cosAzim = Math.cos(orbit[1]);
+  sinAzim = Math.sin(orbit[1]);
+  position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
+  return MoonModule.render(gl, view, projection, position);
 };
