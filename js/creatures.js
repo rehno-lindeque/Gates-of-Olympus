@@ -18,7 +18,8 @@ Creature = function() {};
 Creature.prototype.create = function() {
   this.pos = [0.0, 0.0, platformHeights[0] - 1.75];
   this.rot = 0.0;
-  this.level = 1;
+  this.level = 0;
+  this.index = 6 + 6 * gridSize;
   this.health = 0;
   return null;
 };
@@ -91,15 +92,8 @@ Creatures.prototype.update = function() {
   x = creatures[c].pos[0];
   y = creatures[c].pos[1];
   index = positionToIndex(x, y);
-  if (dirtyLevel[creatures[c].level]) {
-    floodFill(goal);
-  }
   if (index !== goal) {
-    vel = getMove(creatures[c].pos[0], creatures[c].pos[1], goal);
-    if (!(typeof vel !== "undefined" && vel !== null) || dirtyLevel[creatures[c].level]) {
-      floodFillGenPath(index, goal);
-      vel = getMove(creatures[c].pos[0], creatures[c].pos[1], goal);
-    }
+    vel = getMove(creatures[c].pos[0], creatures[c].pos[1], creatures[c].level);
     creatures[c].pos[0] = x + vel.x * 0.1;
     creatures[c].pos[1] = y + vel.y * 0.1;
     creatures[c].rot = 180 * Math.atan2(vel.y, vel.x) / Math.PI - 90;
@@ -107,6 +101,8 @@ Creatures.prototype.update = function() {
     resetPos = indexToPosition(6, 6);
     creatures[c].pos[0] = resetPos.x;
     creatures[c].pos[1] = resetPos.y;
+    creatures[c].level = 1;
+    creatures[c].pos[2] = platformHeights[creatures[c].level] - 1.75;
   }
   SceneJS.withNode("creatures").eachNode(function() {
     this.set({

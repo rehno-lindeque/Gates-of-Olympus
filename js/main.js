@@ -181,6 +181,7 @@
       guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
     gui.update();
+    updateAI();
     level.update();
     timeline.update(timeline.time + 0.1);
     gameScene.render();

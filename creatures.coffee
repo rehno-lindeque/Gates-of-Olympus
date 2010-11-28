@@ -11,8 +11,9 @@ class Creature
   create: () ->
     @pos = [0.0,0.0,platformHeights[0]-1.75]
     @rot = 0.0
-    @level = 1
+    @level = 0
     #@node = null
+    @index = 6+ 6*gridSize
     @health = 0
     null
 
@@ -70,14 +71,13 @@ class Creatures
     #curPosX = Math.floor((x/cellScale) + gridSize/2)
     #curPosY = Math.floor((y/cellScale) + gridSize/2)
     index = positionToIndex(x,y) #curPosX + gridSize*curPosY
-    if (dirtyLevel[creatures[c].level])
-      floodFill(goal)
+   
       
     if (index != goal)
-      vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
-      if (!vel? || dirtyLevel[creatures[c].level])
-        floodFillGenPath(index,goal)
-        vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
+      vel = getMove(creatures[c].pos[0],creatures[c].pos[1],creatures[c].level)
+    #  if (!vel? || dirtyLevel[creatures[c].level])
+    #    floodFillGenPath(index,goal)
+    #    vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
       
       creatures[c].pos[0] = x + vel.x*0.1
       creatures[c].pos[1] = y + vel.y*0.1
@@ -86,6 +86,9 @@ class Creatures
       resetPos = indexToPosition(6,6)
       creatures[c].pos[0] = resetPos.x
       creatures[c].pos[1] = resetPos.y
+      creatures[c].level  = 1 
+      creatures[c].pos[2] = platformHeights[creatures[c].level] - 1.75
+      
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
