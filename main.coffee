@@ -242,6 +242,7 @@ window.render = ->
   
   # Render astronomical objects
   moon.render(customGL, view, projection, timeline.time)
+  sun.render(customGL, view, projection, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
 

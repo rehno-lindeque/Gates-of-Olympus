@@ -21,6 +21,7 @@ coffee --no-wrap -c -o js/proxies proxies/gui.coffee
 coffee --no-wrap -c -o js/proxies proxies/guicamera.coffee
 coffee --no-wrap -c -o js/proxies proxies/backgroundcamera.coffee
 coffee --no-wrap -c -o js/proxies proxies/moon.coffee
+coffee --no-wrap -c -o js/proxies proxies/sun.coffee
 
 cat \
 js/proxies/proxies.js \
@@ -33,6 +34,7 @@ js/proxies/gui.js \
 js/proxies/guicamera.js \
 js/proxies/backgroundcamera.js \
 js/proxies/moon.js \
+js/proxies/sun.js \
 > js/proxies.js
 
 coffee           -c -o js main.coffee
