@@ -183,7 +183,8 @@
       CloudDomeModule.createResources(customGL);
     }
     CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view));
-    return moon.render(customGL, view, projection, timeline.time);
+    moon.render(customGL, view, projection, timeline.time);
+    return sun.render(customGL, view, projection, timeline.time);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
