@@ -748,10 +748,11 @@ Sun proxy
 */
 Sun = function() {
   this.velocity = [0.01, 0.0];
+  this.position = [0.0, 0.0, 0.0];
   return this;
 };
 Sun.prototype.render = function(gl, view, projection, time) {
-  var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
+  var cosAzim, cosIncl, orbit, sinAzim, sinIncl;
   orbit = [Math.PI * 0.3 + this.velocity[0] * time, this.velocity[1] * time];
   if (!SunModule.vertexBuffer) {
     SunModule.createResources(gl);
@@ -760,6 +761,6 @@ Sun.prototype.render = function(gl, view, projection, time) {
   sinIncl = Math.sin(orbit[0]);
   cosAzim = Math.cos(orbit[1]);
   sinAzim = Math.sin(orbit[1]);
-  position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
-  return SunModule.render(gl, view, projection, position);
+  this.position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
+  return SunModule.render(gl, view, projection, this.position);
 };

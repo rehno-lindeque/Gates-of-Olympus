@@ -118,6 +118,7 @@ class Sun
     # Control the sun position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
     @velocity = [0.01, 0.0]
+    @position = [0.0, 0.0, 0.0]
   
   render: (gl, view, projection, time) ->
     orbit = [ Math.PI * 0.3 + @velocity[0] * time, @velocity[1] * time ]
@@ -129,7 +130,7 @@ class Sun
     sinIncl = Math.sin(orbit[0])
     cosAzim = Math.cos(orbit[1])
     sinAzim = Math.sin(orbit[1])
-    position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
+    @position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
     
-    SunModule.render(gl, view, projection, position)
+    SunModule.render(gl, view, projection, @position)
 
