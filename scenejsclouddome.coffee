@@ -16,6 +16,52 @@ Cloud Dome Module
 CloudDomeModule =
   vertexBuffer: null
   shaderProgram: null
+  transmittanceProgram: null
+  transmittanceTexture: null
+
+  createTransmittanceResources: (gl) ->
+    # Create shader program
+    @transmittanceProgram = gl.createProgram()
+    vertexShader = compileShader(gl, "fullscreenquad-vs")
+    fragmentShader = compileShader(gl, "atmosphere-fs")
+    gl.attachShader(@transmittanceProgram, vertexShader)
+    gl.attachShader(@transmittanceProgram, fragmentShader)
+    gl.linkProgram(@transmittanceProgram)
+    if not gl.getProgramParameter(@transmittanceProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+
+    # Get uniform locations
+    
+    # Get attribute array locations
+    gl.useProgram(@transmittanceProgram)
+    @transmittanceProgram.vertexPosition = gl.getAttribLocation(@transmittanceProgram, "vertexPosition")
+    
+    # Create the transmittance texture
+    @transmittanceTexture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, @transmittanceTexture)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null)
+
+    ## Precalculate the transmittance texture
+    
+    # Bind shader parameters
+    gl.enableVertexAttribArray(@transmittanceProgram.vertexPosition)
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+
+    # Create the frame buffer object
+    frameBuffer = gl.createFramebuffer()
+    #renderBuffer = gl.createRenderbuffer()
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, @transmittanceTexture, 0)
+    
+    # Restore gl state
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    gl.deleteFramebuffer(frameBuffer)
+    #gl.deleteRenderbuffer(renderBuffer)
+    null
   
   createResources: (gl) ->
     # Create the vertex buffer
@@ -36,11 +82,20 @@ CloudDomeModule =
     gl.attachShader(@shaderProgram, fragmentShader)
     gl.linkProgram(@shaderProgram)
     if not gl.getProgramParameter(@shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+
+    # Get uniform locations
+    @shaderProgram.camera = gl.getUniformLocation(@shaderProgram, "camera")
+    @shaderProgram.sun = gl.getUniformLocation(@shaderProgram, "sun")
+    @shaderProgram.invProjection = gl.getUniformLocation(@shaderProgram, "invProjection")
+    @shaderProgram.invView = gl.getUniformLocation(@shaderProgram, "invView")
+    @shaderProgram.exposure = gl.getUniformLocation(@shaderProgram, "exposure")
     
-    # Set shader parameters
+    # Get attribute array locations
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
-    gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    
+    # Pre-calculate the lookup textures
+    @createTransmittanceResources(gl)
     null
 
   destroyResources: ->
@@ -49,7 +104,7 @@ CloudDomeModule =
       if @vertexBuffer then @vertexBuffer.destroy()
     null
   
-  renderDome: (gl, invProjection, invView) ->
+  render: (gl, invView, invProjection, sun) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -60,31 +115,24 @@ CloudDomeModule =
     gl.depthMask(false)
     
     # Bind shaders and parameters
-    shaderProgram = CloudDomeModule.shaderProgram
-    gl.useProgram(shaderProgram)
-    gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer)
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    gl.useProgram(@shaderProgram)
+
+    gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
     
-    # 
-    #gl.uniform3f(gl.getUniformLocation(shaderProgram, "camera"), c.x, c.y, c.z);
-    #gl.uniform3f(gl.getUniformLocation(shaderProgram, "sun"), s.x, s.y, s.z);
     #gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "projInverse"), 1, true, iproj.coefficients());
     #gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "viewInverse"), 1, true, iviewf.coefficients());
     #gl.uniform1f(gl.getUniformLocation(shaderProgram, "exposure"), exposure);
     
-    shaderProgram.camera = gl.getUniformLocation(shaderProgram, "camera")
-    shaderProgram.sun = gl.getUniformLocation(shaderProgram, "sun")
-    shaderProgram.invProjection = gl.getUniformLocation(shaderProgram, "invProjection")
-    shaderProgram.invView = gl.getUniformLocation(shaderProgram, "invView")
-    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure")
-    
-    gl.uniform3f(shaderProgram.camera, 0.0, 0.0, 1.0)
-    gl.uniform3f(shaderProgram.sun, 0.0, 0.0, 1.0)
-    #gl.uniformMatrix4fv(shaderProgram.invProjection, false, new Float32Array(pMatrix.flatten())
-    #gl.uniformMatrix4fv(shaderProgram.invView, false, new Float32Array(pMatrix.flatten())
-    gl.uniformMatrix4fv(shaderProgram.invProjection, false, new Float32Array(invProjection))
-    gl.uniformMatrix4fv(shaderProgram.invView, false, new Float32Array(invView))
-    gl.uniform1f(shaderProgram.exposure, 0.4)
+    gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
+    #gl.uniform3f(@shaderProgram.sun, 0.0, 0.0, 1.0)
+    gl.uniform3f(@shaderProgram.sun, sun)
+    #gl.uniformMatrix4fv(@shaderProgram.invProjection, false, new Float32Array(pMatrix.flatten())
+    #gl.uniformMatrix4fv(@shaderProgram.invView, false, new Float32Array(pMatrix.flatten())
+    gl.uniformMatrix4fv(@shaderProgram.invProjection, false, new Float32Array(invProjection))
+    gl.uniformMatrix4fv(@shaderProgram.invView, false, new Float32Array(invView))
+    gl.uniform1f(@shaderProgram.exposure, 1.0)
     
     #varying vec2 coords;
     #varying vec3 ray;
@@ -112,27 +160,35 @@ SceneJS._eventModule.addListener(
 Cloud dome node type
 ###
 
-SceneJS.CloudDome = SceneJS.createNodeType("cloud-dome")
+#SceneJS.CloudDome = SceneJS.createNodeType("cloud-dome")
+#
+#SceneJS.CloudDome.prototype._init = (params) ->
+#  @setRadius params.radius
+#  null
+#  
+#SceneJS.CloudDome.prototype.setRadius = (radius) ->
+#  @radius = radius || 100.0
+#  @_setDirty()
+#  this
+#
+#SceneJS.CloudDome.prototype.getColor = ->
+#  radius: @radius 
+#
+#SceneJS.CloudDome.prototype._render = (traversalContext) ->
+#  if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
+#    @_renderNodes traversalContext
+#    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(canvas.context)
+#    CloudDomeModule.render(canvas.context)
+#  null
 
-SceneJS.CloudDome.prototype._init = (params) ->
-  @setRadius params.radius
-  null
-  
-SceneJS.CloudDome.prototype.setRadius = (radius) ->
-  @radius = radius || 100.0
-  @_setDirty()
-  this
 
-SceneJS.CloudDome.prototype.getColor = ->
-  radius: @radius
+class Atmosphere
+  render: (gl, invView, invProjection, sun) ->
+    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(gl)
+    CloudDomeModule.render(gl, invView, invProjection, sun)
+    null
 
-SceneJS.CloudDome.prototype.renderClouds = ->
-  #todo: CloudDomeModule.renderDome
 
-SceneJS.CloudDome.prototype._render = (traversalContext) ->
-  if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
-    @_renderNodes traversalContext
-    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(canvas.context)
-    @renderClouds(canvas.context)
-  null
+
+
 

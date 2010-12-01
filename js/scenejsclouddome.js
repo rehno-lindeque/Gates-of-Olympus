@@ -1,4 +1,4 @@
-var CloudDomeModule;
+var Atmosphere, CloudDomeModule;
 /*
 Copyright 2010, Rehno Lindeque.
 
@@ -14,6 +14,38 @@ Cloud Dome Module
 CloudDomeModule = {
   vertexBuffer: null,
   shaderProgram: null,
+  transmittanceProgram: null,
+  transmittanceTexture: null,
+  createTransmittanceResources: function(gl) {
+    var fragmentShader, frameBuffer, vertexShader;
+    this.transmittanceProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-fs");
+    gl.attachShader(this.transmittanceProgram, vertexShader);
+    gl.attachShader(this.transmittanceProgram, fragmentShader);
+    gl.linkProgram(this.transmittanceProgram);
+    if (!gl.getProgramParameter(this.transmittanceProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.transmittanceProgram);
+    this.transmittanceProgram.vertexPosition = gl.getAttribLocation(this.transmittanceProgram, "vertexPosition");
+    this.transmittanceTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.transmittanceTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.enableVertexAttribArray(this.transmittanceProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    frameBuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.transmittanceTexture, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.deleteFramebuffer(frameBuffer);
+    return null;
+  },
   createResources: function(gl) {
     var fragmentShader, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
@@ -29,9 +61,14 @@ CloudDomeModule = {
     if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
       alert("Could not initialise shaders");
     }
+    this.shaderProgram.camera = gl.getUniformLocation(this.shaderProgram, "camera");
+    this.shaderProgram.sun = gl.getUniformLocation(this.shaderProgram, "sun");
+    this.shaderProgram.invProjection = gl.getUniformLocation(this.shaderProgram, "invProjection");
+    this.shaderProgram.invView = gl.getUniformLocation(this.shaderProgram, "invView");
+    this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
-    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.createTransmittanceResources(gl);
     return null;
   },
   destroyResources: function() {
@@ -45,8 +82,8 @@ CloudDomeModule = {
     }
     return null;
   },
-  renderDome: function(gl, invProjection, invView) {
-    var saveState, shaderProgram;
+  render: function(gl, invView, invProjection, sun) {
+    var saveState;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -54,20 +91,15 @@ CloudDomeModule = {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     gl.depthMask(false);
-    shaderProgram = CloudDomeModule.shaderProgram;
-    gl.useProgram(shaderProgram);
-    gl.bindBuffer(gl.ARRAY_BUFFER, CloudDomeModule.vertexBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    shaderProgram.camera = gl.getUniformLocation(shaderProgram, "camera");
-    shaderProgram.sun = gl.getUniformLocation(shaderProgram, "sun");
-    shaderProgram.invProjection = gl.getUniformLocation(shaderProgram, "invProjection");
-    shaderProgram.invView = gl.getUniformLocation(shaderProgram, "invView");
-    shaderProgram.exposure = gl.getUniformLocation(shaderProgram, "exposure");
-    gl.uniform3f(shaderProgram.camera, 0.0, 0.0, 1.0);
-    gl.uniform3f(shaderProgram.sun, 0.0, 0.0, 1.0);
-    gl.uniformMatrix4fv(shaderProgram.invProjection, false, new Float32Array(invProjection));
-    gl.uniformMatrix4fv(shaderProgram.invView, false, new Float32Array(invView));
-    gl.uniform1f(shaderProgram.exposure, 0.4);
+    gl.useProgram(this.shaderProgram);
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
+    gl.uniform3f(this.shaderProgram.sun, sun);
+    gl.uniformMatrix4fv(this.shaderProgram.invProjection, false, new Float32Array(invProjection));
+    gl.uniformMatrix4fv(this.shaderProgram.invView, false, new Float32Array(invView));
+    gl.uniform1f(this.shaderProgram.exposure, 1.0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
@@ -85,29 +117,11 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 /*
 Cloud dome node type
 */
-SceneJS.CloudDome = SceneJS.createNodeType("cloud-dome");
-SceneJS.CloudDome.prototype._init = function(params) {
-  this.setRadius(params.radius);
-  return null;
-};
-SceneJS.CloudDome.prototype.setRadius = function(radius) {
-  this.radius = radius || 100.0;
-  this._setDirty();
-  return this;
-};
-SceneJS.CloudDome.prototype.getColor = function() {
-  return {
-    radius: this.radius
-  };
-};
-SceneJS.CloudDome.prototype.renderClouds = function() {};
-SceneJS.CloudDome.prototype._render = function(traversalContext) {
-  if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
-    this._renderNodes(traversalContext);
-    if (!CloudDomeModule.vertexBuffer) {
-      CloudDomeModule.createResources(canvas.context);
-    }
-    this.renderClouds(canvas.context);
+Atmosphere = function() {};
+Atmosphere.prototype.render = function(gl, invView, invProjection, sun) {
+  if (!CloudDomeModule.vertexBuffer) {
+    CloudDomeModule.createResources(gl);
   }
+  CloudDomeModule.render(gl, invView, invProjection, sun);
   return null;
 };

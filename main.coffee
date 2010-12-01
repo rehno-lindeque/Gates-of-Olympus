@@ -215,8 +215,9 @@ window.render = ->
   )
   
   # Render the atmospheric dome
-  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
-  CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
+  #if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
+  #CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
+  atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position)
   
   # Render astronomical objects
   moon.render(customGL, view, projection, timeline.time)

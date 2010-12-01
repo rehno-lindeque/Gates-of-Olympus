@@ -179,10 +179,7 @@
     view = lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
     optics = backgroundCamera.optics;
     projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
-    if (!CloudDomeModule.vertexBuffer) {
-      CloudDomeModule.createResources(customGL);
-    }
-    CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view));
+    atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position);
     moon.render(customGL, view, projection, timeline.time);
     return sun.render(customGL, view, projection, timeline.time);
   };
