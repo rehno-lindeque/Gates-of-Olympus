@@ -39,9 +39,9 @@ sceneNode = {
         stencil: false
       },
       clearColor: {
-        r: 0.7,
-        g: 0.7,
-        b: 0.7
+        r: 0.8,
+        g: 0.8,
+        b: 0.8
       },
       nodes: [graft(gui.lookAtNode, [guiCamera.node]), levelLookAt.node, levelLookAt.backgroundLookAtNode]
     }

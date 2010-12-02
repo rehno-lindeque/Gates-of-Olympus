@@ -70,7 +70,7 @@ AtmosphereModule =
     #gl.deleteRenderbuffer(renderBuffer)
     null
   
-  createResources: (gl) ->
+  createResourcesHi: (gl) ->
     # Create the vertex buffer
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
@@ -104,14 +104,8 @@ AtmosphereModule =
     # Pre-calculate the lookup textures
     #todo: @createTransmittanceResources(gl)
     null
-
-  destroyResources: ->
-    if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
-      if @shaderProgram then @shaderProgram.destroy()
-      if @vertexBuffer then @vertexBuffer.destroy()
-    null
   
-  render: (gl, invView, invProjection, sun) ->
+  renderHi: (gl, invView, invProjection, sun) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -152,6 +146,65 @@ AtmosphereModule =
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
     gl.depthMask(true)
     null
+  
+  createResourcesLo: (gl) ->
+    # Create the vertex buffer
+    @vertexBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    vertices = [
+       1.0,  1.0
+      -1.0,  1.0
+       1.0, -1.0
+      -1.0, -1.0 ]
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+    
+    # Create shader program
+    @shaderProgram = gl.createProgram()
+    vertexShader = compileShader(gl, "fullscreenquad-vs")
+    fragmentShader = compileShader(gl, "atmosphere-lo-fs")
+    gl.attachShader(@shaderProgram, vertexShader)
+    gl.attachShader(@shaderProgram, fragmentShader)
+    gl.linkProgram(@shaderProgram)
+    if not gl.getProgramParameter(@shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
+
+    # Get uniform locations
+    
+    # Get attribute array locations
+    gl.useProgram(@shaderProgram)
+    @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
+    null
+  
+  renderLo: (gl, invView, invProjection, sun) ->
+    # Change gl state
+    saveState =
+      blend:     gl.getParameter(gl.BLEND)
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.enable(gl.BLEND)
+    #gl.disable(gl.DEPTH_TEST)
+    gl.depthMask(false)
+    
+    # Bind shaders and parameters
+    gl.useProgram(@shaderProgram)
+
+    gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    
+    # Draw geometry
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    
+    # Restore gl state
+    if not saveState.blend then gl.disable(gl.BLEND)
+    #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.depthMask(true)
+    null
+  
+  destroyResources: ->
+    if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
+      if @shaderProgram then @shaderProgram.destroy()
+      if @vertexBuffer then @vertexBuffer.destroy()
+    null
 
 ###
 SceneJS listeners
@@ -191,8 +244,8 @@ Cloud dome node type
 
 class Atmosphere
   render: (gl, invView, invProjection, sun) ->
-    if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResources(gl)
-    AtmosphereModule.render(gl, invView, invProjection, sun)
+    if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResourcesLo(gl)
+    AtmosphereModule.renderLo(gl, invView, invProjection, sun)
     null
 
 

@@ -888,7 +888,7 @@ AtmosphereModule = {
     gl.deleteFramebuffer(frameBuffer);
     return null;
   },
-  createResources: function(gl) {
+  createResourcesHi: function(gl) {
     var fragmentShader, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -912,18 +912,7 @@ AtmosphereModule = {
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     return null;
   },
-  destroyResources: function() {
-    if (document.getElementById(canvas.canvasId)) {
-      if (this.shaderProgram) {
-        this.shaderProgram.destroy();
-      }
-      if (this.vertexBuffer) {
-        this.vertexBuffer.destroy();
-      }
-    }
-    return null;
-  },
-  render: function(gl, invView, invProjection, sun) {
+  renderHi: function(gl, invView, invProjection, sun) {
     var saveState;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
@@ -947,6 +936,56 @@ AtmosphereModule = {
     }
     gl.depthMask(true);
     return null;
+  },
+  createResourcesLo: function(gl) {
+    var fragmentShader, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-lo-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    return null;
+  },
+  renderLo: function(gl, invView, invProjection, sun) {
+    var saveState;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.depthMask(false);
+    gl.useProgram(this.shaderProgram);
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+    }
+    return null;
   }
 };
 /*
@@ -961,8 +1000,8 @@ Cloud dome node type
 Atmosphere = function() {};
 Atmosphere.prototype.render = function(gl, invView, invProjection, sun) {
   if (!AtmosphereModule.vertexBuffer) {
-    AtmosphereModule.createResources(gl);
+    AtmosphereModule.createResourcesLo(gl);
   }
-  AtmosphereModule.render(gl, invView, invProjection, sun);
+  AtmosphereModule.renderLo(gl, invView, invProjection, sun);
   return null;
 };

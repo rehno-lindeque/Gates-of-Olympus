@@ -39,7 +39,7 @@ sceneNode =
       depth:    true
       color:    true
       stencil:  false
-    clearColor: { r: 0.7, g: 0.7, b: 0.7 }
+    clearColor: { r: 0.8, g: 0.8, b: 0.8 }
     nodes: [
       graft(gui.lookAtNode, [guiCamera.node])
     ,
