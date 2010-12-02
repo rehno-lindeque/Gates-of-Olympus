@@ -23,7 +23,7 @@ AtmosphereModule =
     # Create shader program
     @transmittanceProgram = gl.createProgram()
     vertexShader = compileShader(gl, "fullscreenquad-vs")
-    fragmentShader = compileShader(gl, "atmosphere-fs")
+    fragmentShader = compileShader(gl, "atmosphere-hi-transmittance-fs")
     gl.attachShader(@transmittanceProgram, vertexShader)
     gl.attachShader(@transmittanceProgram, fragmentShader)
     gl.linkProgram(@transmittanceProgram)
@@ -84,7 +84,7 @@ AtmosphereModule =
     # Create shader program
     @shaderProgram = gl.createProgram()
     vertexShader = compileShader(gl, "fullscreenquad-vs")
-    fragmentShader = compileShader(gl, "atmosphere-fs")
+    fragmentShader = compileShader(gl, "atmosphere-hi-fs")
     gl.attachShader(@shaderProgram, vertexShader)
     gl.attachShader(@shaderProgram, fragmentShader)
     gl.linkProgram(@shaderProgram)
@@ -102,7 +102,7 @@ AtmosphereModule =
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
     
     # Pre-calculate the lookup textures
-    @createTransmittanceResources(gl)
+    #todo: @createTransmittanceResources(gl)
     null
 
   destroyResources: ->

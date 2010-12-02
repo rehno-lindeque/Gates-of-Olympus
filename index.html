@@ -10,24 +10,36 @@
 -->
   <meta charset="utf-8" />
   <title>Gates of Olympus - A 3D Tower Defense game</title>
+
+  <!-- Framework -->
+
   <script type="application/javascript" src="jquery-1.4.3.min.js"></script>
   <!--<script type="application/javascript" src="scenejs.min.js"></script>-->
   <script type="application/javascript" src="scenejs.js"></script>
   <script type="application/javascript" src="scenejsmath.js"></script>
   <script type="application/javascript" src="js/scenejsext.js"></script>
-  <script id="atmospherecommon-fs" type="x-shader/x-fragment" src="shaders/atmospherecommon.fs"></script>
-  <script id="atmospheretransmittance-fs" type="x-shader/x-fragment" src="shaders/atmospheretransmittance.fs"></script>  
-  <script id="atmosphere-fs" type="x-shader/x-fragment" src="shaders/atmosphere.fs"></script>
+
+  <!-- Shaders -->
+
+  <script id="atmosphere-hi-common-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/common.fs"></script>
+  <script id="atmosphere-hi-transmittance-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/transmittance.fs"></script>  
+  <script id="atmosphere-hi-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/atmosphere.fs"></script>
   <script id="fullscreenquad-vs" type="x-shader/x-vertex" src="shaders/fullscreenquad.vs"></script>
   <script id="moon-fs" type="x-shader/x-fragment" src="shaders/moon.fs"></script>
   <script id="moon-vs" type="x-shader/x-vertex" src="shaders/moon.vs"></script>
   <script id="sun-fs" type="x-shader/x-fragment" src="shaders/sun.fs"></script>
   <script id="sun-vs" type="x-shader/x-vertex" src="shaders/sun.vs"></script>
+
+  <!-- Models -->
+
   <script>var BlenderExport = {};</script>
   <script type="application/javascript" src="gui/NumberedDais.js"></script>
   <script type="application/javascript" src="towers/Archer.js"></script>
   <script type="application/javascript" src="towers/Catapult.js"></script>
   <script type="application/javascript" src="creatures/Scorpion.js"></script>
+
+  <!-- Stylesheet -->
+
   <style type="text/css" media="screen">
     * {
       margin: 0;
@@ -95,6 +107,9 @@
       overflow: scroll;
     }
   </style>
+
+  <!-- Analytics -->
+ 
   <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-18079282-4']);
@@ -107,6 +122,9 @@
   })();
   </script>
 </head>
+
+<!-- Layout / Containers -->
+
 <body>
   <div id="scenejsLog"></div>
   <div id="container">
@@ -162,6 +180,9 @@
     <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
   </div>
   <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fgatesofolympus.com%2F&amp;layout=button_count&amp;show_faces=true&amp;width=420&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;" allowTransparency="true"></iframe>
+
+  <!-- Game logic -->
+
   <script type="application/javascript" src="js/global.js"></script>
   <script type="application/javascript" src="js/common.js"></script>
   <script type="application/javascript" src="js/resources.js"></script>
@@ -172,5 +193,6 @@
   <script type="application/javascript" src="js/timeline.js"></script>
   <script type="application/javascript" src="js/events.js"></script>
   <script type="application/javascript" src="js/main.js"></script>
+
 </body>
 </html>

@@ -859,7 +859,7 @@ AtmosphereModule = {
     var fragmentShader, frameBuffer, textureHeight, textureWidth, vertexShader;
     this.transmittanceProgram = gl.createProgram();
     vertexShader = compileShader(gl, "fullscreenquad-vs");
-    fragmentShader = compileShader(gl, "atmosphere-fs");
+    fragmentShader = compileShader(gl, "atmosphere-hi-transmittance-fs");
     gl.attachShader(this.transmittanceProgram, vertexShader);
     gl.attachShader(this.transmittanceProgram, fragmentShader);
     gl.linkProgram(this.transmittanceProgram);
@@ -896,7 +896,7 @@ AtmosphereModule = {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
     vertexShader = compileShader(gl, "fullscreenquad-vs");
-    fragmentShader = compileShader(gl, "atmosphere-fs");
+    fragmentShader = compileShader(gl, "atmosphere-hi-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
     gl.linkProgram(this.shaderProgram);
@@ -910,7 +910,6 @@ AtmosphereModule = {
     this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
-    this.createTransmittanceResources(gl);
     return null;
   },
   destroyResources: function() {
