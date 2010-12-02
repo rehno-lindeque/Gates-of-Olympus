@@ -6,14 +6,14 @@ Copyright 2010, Rehno Lindeque.
 ###
 
 ###
-A scenejs extension that renders a cloud dome using a full-screen quad and some procedural shaders.
+A scenejs extension that renders the atmosphere (atmospheric scattering) using a full-screen quad and some procedural shaders.
 ###
 
 ###
-Cloud Dome Module
+Atmosphere Module
 ###
 
-CloudDomeModule =
+AtmosphereModule =
   vertexBuffer: null
   shaderProgram: null
   transmittanceProgram: null
@@ -160,7 +160,7 @@ SceneJS listeners
 SceneJS._eventModule.addListener(
   SceneJS._eventModule.RESET
   () ->
-    CloudDomeModule.destroyResources()
+    AtmosphereModule.destroyResources()
 )
 
 ###
@@ -184,15 +184,15 @@ Cloud dome node type
 #SceneJS.CloudDome.prototype._render = (traversalContext) ->
 #  if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
 #    @_renderNodes traversalContext
-#    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(canvas.context)
-#    CloudDomeModule.render(canvas.context)
+#    if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResources(canvas.context)
+#    AtmosphereModule.render(canvas.context)
 #  null
 
 
 class Atmosphere
   render: (gl, invView, invProjection, sun) ->
-    if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(gl)
-    CloudDomeModule.render(gl, invView, invProjection, sun)
+    if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResources(gl)
+    AtmosphereModule.render(gl, invView, invProjection, sun)
     null
 
 

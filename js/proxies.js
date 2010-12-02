@@ -837,7 +837,7 @@ DaisClouds.prototype.render = function(gl, view, projection, time) {
     DaisCloudsModule.createResources(gl);
   }
   return DaisCloudsModule.render(gl, view, projection);
-};var Atmosphere, CloudDomeModule;
+};var Atmosphere, AtmosphereModule;
 /*
 Copyright 2010, Rehno Lindeque.
 
@@ -845,12 +845,12 @@ Copyright 2010, Rehno Lindeque.
  * It is intended to be compatible with http://scenejs.org/license so that changes can be back-ported.
 */
 /*
-A scenejs extension that renders a cloud dome using a full-screen quad and some procedural shaders.
+A scenejs extension that renders the atmosphere (atmospheric scattering) using a full-screen quad and some procedural shaders.
 */
 /*
-Cloud Dome Module
+Atmosphere Module
 */
-CloudDomeModule = {
+AtmosphereModule = {
   vertexBuffer: null,
   shaderProgram: null,
   transmittanceProgram: null,
@@ -954,16 +954,16 @@ CloudDomeModule = {
 SceneJS listeners
 */
 SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
-  return CloudDomeModule.destroyResources();
+  return AtmosphereModule.destroyResources();
 });
 /*
 Cloud dome node type
 */
 Atmosphere = function() {};
 Atmosphere.prototype.render = function(gl, invView, invProjection, sun) {
-  if (!CloudDomeModule.vertexBuffer) {
-    CloudDomeModule.createResources(gl);
+  if (!AtmosphereModule.vertexBuffer) {
+    AtmosphereModule.createResources(gl);
   }
-  CloudDomeModule.render(gl, invView, invProjection, sun);
+  AtmosphereModule.render(gl, invView, invProjection, sun);
   return null;
 };
