@@ -12,9 +12,8 @@ Dais Clouds Module
 DaisCloudsModule = {
   vertexBuffer: null,
   shaderProgram: null,
-  createResources: function() {
-    var fragmentShader, gl, vertexShader, vertices;
-    gl = canvas.context;
+  createResources: function(gl) {
+    var fragmentShader, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
@@ -43,6 +42,19 @@ DaisCloudsModule = {
       }
     }
     return null;
+  },
+  render: function(gl, view, projection) {
+    var saveState;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    return null;
   }
 };
 /*
@@ -54,35 +66,10 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 /*
 Dias clouds node type
 */
-DaisClouds = SceneJS.createNodeType("dais-clouds");
-DaisClouds.prototype._init = function(params) {
-  return null;
-};
-DaisClouds.prototype.renderClouds = function() {
-  var gl, saveState;
-  gl = canvas.context;
-  saveState = {
-    blend: gl.getParameter(gl.BLEND),
-    depthTest: gl.getParameter(gl.DEPTH_TEST)
-  };
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.enable(gl.BLEND);
-  gl.useProgram(shaderProgram);
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  if (!saveState.blend) {
-    gl.disable(gl.BLEND);
+DaisClouds = function() {};
+DaisClouds.prototype.render = function(gl, view, projection, time) {
+  if (!DaisCloudsModule.vertexBuffer) {
+    DaisCloudsModule.createResources(gl);
   }
-  return null;
-};
-DaisClouds.prototype._render = function(traversalContext) {
-  if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
-    this._renderNodes(traversalContext);
-    if (!vertexBuffer) {
-      createResources();
-    }
-    this.renderClouds();
-  }
-  return null;
+  return DaisCloudsModule.render(gl, view, projection);
 };
