@@ -17,6 +17,7 @@ guiCamera = new GUICamera(gui, levelCamera)
 moon = new Moon
 sun = new Sun
 atmosphere = new Atmosphere
+daisClouds = new DaisClouds
 
 ###
 The main scene definition
