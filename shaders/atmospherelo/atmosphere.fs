@@ -3,6 +3,6 @@ precision highp float;
 #endif
 
 void main(void) {
-  gl_FragColor = vec4(0.8, 0.85, 0.95, 1.0);
+  gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
 }
 
