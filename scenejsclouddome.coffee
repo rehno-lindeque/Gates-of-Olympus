@@ -36,12 +36,16 @@ CloudDomeModule =
     @transmittanceProgram.vertexPosition = gl.getAttribLocation(@transmittanceProgram, "vertexPosition")
     
     # Create the transmittance texture
+    textureWidth = 256
+    textureHeight = 64
     @transmittanceTexture = gl.createTexture()
     gl.bindTexture(gl.TEXTURE_2D, @transmittanceTexture)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    #todo: gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB16F_ARB, textureWidth, textureHeight, 0, GL_RGB, GL_FLOAT, NULL)
+    #      Unfortunately gl.RGB16F is not yet available to WebGL (waiting for an extension mechanism...)
     gl.bindTexture(gl.TEXTURE_2D, null)
 
     ## Precalculate the transmittance texture
@@ -56,6 +60,9 @@ CloudDomeModule =
     #renderBuffer = gl.createRenderbuffer()
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, @transmittanceTexture, 0)
+    
+    # Render the transmittance data to the texture
+    gl.viewport(0, 0, textureWidth, textureHeight);
     
     # Restore gl state
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)

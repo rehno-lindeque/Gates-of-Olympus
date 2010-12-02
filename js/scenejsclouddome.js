@@ -17,7 +17,7 @@ CloudDomeModule = {
   transmittanceProgram: null,
   transmittanceTexture: null,
   createTransmittanceResources: function(gl) {
-    var fragmentShader, frameBuffer, vertexShader;
+    var fragmentShader, frameBuffer, textureHeight, textureWidth, vertexShader;
     this.transmittanceProgram = gl.createProgram();
     vertexShader = compileShader(gl, "fullscreenquad-vs");
     fragmentShader = compileShader(gl, "atmosphere-fs");
@@ -29,12 +29,14 @@ CloudDomeModule = {
     }
     gl.useProgram(this.transmittanceProgram);
     this.transmittanceProgram.vertexPosition = gl.getAttribLocation(this.transmittanceProgram, "vertexPosition");
+    textureWidth = 256;
+    textureHeight = 64;
     this.transmittanceTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this.transmittanceTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.GL_TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.enableVertexAttribArray(this.transmittanceProgram.vertexPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -42,6 +44,7 @@ CloudDomeModule = {
     frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.transmittanceTexture, 0);
+    gl.viewport(0, 0, textureWidth, textureHeight);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.deleteFramebuffer(frameBuffer);
     return null;
