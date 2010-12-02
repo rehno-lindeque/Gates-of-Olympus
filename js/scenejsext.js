@@ -18,6 +18,3 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_ACTIVATED, function
 SceneJS._eventModule.addListener(SceneJS._eventModule.CANVAS_DEACTIVATED, function() {
   return (canvas = null);
 });
-SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
-  return DaisCloudsModule.destroyResources();
-});

@@ -57,21 +57,6 @@ DaisCloudsModule =
 SceneJS listeners
 ###
 
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.SCENE_RENDERING
-#  () -> canvas = null
-#)
-            
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.CANVAS_ACTIVATED
-#  (c) -> canvas = c
-#)
-
-#SceneJS._eventModule.addListener(
-#  SceneJS._eventModule.CANVAS_DEACTIVATED
-#  () -> canvas = null
-#)
-
 SceneJS._eventModule.addListener(
   SceneJS._eventModule.RESET
   () ->
