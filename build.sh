@@ -1,7 +1,6 @@
 #!/bin/sh
 coffee --no-wrap -c -o js scenejsext.coffee
 coffee --no-wrap -c -o js scenejsclouddome.coffee
-coffee --no-wrap -c -o js scenejsdaisclouds.coffee
 coffee --no-wrap -c -o js global.coffee
 coffee --no-wrap -c -o js common.coffee
 coffee --no-wrap -c -o js resources.coffee
@@ -21,6 +20,7 @@ coffee --no-wrap -c -o js/proxies proxies/guicamera.coffee
 coffee --no-wrap -c -o js/proxies proxies/backgroundcamera.coffee
 coffee --no-wrap -c -o js/proxies proxies/moon.coffee
 coffee --no-wrap -c -o js/proxies proxies/sun.coffee
+coffee --no-wrap -c -o js/proxies proxies/daisclouds.coffee
 
 cat \
 js/proxies/proxies.js \
@@ -34,6 +34,7 @@ js/proxies/guicamera.js \
 js/proxies/backgroundcamera.js \
 js/proxies/moon.js \
 js/proxies/sun.js \
+js/proxies/daisclouds.js \
 > js/proxies.js
 
 coffee           -c -o js main.coffee
