@@ -19,11 +19,10 @@ DaisCloudsModule =
     # Create the vertex buffer
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    vertices = [
-       1.0,  1.0
-      -1.0,  1.0
-       1.0, -1.0
-      -1.0, -1.0 ]
+    vertices = []
+    for k in [0..19]    
+      vertices[k] = Math.random()
+    
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
     
     # Create shader program
@@ -59,6 +58,19 @@ DaisCloudsModule =
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.enable(gl.BLEND)
     
+    # Bind shaders and parameters
+    shaderProgram = @shaderProgram
+    gl.useProgram(shaderProgram)
+
+    gl.disableVertexAttribArray(k) for k in [1..7]
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition)
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    
+    # Draw geometry
+    gl.drawArrays(gl.POINTS, 0, 20)
+    
     # Restore gl state
     if not saveState.blend then gl.disable(gl.BLEND)
     null
@@ -77,7 +89,31 @@ SceneJS._eventModule.addListener(
 Dias clouds node type
 ###
 
+DaisCloudsNode = SceneJS.createNodeType("dais-clouds")
+DaisCloudsNode.prototype._render = (traversalContext) ->
+  if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
+    @_renderNodes traversalContext
+    # todo: get the relevant model-view / projection transformations
+    if @proxy
+      @proxy.view = identityMat4()
+      @proxy.projection  = identityMat4()
+  null
+
+DaisCloudsNode.prototype.setProxy = (proxy) ->
+  @proxy = proxy
+  @_setDirty()
+  this
+
+DaisCloudsNode.prototype.getProxy = -> @proxy
+
+###
+Dias clouds proxy
+###
+
 class DaisClouds  
+  constructor: ->
+    @node = type: "dais-clouds"
+  
   render: (gl, view, projection, time) ->
     if not DaisCloudsModule.vertexBuffer then DaisCloudsModule.createResources(gl)
     DaisCloudsModule.render(gl, view, projection)
