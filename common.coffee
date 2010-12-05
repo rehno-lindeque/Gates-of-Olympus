@@ -5,7 +5,7 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 
 # Compose SceneJS nodes using the JSON API
 graft = (parent, children) ->
-  parent.nodes = if parent.nodes? then Array.concat(parent.nodes, children) else children
+  parent.nodes = if parent.nodes? then parent.nodes.concat(children) else children
   parent
 
 #graftChild = (root, parent, children) ->
