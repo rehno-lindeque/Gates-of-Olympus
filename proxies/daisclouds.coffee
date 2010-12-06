@@ -27,8 +27,8 @@ DaisCloudsModule =
     
     # Create shader program
     @shaderProgram = gl.createProgram()
-    vertexShader = compileShader(gl, "clouddome-vs")
-    fragmentShader = compileShader(gl, "clouddome-fs")
+    vertexShader = compileShader(gl, "cloudparticle-vs")
+    fragmentShader = compileShader(gl, "cloudparticle-fs")
     gl.attachShader(@shaderProgram, vertexShader)
     gl.attachShader(@shaderProgram, fragmentShader)
     gl.linkProgram(@shaderProgram)
@@ -94,27 +94,36 @@ DaisCloudsNode.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
     # todo: get the relevant model-view / projection transformations
-    if @proxy
-      @proxy.view = identityMat4()
-      @proxy.projection  = identityMat4()
+    @view = identityMat4()
+    @projection  = identityMat4()
   null
 
-DaisCloudsNode.prototype.setProxy = (proxy) ->
-  @proxy = proxy
-  @_setDirty()
-  this
+#DaisCloudsNode.prototype.setProxy = (proxy) ->
+#  @proxy = proxy
+#  @_setDirty()
+#  this
+#
+#DaisCloudsNode.prototype.getProxy = -> @proxy
 
-DaisCloudsNode.prototype.getProxy = -> @proxy
+DaisCloudsNode.prototype.getView = -> @view
+DaisCloudsNode.prototype.getProjection = -> @projection
 
 ###
 Dias clouds proxy
 ###
 
 class DaisClouds  
-  constructor: ->
-    @node = type: "dais-clouds"
+  constructor: (index) ->
+    @node = 
+      type: "dais-clouds"
+      id: "dais" + index + "clouds"
   
-  render: (gl, view, projection, time) ->
+  withNode: -> SceneJS.withNode @node.id
+  
+  render: (gl, time) ->
+    nodeRef = @withNode()
+    view = nodeRef.get "view"
+    projection = nodeRef.get "projection"
     if not DaisCloudsModule.vertexBuffer then DaisCloudsModule.createResources(gl)
     DaisCloudsModule.render(gl, view, projection)
 

@@ -173,6 +173,7 @@
     level.update();
     timeline.update(1);
     gameScene.render();
+    gui.daises[0].daisClouds.render(customGL, timeline.time);
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;

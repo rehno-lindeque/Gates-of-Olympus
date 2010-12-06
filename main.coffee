@@ -195,6 +195,9 @@ window.render = ->
  
   # Render the scene
   gameScene.render()
+  
+  # Render the gui additions
+  gui.daises[0].daisClouds.render(customGL, timeline.time)
 
   # Calculate common rendering parameters
   eye = levelLookAt.backgroundLookAtNode.eye

@@ -22,8 +22,8 @@ DaisCloudsModule = {
     }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
-    vertexShader = compileShader(gl, "clouddome-vs");
-    fragmentShader = compileShader(gl, "clouddome-fs");
+    vertexShader = compileShader(gl, "cloudparticle-vs");
+    fragmentShader = compileShader(gl, "cloudparticle-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
     gl.linkProgram(this.shaderProgram);
@@ -82,31 +82,35 @@ DaisCloudsNode = SceneJS.createNodeType("dais-clouds");
 DaisCloudsNode.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
-    if (this.proxy) {
-      this.proxy.view = identityMat4();
-      this.proxy.projection = identityMat4();
-    }
+    this.view = identityMat4();
+    this.projection = identityMat4();
   }
   return null;
 };
-DaisCloudsNode.prototype.setProxy = function(proxy) {
-  this.proxy = proxy;
-  this._setDirty();
-  return this;
+DaisCloudsNode.prototype.getView = function() {
+  return this.view;
 };
-DaisCloudsNode.prototype.getProxy = function() {
-  return this.proxy;
+DaisCloudsNode.prototype.getProjection = function() {
+  return this.projection;
 };
 /*
 Dias clouds proxy
 */
-DaisClouds = function() {
+DaisClouds = function(index) {
   this.node = {
-    type: "dais-clouds"
+    type: "dais-clouds",
+    id: "dais" + index + "clouds"
   };
   return this;
 };
-DaisClouds.prototype.render = function(gl, view, projection, time) {
+DaisClouds.prototype.withNode = function() {
+  return SceneJS.withNode(this.node.id);
+};
+DaisClouds.prototype.render = function(gl, time) {
+  var nodeRef, projection, view;
+  nodeRef = this.withNode();
+  view = nodeRef.get("view");
+  projection = nodeRef.get("projection");
   if (!DaisCloudsModule.vertexBuffer) {
     DaisCloudsModule.createResources(gl);
   }

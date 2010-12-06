@@ -38,9 +38,9 @@ class GUIDais
   constructor: (index) ->
     @index = index
     @id = "dais" + index
-    @daisClouds0 = new DaisClouds
-    @node = graft(guiDaisNode(@id, index), [@daisClouds0.node])
-    
+    @daisClouds = new DaisClouds(index)
+    @node = graft(guiDaisNode(@id, index), [@daisClouds.node])
+  
   update: ->
     SceneJS.withNode(@id)
       .node(0).set(
