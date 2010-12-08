@@ -20,8 +20,8 @@ DaisCloudsModule =
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     vertices = []
-    for k in [0..19]    
-      vertices[k] = Math.random()
+    for k in [0..(20*3 - 1)]
+      vertices[k] = Math.random() - 0.5
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
     
@@ -42,6 +42,10 @@ DaisCloudsModule =
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    
+    @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
+    @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
+    
     null
   
   destroyResources: ->
@@ -57,7 +61,7 @@ DaisCloudsModule =
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.enable(gl.BLEND)
-    
+
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
     gl.useProgram(shaderProgram)
@@ -66,7 +70,10 @@ DaisCloudsModule =
     
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.enableVertexAttribArray(shaderProgram.vertexPosition)
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0)
+    
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
     # Draw geometry
     gl.drawArrays(gl.POINTS, 0, 20)
@@ -93,9 +100,8 @@ DaisCloudsNode = SceneJS.createNodeType("dais-clouds")
 DaisCloudsNode.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
-    # todo: get the relevant model-view / projection transformations
-    @view = identityMat4()
-    @projection  = identityMat4()
+    @view = SceneJS._modelViewTransformModule.getTransform().matrix
+    @projection = SceneJS._projectionModule.getTransform().matrix
   null
 
 #DaisCloudsNode.prototype.setProxy = (proxy) ->

@@ -197,7 +197,7 @@ window.render = ->
   gameScene.render()
   
   # Render the gui additions
-  gui.daises[0].daisClouds.render(customGL, timeline.time)
+  #gui.daises[0].daisClouds.render(customGL, timeline.time)
 
   # Calculate common rendering parameters
   eye = levelLookAt.backgroundLookAtNode.eye
@@ -225,6 +225,9 @@ window.render = ->
   # Render astronomical objects
   moon.render(customGL, view, projection, timeline.time)
   sun.render(customGL, view, projection, timeline.time)
+
+  # Render the gui additions
+  gui.daises[0].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
 

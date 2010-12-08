@@ -13,12 +13,13 @@ DaisCloudsModule = {
   vertexBuffer: null,
   shaderProgram: null,
   createResources: function(gl) {
-    var fragmentShader, k, vertexShader, vertices;
+    var _ref, fragmentShader, k, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [];
-    for (k = 0; k <= 19; k++) {
-      vertices[k] = Math.random();
+    _ref = (20 * 3 - 1);
+    for (k = 0; (0 <= _ref ? k <= _ref : k >= _ref); (0 <= _ref ? k += 1 : k -= 1)) {
+      vertices[k] = Math.random() - 0.5;
     }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
@@ -33,6 +34,8 @@ DaisCloudsModule = {
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
     return null;
   },
   destroyResources: function() {
@@ -61,7 +64,9 @@ DaisCloudsModule = {
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.enableVertexAttribArray(shaderProgram.vertexPosition);
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.drawArrays(gl.POINTS, 0, 20);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
@@ -82,8 +87,8 @@ DaisCloudsNode = SceneJS.createNodeType("dais-clouds");
 DaisCloudsNode.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
-    this.view = identityMat4();
-    this.projection = identityMat4();
+    this.view = SceneJS._modelViewTransformModule.getTransform().matrix;
+    this.projection = SceneJS._projectionModule.getTransform().matrix;
   }
   return null;
 };

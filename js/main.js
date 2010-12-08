@@ -173,7 +173,6 @@
     level.update();
     timeline.update(1);
     gameScene.render();
-    gui.daises[0].daisClouds.render(customGL, timeline.time);
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
@@ -182,7 +181,8 @@
     projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
     atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position);
     moon.render(customGL, view, projection, timeline.time);
-    return sun.render(customGL, view, projection, timeline.time);
+    sun.render(customGL, view, projection, timeline.time);
+    return gui.daises[0].daisClouds.render(customGL, timeline.time);
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
