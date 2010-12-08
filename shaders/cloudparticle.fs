@@ -5,10 +5,10 @@ precision highp float;
 //varying vec2 vTextureCoord;
 
 void main(void) {
-  //float dist = distance(vTextureCoord, vec2(0.5, 0.5));
-  //if(dist > 0.5)
-  //  discard;
-  //gl_FragColor = vec4(1.0, 1.0, 1.0, dist * 2.0);
-  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  float dist = distance(gl_PointCoord, vec2(0.5, 0.5));
+  if(dist > 0.5)
+    discard;
+  gl_FragColor = vec4(1.0, 1.0, 1.0, max(1.0 - dist * 2.0, 0.0));
+  //gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }
 
