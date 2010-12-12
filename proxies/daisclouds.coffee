@@ -59,9 +59,13 @@ DaisCloudsModule =
     saveState =
       blend:     gl.getParameter(gl.BLEND)
       depthTest: gl.getParameter(gl.DEPTH_TEST)
+
     gl.enable(gl.BLEND)    
     gl.blendEquation(gl.FUNC_ADD)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    #gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
+
+    gl.disable(gl.DEPTH_TEST)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
@@ -81,6 +85,7 @@ DaisCloudsModule =
     
     # Restore gl state
     if not saveState.blend then gl.disable(gl.BLEND)
+    if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
     null
 
 ###

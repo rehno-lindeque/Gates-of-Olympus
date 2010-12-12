@@ -824,6 +824,7 @@ DaisCloudsModule = {
     gl.enable(gl.BLEND);
     gl.blendEquation(gl.FUNC_ADD);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.disable(gl.DEPTH_TEST);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
     for (k = 1; k <= 7; k++) {
@@ -837,6 +838,9 @@ DaisCloudsModule = {
     gl.drawArrays(gl.POINTS, 0, 20);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
+    }
+    if (saveState.depthTest) {
+      gl.enable(gl.DEPTH_TEST);
     }
     return null;
   }
