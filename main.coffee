@@ -18,6 +18,13 @@ gui.initialize()
 
 # Manual webgl initialization (for rendering things stand-alone
 customGL = canvas.getContext("experimental-webgl");
+#customGL = canvas.getContext("experimental-webgl",
+#  alpha: true
+#  antialias: false
+#  stencil: true
+#  premultipliedAlpha: true
+#)
+#customGL = canvas.getContext("webgl");
 
 ###
 Development
