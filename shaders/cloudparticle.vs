@@ -6,7 +6,7 @@ uniform mat4 projection;
 
 //varying vec2 vTextureCoord;
 
-const float particleSize = 12.0;
+const float particleSize = 10.0;
 const float spread = 1.5;
 
 void main(void) {

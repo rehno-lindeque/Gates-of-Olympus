@@ -14,7 +14,7 @@ Dais Clouds Module
 DaisCloudsModule =
   vertexBuffer: null
   shaderProgram: null
-  numParticles: 60  
+  numParticles: 200  
 
   createResources: (gl) ->
     # Create the vertex buffer
@@ -22,7 +22,7 @@ DaisCloudsModule =
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     vertices = []
     for k in [0..(@numParticles*3 - 1)]
-      vertices[k] = Math.random() - 0.5
+      vertices[k] = ((Math.random() - 0.5) * 2.0) * ((Math.random() - 0.5) * 2.0)
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
     
