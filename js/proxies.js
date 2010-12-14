@@ -333,41 +333,47 @@ guiDaisNode = function(id, index) {
     x: index * 1.5,
     nodes: [
       {
-        type: "rotate",
-        sid: "rotZ",
-        angle: guiDaisRotPosition[index * 2],
-        z: 1.0,
+        type: "translate",
+        y: 2.5,
         nodes: [
           {
             type: "rotate",
-            sid: "rotX",
+            sid: "rotZ",
             angle: guiDaisRotPosition[index * 2],
-            x: 1.0,
+            z: 1.0,
             nodes: [
               {
-                type: "texture",
-                layers: [
-                  {
-                    uri: "textures/dais.jpg"
-                  }
-                ],
+                type: "rotate",
+                sid: "rotX",
+                angle: guiDaisRotPosition[index * 2],
+                x: 1.0,
                 nodes: [
                   {
-                    type: "instance",
-                    target: "NumberedDais"
-                  }
-                ]
-              }, {
-                type: "texture",
-                layers: [
-                  {
-                    uri: towerTextureURI[index]
-                  }
-                ],
-                nodes: [
-                  {
-                    type: "instance",
-                    target: towerIds[index]
+                    type: "texture",
+                    layers: [
+                      {
+                        uri: "textures/dais.jpg"
+                      }
+                    ],
+                    nodes: [
+                      {
+                        type: "instance",
+                        target: "NumberedDais"
+                      }
+                    ]
+                  }, {
+                    type: "texture",
+                    layers: [
+                      {
+                        uri: towerTextureURI[index]
+                      }
+                    ],
+                    nodes: [
+                      {
+                        type: "instance",
+                        target: towerIds[index]
+                      }
+                    ]
                   }
                 ]
               }
@@ -386,7 +392,7 @@ GUIDais = function(index) {
   return this;
 };
 GUIDais.prototype.update = function() {
-  return SceneJS.withNode(this.id).node(0).set({
+  return SceneJS.withNode(this.id).node(0).node(0).set({
     angle: guiDaisRotPosition[this.index * 2],
     z: 1.0
   }).node(0).set({
@@ -856,7 +862,7 @@ DaisCloudsNode = SceneJS.createNodeType("dais-clouds");
 DaisCloudsNode.prototype._render = function(traversalContext) {
   if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
     this._renderNodes(traversalContext);
-    this.view = SceneJS._modelViewTransformModule.getTransform().matrix;
+    this.view = mulMat4(SceneJS._viewTransformModule.getTransform().matrix, SceneJS._modelTransformModule.getTransform().matrix);
     this.projection = SceneJS._projectionModule.getTransform().matrix;
   }
   return null;

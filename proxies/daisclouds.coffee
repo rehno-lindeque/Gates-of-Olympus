@@ -108,7 +108,9 @@ DaisCloudsNode = SceneJS.createNodeType("dais-clouds")
 DaisCloudsNode.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
-    @view = SceneJS._modelViewTransformModule.getTransform().matrix
+    #@view = SceneJS._modelViewTransformModule.getTransform().matrix
+    @view = mulMat4(SceneJS._viewTransformModule.getTransform().matrix, SceneJS._modelTransformModule.getTransform().matrix)
+
     @projection = SceneJS._projectionModule.getTransform().matrix
   null
 
@@ -128,7 +130,7 @@ Dias clouds proxy
 
 class DaisClouds  
   constructor: (index) ->
-    @node = 
+    @node =
       type: "dais-clouds"
       id: "dais" + index + "clouds"
   
