@@ -14,13 +14,14 @@ Dais Clouds Module
 DaisCloudsModule =
   vertexBuffer: null
   shaderProgram: null
-  
+  numParticles: 60  
+
   createResources: (gl) ->
     # Create the vertex buffer
     @vertexBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     vertices = []
-    for k in [0..(20*3 - 1)]
+    for k in [0..(@numParticles*3 - 1)]
       vertices[k] = Math.random() - 0.5
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
@@ -82,7 +83,7 @@ DaisCloudsModule =
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
     # Draw geometry
-    gl.drawArrays(gl.POINTS, 0, 20)
+    gl.drawArrays(gl.POINTS, 0, @numParticles)
     
     # Restore gl state
     if not saveState.blend then gl.disable(gl.BLEND)

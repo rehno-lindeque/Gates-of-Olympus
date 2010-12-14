@@ -784,12 +784,13 @@ Dais Clouds Module
 DaisCloudsModule = {
   vertexBuffer: null,
   shaderProgram: null,
+  numParticles: 60,
   createResources: function(gl) {
     var _ref, fragmentShader, k, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [];
-    _ref = (20 * 3 - 1);
+    _ref = (this.numParticles * 3 - 1);
     for (k = 0; (0 <= _ref ? k <= _ref : k >= _ref); (0 <= _ref ? k += 1 : k -= 1)) {
       vertices[k] = Math.random() - 0.5;
     }
@@ -841,7 +842,7 @@ DaisCloudsModule = {
     gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
-    gl.drawArrays(gl.POINTS, 0, 20);
+    gl.drawArrays(gl.POINTS, 0, this.numParticles);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
     }

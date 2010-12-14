@@ -6,7 +6,7 @@ uniform mat4 projection;
 
 //varying vec2 vTextureCoord;
 
-const float particleSize = 17.0;
+const float particleSize = 12.0;
 
 void main(void) {
   gl_Position = view * vec4(vertexPosition, 1.0);
