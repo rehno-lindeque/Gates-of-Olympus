@@ -234,7 +234,8 @@ window.render = ->
   sun.render(customGL, view, projection, timeline.time)
 
   # Render the gui additions
-  gui.daises[0].daisClouds.render(customGL, timeline.time)
+  for c in [0..1]
+    gui.daises[c].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
 

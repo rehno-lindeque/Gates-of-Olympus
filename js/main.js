@@ -156,7 +156,7 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var c, eye, look, optics, projection, up, view;
+    var _result, c, eye, look, optics, projection, up, view;
     for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
       if (guiDaisRotPosition[c] > 0) {
@@ -182,7 +182,11 @@
     atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
-    return gui.daises[0].daisClouds.render(customGL, timeline.time);
+    _result = [];
+    for (c = 0; c <= 1; c++) {
+      _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
+    }
+    return _result;
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
