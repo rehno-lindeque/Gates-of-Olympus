@@ -450,20 +450,29 @@ GUI = function() {
     y: 4.0,
     nodes: [
       {
-        type: "material",
-        baseColor: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        specularColor: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        specular: 0.0,
-        shine: 0.0
-      }, this.daises[0].node, this.daises[1].node
+        type: "scale",
+        x: 1.4,
+        y: 1.4,
+        z: 1.4,
+        nodes: [
+          {
+            type: "material",
+            baseColor: {
+              r: 0.0,
+              g: 0.0,
+              b: 0.0
+            },
+            specularColor: {
+              r: 1.0,
+              g: 1.0,
+              b: 1.0
+            },
+            specular: 0.0,
+            shine: 0.0,
+            nodes: [this.daises[0].node, this.daises[1].node]
+          }
+        ]
+      }
     ]
   };
   return this;

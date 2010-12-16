@@ -27,16 +27,22 @@ class GUI
       x: 8.0
       y: 4.0
       nodes: [
+        type: "scale"
+        x: 1.4
+        y: 1.4
+        z: 1.4
+        nodes: [
           type: "material"
-          baseColor:      { r: 1.0, g: 1.0, b: 1.0 }
+          baseColor:      { r: 0.0, g: 0.0, b: 0.0 }
           specularColor:  { r: 1.0, g: 1.0, b: 1.0 }
           specular:       0.0
           shine:          0.0
-        ,
-          @daises[0].node
-        ,
-          @daises[1].node
+          nodes: [
+            @daises[0].node
+            @daises[1].node
+          ]
         ]
+      ]
 
   initialize: ->
     SceneJS.withNode(@daises[0].id).bind("picked", (event) -> alert "#0 picked!")
