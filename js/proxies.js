@@ -352,7 +352,11 @@ guiDaisNode = function(id, index) {
                     type: "texture",
                     layers: [
                       {
-                        uri: "textures/dais.jpg"
+                        uri: "textures/dais1normals.png",
+                        applyTo: "normals"
+                      }, {
+                        uri: "textures/dais.jpg",
+                        applyTo: "baseColor"
                       }
                     ],
                     nodes: [
@@ -420,8 +424,8 @@ GUI = function() {
     diffuse: true,
     specular: false,
     dir: {
-      x: 1.0,
-      y: 1.0,
+      x: 0.3,
+      y: 0.3,
       z: -1.0
     }
   };

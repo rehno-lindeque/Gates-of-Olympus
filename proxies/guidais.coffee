@@ -21,7 +21,9 @@ guiDaisNode = (id, index) ->
               x: 1.0
               nodes: [
                   type: "texture"
-                  layers: [{ uri: "textures/dais.jpg" }]
+                  layers: [
+                    { uri: "textures/dais1normals.png", applyTo: "normals" },
+                    { uri: "textures/dais.jpg", applyTo: "baseColor" }]
                   nodes: [
                     type: "instance"
                     target: "NumberedDais"

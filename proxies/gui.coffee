@@ -15,7 +15,8 @@ class GUI
       color:     { r: 1.0, g: 1.0, b: 1.0 }
       diffuse:   true
       specular:  false
-      dir:       { x: 1.0, y: 1.0, z: -1.0 }
+      #dir:       { x: 1.0, y: 1.0, z: -1.0 }
+      dir:       { x: 0.3, y: 0.3, z: -1.0 }
     @lookAtNode =
       type: "lookAt"
       eye:  { x: 0.0, y: -10.0, z: 4.0 }
