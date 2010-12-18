@@ -32,25 +32,16 @@ POSSIBILITY OF SUCH DAMAGE.
 // Adapted from code by Sean O'Neil (GPU Gems 2, Chapter 16)
 //
 // Changes are copyright (c) 2010 Rehno Lindeque
-// 
+//
 
+attribute vec2 vertexPosition;
 
-#ifdef GL_ES
-precision highp float;
-#endif
-
-uniform vec3 sun;
-uniform float g;
-uniform float g2;
+uniform vec3 camera;
 
 varying vec3 viewDirection;
 
-void main (void)
-{
-  //old: gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
-  float cosSunView = dot(sun, viewDirection) / length(viewDirection);
-	float miePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
-	gl_FragColor = gl_Color + miePhase * gl_SecondaryColor;
-  //todo? gl_FragColor.a = gl_FragColor.b;
-}
 
+void main(void)
+{
+	viewDirection = camera - vertexPosition.xyz;
+}
