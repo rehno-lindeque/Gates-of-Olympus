@@ -87,22 +87,30 @@ Creatures.prototype.update = function() {
   c = 0;
   creatures = this.creatures;
   floodInit();
-  start = 6 + 6 * gridSize;
+  start = 6 + 0 * gridSize;
   goal = 6 + 11 * gridSize;
   x = creatures[c].pos[0];
   y = creatures[c].pos[1];
   index = positionToIndex(x, y);
+  creatures[c].index = index;
   if (index !== goal) {
     vel = getMove(creatures[c].pos[0], creatures[c].pos[1], creatures[c].level);
+    /*
+    if (!vel? || dirtyLevel[creatures[c].level])
+      floodFillGenPath(index,goal)
+      vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
+    */
     creatures[c].pos[0] = x + vel.x * 0.1;
     creatures[c].pos[1] = y + vel.y * 0.1;
     creatures[c].rot = 180 * Math.atan2(vel.y, vel.x) / Math.PI - 90;
   } else {
-    resetPos = indexToPosition(6, 6);
+    resetPos = indexToPosition(6, 1);
     creatures[c].pos[0] = resetPos.x;
     creatures[c].pos[1] = resetPos.y;
-    creatures[c].level = 1;
+    creatures[c].level = 0;
     creatures[c].pos[2] = platformHeights[creatures[c].level] - 1.75;
+    creatures[c].index = positionToIndex(resetPos.x, resetPos.y);
+    dirtyLevel[0] = true;
   }
   SceneJS.withNode("creatures").eachNode(function() {
     this.set({

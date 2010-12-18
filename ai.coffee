@@ -18,9 +18,9 @@ dirtyLevel[2] = true
 
 levelGoals = new Array (levels)
 
-levelGoals[0] = 6 + 6*gridSize
-levelGoals[1] = 6 + 6*gridSize + sqrGridSize
-levelGoals[2] = 6 + 6*gridSize + 2*sqrGridSize
+levelGoals[0] = 6 + 11*gridSize
+levelGoals[1] = 6 + 11*gridSize + sqrGridSize
+levelGoals[2] = 6 + 11*gridSize + 2*sqrGridSize
 
 for i in [0..sqrGridSize*levels -1]
   #path[i] = new Array (sqrGridSize)
@@ -148,23 +148,22 @@ towerPlacement =
   cell: { x: -1, y: -1 }
 
 getMove = (x,y,lev) ->
-  #curPosX = Math.floor((x/cellScale) + gridSize/2)
-  #curPosY = Math.floor((y/cellScale) + gridSize/2)
-  index = positionToIndex(x,y)#curPosX + gridSize*curPosY
+  index = positionToIndex(x,y)
+    
   nextCell = next[index][levelGoals[lev]]
   nextCellX = Math.floor(nextCell % gridSize)
   nextCellY = Math.floor(nextCell / gridSize)
-  #nextPosX = cellScale * (nextCellX - gridSize / 2) + cellScale * 0.5 
-  #nextPosY = cellScale * (nextCellY - gridSize / 2) + cellScale * 0.5 
+  
   nextPos = indexToPosition(nextCellX,nextCellY)
   velX = nextPos.x - x
   velY = nextPos.y - y
-  len = Math.sqrt(velX*velX + velY*velY)
+  if (velX == 0 && velY ==0)
+    gotcha=1
+    len = 1
+  else
+    len = Math.sqrt(velX*velX + velY*velY)
   vel = { x: velX/len, y: velY/len}
   return vel
-  #creatures[c].pos[0] = creatures[c].pos[0] + velX#*0.01
-  #creatures[c].pos[1] = creatures[c].pos[1] + velY#*0.01  
-  
   
 # notes -> to check block, simply see if the floodfill visits all squares, hold counter
 updateAI = ->
@@ -178,8 +177,8 @@ updateAI = ->
     index = creature.index
     # for now this is not gonna be as efficient as I would like, basically 
     # regenerate each path for each creep on a node. this should be shared
-    if (dirtyLevel[level])
-      floodFillGenPath(index,levelGoals[i],lev)
+    if (dirtyLevel[lev])
+      floodFillGenPath(index,levelGoals[lev],lev)
         
   # everything ready
   for i in [0..2]
