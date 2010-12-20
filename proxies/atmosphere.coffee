@@ -15,6 +15,7 @@ Atmosphere Module
 
 AtmosphereModule =
   vertexBuffer: null
+  indexBuffer: null
   shaderProgram: null
   transmittanceProgram: null
   transmittanceTexture: null
@@ -128,7 +129,7 @@ AtmosphereModule =
     
     gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
     #gl.uniform3f(@shaderProgram.sun, 0.0, 0.0, 1.0)
-    gl.uniform3f(@shaderProgram.sun, sun)
+    gl.uniform3fv(@shaderProgram.sun, sun)
     #gl.uniformMatrix4fv(@shaderProgram.invProjection, false, new Float32Array(pMatrix.flatten())
     #gl.uniformMatrix4fv(@shaderProgram.invView, false, new Float32Array(pMatrix.flatten())
     gl.uniformMatrix4fv(@shaderProgram.invProjection, false, new Float32Array(invProjection))
@@ -150,17 +151,41 @@ AtmosphereModule =
   createResourcesLo: (gl) ->
     # Create the vertex buffer
     @vertexBuffer = gl.createBuffer()
+    @indexBuffer = gl.createBuffer()
+    
+    # Create the grid 
+    # We'll assume the user has a 4:3 aspect ratio, so we'll construct the grid using the same ratio of quads
+    nx = 4 * 5
+    ny = 3 * 5
+    vertices = new Array((ny+1) * (nx+1) * 2)
+    for cy in [0..ny]    
+      for cx in [0..nx]
+        vertices[(cy * (nx+1) + cx) * 2 + 0] = cx / (nx+1)
+        vertices[(cy * (nx+1) + cx) * 2 + 1] = cy / (ny+1)
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    vertices = [
-       1.0,  1.0
-      -1.0,  1.0
-       1.0, -1.0
-      -1.0, -1.0 ]
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+    
+    indices = new Array(ny * nx * 6)
+    for cy in [0..(ny-1)]
+      for cx in [0..(nx-1)]
+        indices[(cy * nx + cx) * 6 + 0] = ((cy+0) * (nx+1) + cx+0)
+        indices[(cy * nx + cx) * 6 + 1] = ((cy+0) * (nx+1) + cx+1)
+        indices[(cy * nx + cx) * 6 + 2] = ((cy+1) * (nx+1) + cx+0)
+        indices[(cy * nx + cx) * 6 + 3] = ((cy+0) * (nx+1) + cx+1)
+        indices[(cy * nx + cx) * 6 + 4] = ((cy+1) * (nx+1) + cx+1)
+        indices[(cy * nx + cx) * 6 + 5] = ((cy+1) * (nx+1) + cx+0)
+        #indices[(cy * nx + cx) * 6 + 0] = (cy * nx + cx) * 4 + 0
+        #indices[(cy * nx + cx) * 6 + 1] = (cy * nx + cx) * 4 + 1
+        #indices[(cy * nx + cx) * 6 + 2] = (cy * nx + cx) * 4 + 3
+        #indices[(cy * nx + cx) * 6 + 3] = (cy * nx + cx) * 4 + 1
+        #indices[(cy * nx + cx) * 6 + 4] = (cy * nx + cx) * 4 + 2
+        #indices[(cy * nx + cx) * 6 + 5] = (cy * nx + cx) * 4 + 3
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertices), gl.STATIC_DRAW)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
-    vertexShader = compileShader(gl, "fullscreenquad-vs")
+    vertexShader = compileShader(gl, "atmosphere-lo-vs")
     fragmentShader = compileShader(gl, "atmosphere-lo-fs")
     gl.attachShader(@shaderProgram, vertexShader)
     gl.attachShader(@shaderProgram, fragmentShader)
@@ -168,7 +193,11 @@ AtmosphereModule =
     if not gl.getProgramParameter(@shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
 
     # Get uniform locations
-    
+    @shaderProgram.camera = gl.getUniformLocation(@shaderProgram, "camera")
+    @shaderProgram.sun = gl.getUniformLocation(@shaderProgram, "sun")
+    @shaderProgram.g = gl.getUniformLocation(@shaderProgram, "g")
+    @shaderProgram.g2 = gl.getUniformLocation(@shaderProgram, "g2")
+
     # Get attribute array locations
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
@@ -179,8 +208,8 @@ AtmosphereModule =
     saveState =
       blend:     gl.getParameter(gl.BLEND)
       depthTest: gl.getParameter(gl.DEPTH_TEST)
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    gl.enable(gl.BLEND)
+    #gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    #gl.enable(gl.BLEND)
     #gl.disable(gl.DEPTH_TEST)
     gl.depthMask(false)
     
@@ -190,9 +219,17 @@ AtmosphereModule =
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
+
+    #gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
+    #gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
+    #gl.uniform1f(@shaderProgram.g, 0.0)
+    #gl.uniform1f(@shaderProgram.g2, 0.0)
     
     # Draw geometry
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    nx = 4 * 5
+    ny = 3 * 5
+    #gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     
     # Restore gl state
     if not saveState.blend then gl.disable(gl.BLEND)

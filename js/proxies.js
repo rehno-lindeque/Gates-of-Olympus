@@ -924,6 +924,7 @@ Atmosphere Module
 */
 AtmosphereModule = {
   vertexBuffer: null,
+  indexBuffer: null,
   shaderProgram: null,
   transmittanceProgram: null,
   transmittanceTexture: null,
@@ -998,7 +999,7 @@ AtmosphereModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
-    gl.uniform3f(this.shaderProgram.sun, sun);
+    gl.uniform3fv(this.shaderProgram.sun, sun);
     gl.uniformMatrix4fv(this.shaderProgram.invProjection, false, new Float32Array(invProjection));
     gl.uniformMatrix4fv(this.shaderProgram.invView, false, new Float32Array(invView));
     gl.uniform1f(this.shaderProgram.exposure, 1.0);
@@ -1010,13 +1011,37 @@ AtmosphereModule = {
     return null;
   },
   createResourcesLo: function(gl) {
-    var fragmentShader, vertexShader, vertices;
+    var _ref, _ref2, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
+    this.indexBuffer = gl.createBuffer();
+    nx = 4 * 5;
+    ny = 3 * 5;
+    vertices = new Array((ny + 1) * (nx + 1) * 2);
+    for (cy = 0; (0 <= ny ? cy <= ny : cy >= ny); (0 <= ny ? cy += 1 : cy -= 1)) {
+      for (cx = 0; (0 <= nx ? cx <= nx : cx >= nx); (0 <= nx ? cx += 1 : cx -= 1)) {
+        vertices[(cy * (nx + 1) + cx) * 2 + 0] = cx / (nx + 1);
+        vertices[(cy * (nx + 1) + cx) * 2 + 1] = cy / (ny + 1);
+      }
+    }
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    indices = new Array(ny * nx * 6);
+    _ref = (ny - 1);
+    for (cy = 0; (0 <= _ref ? cy <= _ref : cy >= _ref); (0 <= _ref ? cy += 1 : cy -= 1)) {
+      _ref2 = (nx - 1);
+      for (cx = 0; (0 <= _ref2 ? cx <= _ref2 : cx >= _ref2); (0 <= _ref2 ? cx += 1 : cx -= 1)) {
+        indices[(cy * nx + cx) * 6 + 0] = ((cy + 0) * (nx + 1) + cx + 0);
+        indices[(cy * nx + cx) * 6 + 1] = ((cy + 0) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 2] = ((cy + 1) * (nx + 1) + cx + 0);
+        indices[(cy * nx + cx) * 6 + 3] = ((cy + 0) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 4] = ((cy + 1) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 5] = ((cy + 1) * (nx + 1) + cx + 0);
+      }
+    }
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
-    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    vertexShader = compileShader(gl, "atmosphere-lo-vs");
     fragmentShader = compileShader(gl, "atmosphere-lo-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
@@ -1024,24 +1049,28 @@ AtmosphereModule = {
     if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
       alert("Could not initialise shaders");
     }
+    this.shaderProgram.camera = gl.getUniformLocation(this.shaderProgram, "camera");
+    this.shaderProgram.sun = gl.getUniformLocation(this.shaderProgram, "sun");
+    this.shaderProgram.g = gl.getUniformLocation(this.shaderProgram, "g");
+    this.shaderProgram.g2 = gl.getUniformLocation(this.shaderProgram, "g2");
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     return null;
   },
   renderLo: function(gl, invView, invProjection, sun) {
-    var saveState;
+    var nx, ny, saveState;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     };
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.enable(gl.BLEND);
     gl.depthMask(false);
     gl.useProgram(this.shaderProgram);
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    nx = 4 * 5;
+    ny = 3 * 5;
+    gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
     if (!saveState.blend) {
       gl.disable(gl.BLEND);
     }
