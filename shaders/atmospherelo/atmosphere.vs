@@ -35,19 +35,19 @@ POSSIBILITY OF SUCH DAMAGE.
 //
 
 attribute vec2 vertexPosition;
-/*
+
 uniform vec3 camera;
 
 varying vec3 viewDirection;
 varying vec3 color;
-varying vec3 secondaryColor;*/
+varying vec3 secondaryColor;
 
 void main(void)
 {
   gl_Position = vec4(vertexPosition, 0.0, 1.0);
 	
-  /*//viewDirection = camera - vertexPosition.xyz;
+  //viewDirection = camera - vertexPosition.xyz;
   viewDirection = camera;
   color = vec3(0.0,0.0,0.0);
-  secondaryColor = vec3(1.0,0.0,0.0);*/
+  secondaryColor = vec3(1.0,0.0,0.0);
 }

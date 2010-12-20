@@ -34,33 +34,27 @@ POSSIBILITY OF SUCH DAMAGE.
 // Changes are copyright (c) 2010 Rehno Lindeque
 // 
 
-
 #ifdef GL_ES
 precision highp float;
 #endif
 
-/*
 uniform vec3 sun;
 uniform float g;
 uniform float g2;
 
 varying vec3 viewDirection;
 varying vec3 color;
-varying vec3 secondaryColor;*/
+varying vec3 secondaryColor;
 
 void main (void)
 {
   /*vec3 tmp = sun * g * g2;
   gl_FragColor = vec4(tmp * 0.00000000001, 0.0);
-  gl_FragColor.rgb += viewDirection * 0.00000000001;
+  gl_FragColor.rgb += viewDirection * 0.00000000001;*/
+
   //old: gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
-  //float cosSunView = dot(sun, viewDirection) / length(viewDirection);
-	//float miePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + g2 - 2.0*g*cosSunView, 1.5);
-  //float miePhase = 0.0;
-	//gl_FragColor = vec4(color + miePhase * secondaryColor, 1.0);
-  //gl_FragColor = vec4(color, 1.0);
-  //todo? gl_FragColor.a = gl_FragColor.b;*/
-  gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
-  //gl_FragColor += vec4(0.7, 0.75, 0.9, 1.0);
+  float cosSunView = dot(sun, viewDirection) / length(viewDirection);
+	float miePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + g2 - 2.0*g*cosSunView, 1.5);
+	gl_FragColor = vec4(color + miePhase * secondaryColor, 1.0);
 }
 
