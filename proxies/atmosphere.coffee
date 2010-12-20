@@ -136,9 +136,6 @@ AtmosphereModule =
     gl.uniformMatrix4fv(@shaderProgram.invView, false, new Float32Array(invView))
     gl.uniform1f(@shaderProgram.exposure, 1.0)
     
-    #varying vec2 coords;
-    #varying vec3 ray;
-    
     # Draw geometry
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     
@@ -157,8 +154,6 @@ AtmosphereModule =
     # We'll assume the user has a 4:3 aspect ratio, so we'll construct the grid using the same ratio of quads
     nx = 4 * 5
     ny = 3 * 5
-    #nx = 1
-    #ny = 1
     vertices = new Array((ny+1) * (nx+1) * 2)
     for cy in [0..ny]    
       for cx in [0..nx]
@@ -176,12 +171,6 @@ AtmosphereModule =
         indices[(cy * nx + cx) * 6 + 3] = ((cy+0) * (nx+1) + cx+1)
         indices[(cy * nx + cx) * 6 + 4] = ((cy+1) * (nx+1) + cx+1)
         indices[(cy * nx + cx) * 6 + 5] = ((cy+1) * (nx+1) + cx+0)
-        #indices[(cy * nx + cx) * 6 + 0] = (cy * nx + cx) * 4 + 0
-        #indices[(cy * nx + cx) * 6 + 1] = (cy * nx + cx) * 4 + 1
-        #indices[(cy * nx + cx) * 6 + 2] = (cy * nx + cx) * 4 + 3
-        #indices[(cy * nx + cx) * 6 + 3] = (cy * nx + cx) * 4 + 1
-        #indices[(cy * nx + cx) * 6 + 4] = (cy * nx + cx) * 4 + 2
-        #indices[(cy * nx + cx) * 6 + 5] = (cy * nx + cx) * 4 + 3
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
     
@@ -223,19 +212,14 @@ AtmosphereModule =
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
 
-    
-    #gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
-    #gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
-    #gl.uniform1f(@shaderProgram.g, 0.0)
-    #gl.uniform1f(@shaderProgram.g2, 0.0)
+    gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
+    gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
+    gl.uniform1f(@shaderProgram.g, 0.0)
+    gl.uniform1f(@shaderProgram.g2, 0.0)
     
     # Draw geometry
     nx = 4 * 5
     ny = 3 * 5
-    #nx = 1
-    #ny = 1
-    #gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     

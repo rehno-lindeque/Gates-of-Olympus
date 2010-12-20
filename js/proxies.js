@@ -1069,6 +1069,10 @@ AtmosphereModule = {
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
+    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(sun));
+    gl.uniform1f(this.shaderProgram.g, 0.0);
+    gl.uniform1f(this.shaderProgram.g2, 0.0);
     nx = 4 * 5;
     ny = 3 * 5;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
