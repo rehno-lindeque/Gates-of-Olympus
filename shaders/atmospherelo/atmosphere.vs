@@ -48,6 +48,6 @@ void main(void)
 	
   //viewDirection = camera - vertexPosition.xyz;
   viewDirection = camera;
-  color = vec3(0.0,0.0,0.0);
-  secondaryColor = vec3(1.0,0.0,0.0);
+  color = vec3(0.7, 0.75, 0.9);
+  secondaryColor = vec3(0.1,0.1,0.1);
 }
