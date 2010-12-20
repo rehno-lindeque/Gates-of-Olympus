@@ -157,11 +157,13 @@ AtmosphereModule =
     # We'll assume the user has a 4:3 aspect ratio, so we'll construct the grid using the same ratio of quads
     nx = 4 * 5
     ny = 3 * 5
+    #nx = 1
+    #ny = 1
     vertices = new Array((ny+1) * (nx+1) * 2)
     for cy in [0..ny]    
       for cx in [0..nx]
-        vertices[(cy * (nx+1) + cx) * 2 + 0] = cx / (nx+1)
-        vertices[(cy * (nx+1) + cx) * 2 + 1] = cy / (ny+1)
+        vertices[(cy * (nx+1) + cx) * 2 + 0] = -1.0 + (cx * 2) / nx
+        vertices[(cy * (nx+1) + cx) * 2 + 1] = -1.0 + (cy * 2) / ny
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
     
@@ -181,7 +183,7 @@ AtmosphereModule =
         #indices[(cy * nx + cx) * 6 + 4] = (cy * nx + cx) * 4 + 2
         #indices[(cy * nx + cx) * 6 + 5] = (cy * nx + cx) * 4 + 3
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer)
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
@@ -210,6 +212,7 @@ AtmosphereModule =
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     #gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     #gl.enable(gl.BLEND)
+    gl.disable(gl.BLEND)
     #gl.disable(gl.DEPTH_TEST)
     gl.depthMask(false)
     
@@ -220,6 +223,7 @@ AtmosphereModule =
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
 
+    
     #gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
     #gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
     #gl.uniform1f(@shaderProgram.g, 0.0)
@@ -228,11 +232,15 @@ AtmosphereModule =
     # Draw geometry
     nx = 4 * 5
     ny = 3 * 5
+    #nx = 1
+    #ny = 1
     #gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     
     # Restore gl state
-    if not saveState.blend then gl.disable(gl.BLEND)
+    if saveState.blend then gl.enable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
     gl.depthMask(true)
     null
