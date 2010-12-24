@@ -18,6 +18,10 @@ negateVector4 = function(v) {
   return [-v[0],-v[1],-v[2],-v[3]];
 }
 
+negateVector3 = function(v) {
+  return [-v[0],-v[1],-v[2]];
+}
+
 addVec4 = function(u, v) {
   return [u[0] + v[0],u[1] + v[1],u[2] + v[2],u[3] + v[3]];
 }
