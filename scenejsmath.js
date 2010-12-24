@@ -340,6 +340,14 @@ mulMat4v4 = function(m, v) {
   ];
 }
 
+mulMat3v3 = function(m, v) {
+  return [
+    m[0] * v[0] + m[3] * v[1] + m[6] * v[2],
+    m[1] * v[0] + m[4] * v[1] + m[7] * v[2],
+    m[2] * v[0] + m[5] * v[1] + m[8] * v[2]
+  ];
+}
+
 transposeMat4 = function(m) {
   var r = mat4();
   var i = 0;
