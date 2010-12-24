@@ -196,7 +196,7 @@ AtmosphereModule =
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
     null
   
-  renderLo: (gl, invView, invProjection, nearZ, sun) ->
+  renderLo: (gl, view, invProjection, nearZ, sun) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -216,8 +216,8 @@ AtmosphereModule =
 
     gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
     gl.uniform2f(@shaderProgram.invProjection, invProjection[0]/nearZ, invProjection[5]/nearZ)
-    gl.uniformMatrix3fv(@shaderProgram.invView, false, new Float32Array(mat4To3(invView)))
-    gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
+    gl.uniformMatrix3fv(@shaderProgram.invView, false, new Float32Array(transposeMat3(view)))
+    gl.uniform3fv(@shaderProgram.sun, new Float32Array(mulMat3v3(view,sun)))
     gl.uniform1f(@shaderProgram.g, 0.0)
     gl.uniform1f(@shaderProgram.g2, 0.0)
     
@@ -276,9 +276,9 @@ Cloud dome node type
 
 
 class Atmosphere
-  render: (gl, invView, invProjection, nearZ, sun) ->
+  render: (gl, view, invProjection, nearZ, sun) ->
     if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResourcesLo(gl)
-    AtmosphereModule.renderLo(gl, invView, invProjection, nearZ, sun)
+    AtmosphereModule.renderLo(gl, view, invProjection, nearZ, sun)
     null
 
 

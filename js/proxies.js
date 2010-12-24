@@ -1059,7 +1059,7 @@ AtmosphereModule = {
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     return null;
   },
-  renderLo: function(gl, invView, invProjection, nearZ, sun) {
+  renderLo: function(gl, view, invProjection, nearZ, sun) {
     var nx, ny, saveState;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
@@ -1073,8 +1073,8 @@ AtmosphereModule = {
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
     gl.uniform2f(this.shaderProgram.invProjection, invProjection[0] / nearZ, invProjection[5] / nearZ);
-    gl.uniformMatrix3fv(this.shaderProgram.invView, false, new Float32Array(mat4To3(invView)));
-    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(sun));
+    gl.uniformMatrix3fv(this.shaderProgram.invView, false, new Float32Array(transposeMat3(view)));
+    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(mulMat3v3(view, sun)));
     gl.uniform1f(this.shaderProgram.g, 0.0);
     gl.uniform1f(this.shaderProgram.g2, 0.0);
     nx = 4 * 5;
@@ -1109,10 +1109,10 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Cloud dome node type
 */
 Atmosphere = function() {};
-Atmosphere.prototype.render = function(gl, invView, invProjection, nearZ, sun) {
+Atmosphere.prototype.render = function(gl, view, invProjection, nearZ, sun) {
   if (!AtmosphereModule.vertexBuffer) {
     AtmosphereModule.createResourcesLo(gl);
   }
-  AtmosphereModule.renderLo(gl, invView, invProjection, nearZ, sun);
+  AtmosphereModule.renderLo(gl, view, invProjection, nearZ, sun);
   return null;
 };
