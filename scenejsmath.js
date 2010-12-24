@@ -132,6 +132,10 @@ mat4 = function() {
   return new Array(16);
 }
 
+mat3 = function() {
+  return new Array(9);
+}
+
 dupMat4 = function(m) {
   return m.slice(0, 16);
 }
@@ -355,6 +359,18 @@ transposeMat4 = function(m) {
   for (i = 0; i < 4; ++i) {
     for (j = 0; j < 4; ++j) {
       r[i + j * 4] = m[i * 4 + j];
+    }
+  }
+  return r;
+}
+
+transposeMat3 = function(m) {
+  var r = mat3();
+  var i = 0;
+  var j = 0;
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 3; ++j) {
+      r[i + j * 3] = m[i * 3 + j];
     }
   }
   return r;
