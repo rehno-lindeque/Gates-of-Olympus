@@ -179,7 +179,7 @@
     view = lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
     optics = backgroundCamera.optics;
     projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
-    atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position);
+    atmosphere.render(customGL, inverseMat4(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
     _result = [];

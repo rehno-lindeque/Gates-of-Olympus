@@ -38,6 +38,11 @@ attribute vec2 vertexPosition;
 
 uniform vec3 camera;
 
+// using a vec2 representing the first two diagonals of the corresponding inverse projection matrix, 
+// but with a near plane of 1.0.
+uniform vec2 invProjection;
+uniform mat3 invView;
+
 varying vec3 viewDirection;
 varying vec3 color;
 varying vec3 secondaryColor;
@@ -47,7 +52,13 @@ void main(void)
   gl_Position = vec4(vertexPosition, 0.0, 1.0);
 	
   //viewDirection = camera - vertexPosition.xyz;
-  viewDirection = camera;
-  color = vec3(0.7, 0.75, 0.9);
-  secondaryColor = vec3(0.1,0.1,0.1);
+  viewDirection = vec3(vertexPosition / invProjection, 1.0);
+  viewDirection = viewDirection * invView;
+  viewDirection = normalize(viewDirection);
+  //viewDirection = vertexPosition.z * cameraLook + vertexPosition.y * cameraUp;
+  //viewDirection = invProjection * vec4(vertexPosition, 0.0, 1.0);
+  
+
+  color = vec3(0.5, 0.55, 0.7);
+  secondaryColor = vec3(0.2,0.2,0.2);
 }

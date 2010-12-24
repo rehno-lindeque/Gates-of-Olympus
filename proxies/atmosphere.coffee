@@ -185,6 +185,8 @@ AtmosphereModule =
 
     # Get uniform locations
     @shaderProgram.camera = gl.getUniformLocation(@shaderProgram, "camera")
+    @shaderProgram.invProjection = gl.getUniformLocation(@shaderProgram, "invProjection")
+    @shaderProgram.invView = gl.getUniformLocation(@shaderProgram, "invView")
     @shaderProgram.sun = gl.getUniformLocation(@shaderProgram, "sun")
     @shaderProgram.g = gl.getUniformLocation(@shaderProgram, "g")
     @shaderProgram.g2 = gl.getUniformLocation(@shaderProgram, "g2")
@@ -194,7 +196,7 @@ AtmosphereModule =
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
     null
   
-  renderLo: (gl, invView, invProjection, sun) ->
+  renderLo: (gl, invView, invProjection, nearZ, sun) ->
     # Change gl state
     saveState =
       blend:     gl.getParameter(gl.BLEND)
@@ -213,6 +215,8 @@ AtmosphereModule =
     gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
 
     gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
+    gl.uniform2f(@shaderProgram.invProjection, invProjection[0]/nearZ, invProjection[5]/nearZ)
+    gl.uniformMatrix3fv(@shaderProgram.invView, false, new Float32Array(mat4To3(invView)))
     gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
     gl.uniform1f(@shaderProgram.g, 0.0)
     gl.uniform1f(@shaderProgram.g2, 0.0)
@@ -272,9 +276,9 @@ Cloud dome node type
 
 
 class Atmosphere
-  render: (gl, invView, invProjection, sun) ->
+  render: (gl, invView, invProjection, nearZ, sun) ->
     if not AtmosphereModule.vertexBuffer then AtmosphereModule.createResourcesLo(gl)
-    AtmosphereModule.renderLo(gl, invView, invProjection, sun)
+    AtmosphereModule.renderLo(gl, invView, invProjection, nearZ, sun)
     null
 
 

@@ -56,5 +56,7 @@ void main (void)
   float cosSunView = dot(sun, viewDirection) / length(viewDirection);
 	float miePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + g2 - 2.0*g*cosSunView, 1.5);
 	gl_FragColor = vec4(color + miePhase * secondaryColor, 1.0);
+
+  //gl_FragColor = vec4(viewDirection, 1.0);
 }
 
