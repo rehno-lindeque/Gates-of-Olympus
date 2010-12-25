@@ -51,12 +51,9 @@ void main(void)
 {
   gl_Position = vec4(vertexPosition, 0.0, 1.0);
 	
-  //viewDirection = camera - vertexPosition.xyz;
   viewDirection = vec3(vertexPosition / invProjection, 1.0);
   viewDirection = viewDirection * invView;
-  viewDirection = normalize(viewDirection);
-  //viewDirection = vertexPosition.z * cameraLook + vertexPosition.y * cameraUp;
-  //viewDirection = invProjection * vec4(vertexPosition, 0.0, 1.0);
+  //viewDirection = normalize(viewDirection); (no need to normalize, normalized in fragment shader)
   
 
   color = vec3(0.5, 0.55, 0.7);
