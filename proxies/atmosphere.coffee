@@ -201,7 +201,7 @@ AtmosphereModule =
     @shaderProgram.scaleDepth = gl.getUniformLocation(@shaderProgram, "scaleDepth");
     @shaderProgram.scaleDivScaleDepth = gl.getUniformLocation(@shaderProgram, "scaleDivScaleDepth");
     @shaderProgram.g = gl.getUniformLocation(@shaderProgram, "g")
-    @shaderProgram.g2 = gl.getUniformLocation(@shaderProgram, "g2")
+    @shaderProgram.gSqr = gl.getUniformLocation(@shaderProgram, "gSqr")
 
     # Get attribute array locations
     gl.useProgram(@shaderProgram)

@@ -1065,7 +1065,7 @@ AtmosphereModule = {
     this.shaderProgram.scaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDepth");
     this.shaderProgram.scaleDivScaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDivScaleDepth");
     this.shaderProgram.g = gl.getUniformLocation(this.shaderProgram, "g");
-    this.shaderProgram.g2 = gl.getUniformLocation(this.shaderProgram, "g2");
+    this.shaderProgram.gSqr = gl.getUniformLocation(this.shaderProgram, "gSqr");
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     return null;
