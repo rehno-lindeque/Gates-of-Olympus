@@ -184,10 +184,20 @@ AtmosphereModule =
     if not gl.getProgramParameter(@shaderProgram, gl.LINK_STATUS) then alert "Could not initialise shaders"
 
     # Get uniform locations
-    @shaderProgram.camera = gl.getUniformLocation(@shaderProgram, "camera")
+    #@shaderProgram.camera = gl.getUniformLocation(@shaderProgram, "camera")
     @shaderProgram.invProjection = gl.getUniformLocation(@shaderProgram, "invProjection")
     @shaderProgram.invView = gl.getUniformLocation(@shaderProgram, "invView")
     @shaderProgram.sun = gl.getUniformLocation(@shaderProgram, "sun")
+    @shaderProgram.invWavelength = gl.getUniformLocation(@shaderProgram, "invWavelength");
+    @shaderProgram.cameraHeight = gl.getUniformLocation(@shaderProgram, "cameraHeight");
+    @shaderProgram.cameraHeightSqr = gl.getUniformLocation(@shaderProgram, "cameraHeightSqr");
+    @shaderProgram.innerRadius = gl.getUniformLocation(@shaderProgram, "innerRadius");
+    @shaderProgram.outerRadiusSqr = gl.getUniformLocation(@shaderProgram, "outerRadiusSqr");
+    @shaderProgram.Kr4PI = gl.getUniformLocation(@shaderProgram, "Kr4PI")
+    @shaderProgram.Km4PI = gl.getUniformLocation(@shaderProgram, "Km4PI")
+    @shaderProgram.scale = gl.getUniformLocation(@shaderProgram, "scale");
+    @shaderProgram.scaleDepth = gl.getUniformLocation(@shaderProgram, "scaleDepth");
+    @shaderProgram.scaleDivScaleDepth = gl.getUniformLocation(@shaderProgram, "scaleDivScaleDepth");
     @shaderProgram.g = gl.getUniformLocation(@shaderProgram, "g")
     @shaderProgram.g2 = gl.getUniformLocation(@shaderProgram, "g2")
 
@@ -214,12 +224,41 @@ AtmosphereModule =
     gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
     gl.vertexAttribPointer(@shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
 
-    gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
+    #gl.uniform3f(@shaderProgram.camera, 0.0, 0.0, 1.0)
     gl.uniform2f(@shaderProgram.invProjection, invProjection[0]/nearZ, invProjection[5]/nearZ)
     gl.uniformMatrix3fv(@shaderProgram.invView, false, new Float32Array(transposeMat3(view)))
+
+    #nSamples = 3             # Number of sample rays to use in integral equation
+    Kr = 0.0025  		          # Rayleigh scattering constant
+    Kr4PI = Kr * 4.0 * Math.PI
+    Km = 0.0010               # Mie scattering constant
+    Km4PI = Km * 4.0 * Math.PI
+    #ESun = 20.0              # Sun brightness constant
+    #g = -0.990               # The Mie phase asymmetry factor
+    #exposure = 2.0    
+    cameraHeight = 10.15
+    innerRadius = 10.0
+    outerRadius = 10.25
+    scale = 1.0 / (outerRadius - innerRadius)
+    wavelength = [0.650, 0.570, 0.475] # 650 nm for red, 570 nm for green, 475 nm for blue
+    wavelength4 = [square(square(wavelength[0])), square(square(wavelength[1])), square(square(wavelength[2]))]
+    rayleighScaleDepth = 0.25
+    #mieScaleDepth = 0.1
+
     gl.uniform3fv(@shaderProgram.sun, new Float32Array(mulMat3v3(view,sun)))
-    gl.uniform1f(@shaderProgram.g, 0.0)
-    gl.uniform1f(@shaderProgram.g2, 0.0)
+    gl.uniform3f(@shaderProgram.invWavelength, 1.0 / wavelength4[0], 1.0 / wavelength4[1], 1.0 / wavelength4[2])
+    gl.uniform1f(@shaderProgram.cameraHeight, cameraHeight)
+    gl.uniform1f(@shaderProgram.innerRadius, innerRadius)
+    gl.uniform1f(@shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight)
+    gl.uniform1f(@shaderProgram.outerRadiusSqr, outerRadius * outerRadius)
+    gl.uniform1f(@shaderProgram.Kr4PI, Kr4PI)
+    gl.uniform1f(@shaderProgram.Km4PI, Km4PI)
+    gl.uniform1f(@shaderProgram.scale, scale)
+    gl.uniform1f(@shaderProgram.scaleDepth, rayleighScaleDepth)
+    gl.uniform1f(@shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth)
+
+    gl.uniform1f(@shaderProgram.g, -0.990)
+    gl.uniform1f(@shaderProgram.gSqr, -0.990 * -0.990)
     
     # Draw geometry
     nx = 4 * 5

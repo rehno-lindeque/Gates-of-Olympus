@@ -1049,10 +1049,19 @@ AtmosphereModule = {
     if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
       alert("Could not initialise shaders");
     }
-    this.shaderProgram.camera = gl.getUniformLocation(this.shaderProgram, "camera");
     this.shaderProgram.invProjection = gl.getUniformLocation(this.shaderProgram, "invProjection");
     this.shaderProgram.invView = gl.getUniformLocation(this.shaderProgram, "invView");
     this.shaderProgram.sun = gl.getUniformLocation(this.shaderProgram, "sun");
+    this.shaderProgram.invWavelength = gl.getUniformLocation(this.shaderProgram, "invWavelength");
+    this.shaderProgram.cameraHeight = gl.getUniformLocation(this.shaderProgram, "cameraHeight");
+    this.shaderProgram.cameraHeightSqr = gl.getUniformLocation(this.shaderProgram, "cameraHeightSqr");
+    this.shaderProgram.innerRadius = gl.getUniformLocation(this.shaderProgram, "innerRadius");
+    this.shaderProgram.outerRadiusSqr = gl.getUniformLocation(this.shaderProgram, "outerRadiusSqr");
+    this.shaderProgram.Kr4PI = gl.getUniformLocation(this.shaderProgram, "Kr4PI");
+    this.shaderProgram.Km4PI = gl.getUniformLocation(this.shaderProgram, "Km4PI");
+    this.shaderProgram.scale = gl.getUniformLocation(this.shaderProgram, "scale");
+    this.shaderProgram.scaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDepth");
+    this.shaderProgram.scaleDivScaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDivScaleDepth");
     this.shaderProgram.g = gl.getUniformLocation(this.shaderProgram, "g");
     this.shaderProgram.g2 = gl.getUniformLocation(this.shaderProgram, "g2");
     gl.useProgram(this.shaderProgram);
@@ -1060,7 +1069,7 @@ AtmosphereModule = {
     return null;
   },
   renderLo: function(gl, view, invProjection, nearZ, sun) {
-    var nx, ny, saveState;
+    var Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -1071,12 +1080,32 @@ AtmosphereModule = {
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
     gl.uniform2f(this.shaderProgram.invProjection, invProjection[0] / nearZ, invProjection[5] / nearZ);
     gl.uniformMatrix3fv(this.shaderProgram.invView, false, new Float32Array(transposeMat3(view)));
+    Kr = 0.0025;
+    Kr4PI = Kr * 4.0 * Math.PI;
+    Km = 0.0010;
+    Km4PI = Km * 4.0 * Math.PI;
+    cameraHeight = 10.15;
+    innerRadius = 10.0;
+    outerRadius = 10.25;
+    scale = 1.0 / (outerRadius - innerRadius);
+    wavelength = [0.650, 0.570, 0.475];
+    wavelength4 = [square(square(wavelength[0])), square(square(wavelength[1])), square(square(wavelength[2]))];
+    rayleighScaleDepth = 0.25;
     gl.uniform3fv(this.shaderProgram.sun, new Float32Array(mulMat3v3(view, sun)));
-    gl.uniform1f(this.shaderProgram.g, 0.0);
-    gl.uniform1f(this.shaderProgram.g2, 0.0);
+    gl.uniform3f(this.shaderProgram.invWavelength, 1.0 / wavelength4[0], 1.0 / wavelength4[1], 1.0 / wavelength4[2]);
+    gl.uniform1f(this.shaderProgram.cameraHeight, cameraHeight);
+    gl.uniform1f(this.shaderProgram.innerRadius, innerRadius);
+    gl.uniform1f(this.shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight);
+    gl.uniform1f(this.shaderProgram.outerRadiusSqr, outerRadius * outerRadius);
+    gl.uniform1f(this.shaderProgram.Kr4PI, Kr4PI);
+    gl.uniform1f(this.shaderProgram.Km4PI, Km4PI);
+    gl.uniform1f(this.shaderProgram.scale, scale);
+    gl.uniform1f(this.shaderProgram.scaleDepth, rayleighScaleDepth);
+    gl.uniform1f(this.shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth);
+    gl.uniform1f(this.shaderProgram.g, -0.990);
+    gl.uniform1f(this.shaderProgram.gSqr, -0.990 * -0.990);
     nx = 4 * 5;
     ny = 3 * 5;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);

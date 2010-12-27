@@ -39,8 +39,8 @@ precision highp float;
 #endif
 
 uniform vec3 sun;
-uniform float g;
-uniform float g2;
+uniform float g;    // The Mie phase asymmetry factor
+uniform float gSqr;
 
 varying vec3 viewDirection;
 varying vec3 color;
@@ -54,7 +54,7 @@ void main (void)
 
   //old: gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
   float cosSunView = dot(sun, viewDirection) / length(viewDirection);
-	float miePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + g2 - 2.0*g*cosSunView, 1.5);
+	float miePhase = 1.5 * ((1.0 - gSqr) / (2.0 + gSqr)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + gSqr - 2.0*g*cosSunView, 1.5);
 	gl_FragColor = vec4(color + miePhase * secondaryColor, 1.0);
 
   //gl_FragColor = vec4(viewDirection, 1.0);
