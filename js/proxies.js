@@ -1057,6 +1057,8 @@ AtmosphereModule = {
     this.shaderProgram.cameraHeightSqr = gl.getUniformLocation(this.shaderProgram, "cameraHeightSqr");
     this.shaderProgram.innerRadius = gl.getUniformLocation(this.shaderProgram, "innerRadius");
     this.shaderProgram.outerRadiusSqr = gl.getUniformLocation(this.shaderProgram, "outerRadiusSqr");
+    this.shaderProgram.KrESun = gl.getUniformLocation(this.shaderProgram, "KrESun");
+    this.shaderProgram.KmESun = gl.getUniformLocation(this.shaderProgram, "KmESun");
     this.shaderProgram.Kr4PI = gl.getUniformLocation(this.shaderProgram, "Kr4PI");
     this.shaderProgram.Km4PI = gl.getUniformLocation(this.shaderProgram, "Km4PI");
     this.shaderProgram.scale = gl.getUniformLocation(this.shaderProgram, "scale");
@@ -1069,7 +1071,7 @@ AtmosphereModule = {
     return null;
   },
   renderLo: function(gl, view, invProjection, nearZ, sun) {
-    var Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
+    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
@@ -1086,6 +1088,7 @@ AtmosphereModule = {
     Kr4PI = Kr * 4.0 * Math.PI;
     Km = 0.0010;
     Km4PI = Km * 4.0 * Math.PI;
+    ESun = 20.0;
     cameraHeight = 10.15;
     innerRadius = 10.0;
     outerRadius = 10.25;
@@ -1099,6 +1102,8 @@ AtmosphereModule = {
     gl.uniform1f(this.shaderProgram.innerRadius, innerRadius);
     gl.uniform1f(this.shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight);
     gl.uniform1f(this.shaderProgram.outerRadiusSqr, outerRadius * outerRadius);
+    gl.uniform1f(this.shaderProgram.KrESun, Kr * ESun);
+    gl.uniform1f(this.shaderProgram.KmESun, Km * ESun);
     gl.uniform1f(this.shaderProgram.Kr4PI, Kr4PI);
     gl.uniform1f(this.shaderProgram.Km4PI, Km4PI);
     gl.uniform1f(this.shaderProgram.scale, scale);

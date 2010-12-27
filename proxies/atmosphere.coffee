@@ -193,6 +193,8 @@ AtmosphereModule =
     @shaderProgram.cameraHeightSqr = gl.getUniformLocation(@shaderProgram, "cameraHeightSqr");
     @shaderProgram.innerRadius = gl.getUniformLocation(@shaderProgram, "innerRadius");
     @shaderProgram.outerRadiusSqr = gl.getUniformLocation(@shaderProgram, "outerRadiusSqr");
+    @shaderProgram.KrESun = gl.getUniformLocation(@shaderProgram, "KrESun")
+    @shaderProgram.KmESun = gl.getUniformLocation(@shaderProgram, "KmESun")
     @shaderProgram.Kr4PI = gl.getUniformLocation(@shaderProgram, "Kr4PI")
     @shaderProgram.Km4PI = gl.getUniformLocation(@shaderProgram, "Km4PI")
     @shaderProgram.scale = gl.getUniformLocation(@shaderProgram, "scale");
@@ -233,7 +235,7 @@ AtmosphereModule =
     Kr4PI = Kr * 4.0 * Math.PI
     Km = 0.0010               # Mie scattering constant
     Km4PI = Km * 4.0 * Math.PI
-    #ESun = 20.0              # Sun brightness constant
+    ESun = 20.0               # Sun brightness constant
     #g = -0.990               # The Mie phase asymmetry factor
     #exposure = 2.0    
     cameraHeight = 10.15
@@ -251,6 +253,8 @@ AtmosphereModule =
     gl.uniform1f(@shaderProgram.innerRadius, innerRadius)
     gl.uniform1f(@shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight)
     gl.uniform1f(@shaderProgram.outerRadiusSqr, outerRadius * outerRadius)
+    gl.uniform1f(@shaderProgram.KrESun, Kr * ESun)
+    gl.uniform1f(@shaderProgram.KmESun, Km * ESun)
     gl.uniform1f(@shaderProgram.Kr4PI, Kr4PI)
     gl.uniform1f(@shaderProgram.Km4PI, Km4PI)
     gl.uniform1f(@shaderProgram.scale, scale)

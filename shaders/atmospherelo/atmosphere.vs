@@ -50,18 +50,20 @@ uniform float cameraHeightSqr;
 uniform float innerRadius;		      // The inner (atmosphere) radius
 //uniform float outerRadius;		    // The outer (atmosphere) radius
 uniform float outerRadiusSqr;
+uniform float KrESun;			          // Kr * ESun
+uniform float KmESun;			          // Km * ESun
 uniform float Kr4PI;                // Kr * 4 * PI
 uniform float Km4PI;                // Km * 4 * PI
 uniform float scale;                // 1 / (outerRadius - innerRadius)
 uniform float scaleDepth;           // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 uniform float scaleDivScaleDepth;	  // scale / scaleDepth
 
-const int nSamples = 2;
-const float samples = 2.0;
+const int nSamples = 3;
+const float samples = 3.0;
 
 varying vec3 viewDirection;
-varying vec3 color;
-varying vec3 secondaryColor;
+varying vec3 mieColor;
+varying vec3 raleighColor;
 
 float applyScale(float cosAngle)
 {
@@ -109,7 +111,7 @@ void main(void)
   vec3 samplePoint = vec3(0.0, cameraHeight, 0.0) + sampleRay * 0.5;
 
 	// Loop through the sample rays
-	vec3 frontColor = vec3(0.0, 0.0, 0.0);
+	vec3 color = vec3(0.0, 0.0, 0.0);
 	for(int i = 0; i < nSamples; i++)
 	{
 		float height = length(samplePoint);
@@ -118,11 +120,14 @@ void main(void)
 		float cameraAngle = dot(ray, samplePoint) / height;
 		float scatter = (startOffset + depth * (applyScale(lightAngle) - applyScale(cameraAngle)));
 		vec3 attenuate = exp(-scatter * (invWavelength * Kr4PI + Km4PI));
-		frontColor += attenuate * (depth * scaledLength);
+		color += attenuate * (depth * scaledLength);
 		samplePoint += sampleRay;
 	}
 
+	// Scale the Mie and Rayleigh colors
+	mieColor = color * KmESun;
+	raleighColor = color * (invWavelength * KrESun);
 
-  color = vec3(0.5, 0.55, 0.7);
-  secondaryColor = vec3(0.2,0.2,0.2);
+  //old (testing): color = vec3(0.5, 0.55, 0.7);
+  //old (testing): secondaryColor = vec3(0.2,0.2,0.2);
 }
