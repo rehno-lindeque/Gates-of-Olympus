@@ -76,9 +76,8 @@ void main(void)
   gl_Position = vec4(vertexPosition, 0.0, 1.0);
 	
   // Calculate the view direction in world space
-  viewDirection = vec3(vertexPosition / invProjection, 1.0);
-  viewDirection = viewDirection * invView;
-  //viewDirection = normalize(viewDirection); (no need to normalize, normalized in fragment shader)
+  viewDirection = vec3(vertexPosition / invProjection, -1.0);
+  viewDirection = invView * viewDirection;
  
   // OLD: (Remove) Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
 	//float B = 2.0 * dot(v3CameraPos, v3Ray);
@@ -92,12 +91,12 @@ void main(void)
   //       store its length to use in later computations...
   vec3 ray = normalize(viewDirection); 
 
+  // Calculate the intersection of the camera ray with the atmosphere's outer radius
+  float far = -2.0 * ray.z + sqrt(4.0 * (ray.z * ray.z - cameraHeightSqr + outerRadiusSqr));
+
   // Calculate the camera angle in relation to the atmosphere normal
   //float fStartAngle = dot(v3Ray, v3Start) / fHeight;
-  float startCosAngle = ray.y;                    // Because the camera is static (camera position is (0, cameraHeight, 0))
-
-  // Calculate the intersection of the camera ray with the atmosphere's outer radius
-  float far = -2.0 * ray.y + sqrt(4.0 * (ray.y * ray.y - cameraHeightSqr + outerRadiusSqr));
+  float startCosAngle = ray.z;                    // Because the camera is static (camera position is (0, 0, cameraHeight))
 
   // Calculate the scattering offset
   float depth = exp(scaleDivScaleDepth * (innerRadius - cameraHeight));
@@ -108,7 +107,7 @@ void main(void)
   float sampleLength = far / samples;
   float scaledLength = sampleLength * scale;
   vec3 sampleRay = ray * sampleLength;
-  vec3 samplePoint = vec3(0.0, cameraHeight, 0.0) + sampleRay * 0.5;
+  vec3 samplePoint = vec3(0.0, 0.0, cameraHeight) + sampleRay * 0.5;
 
 	// Loop through the sample rays
 	vec3 color = vec3(0.0, 0.0, 0.0);
@@ -128,6 +127,6 @@ void main(void)
 	mieColor = color * KmESun;
 	raleighColor = color * (invWavelength * KrESun);
 
-  //old (testing): color = vec3(0.5, 0.55, 0.7);
-  //old (testing): secondaryColor = vec3(0.2,0.2,0.2);
+  /*old (testing):* raleighColor = vec3(0.5, 0.55, 0.7);//*/
+  /*old (testing):* mieColor = vec3(0.2,0.2,0.2);//*/
 }
