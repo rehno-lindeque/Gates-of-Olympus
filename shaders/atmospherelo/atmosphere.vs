@@ -58,8 +58,8 @@ uniform float scale;                // 1 / (outerRadius - innerRadius)
 uniform float scaleDepth;           // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 uniform float scaleDivScaleDepth;	  // scale / scaleDepth
 
-const int nSamples = 4;
-const float samples = 4.0;
+const int nSamples = 8;
+const float samples = 8.0;
 
 varying vec3 viewDirection;
 varying vec3 mieColor;

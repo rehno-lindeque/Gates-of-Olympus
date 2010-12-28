@@ -53,7 +53,9 @@ void main (void)
   gl_FragColor.rgb += viewDirection * 0.00000000001;*/
 
   //old: gl_FragColor = vec4(0.7, 0.75, 0.9, 1.0);
-  float cosSunView = dot(sun, viewDirection) / length(viewDirection);
+  // todo: not sure why, but the sun sign has to be opposite here to in the vertex shader for mie scattering to work...
+  //float cosSunView = dot(sun, viewDirection) / length(viewDirection);
+  float cosSunView = dot(-sun, viewDirection) / length(viewDirection);
 	float miePhase = 1.5 * ((1.0 - gSqr) / (2.0 + gSqr)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + gSqr - 2.0 * g * cosSunView, 1.5);
 	gl_FragColor = vec4(raleighColor + miePhase * mieColor, 1.0);
   //gl_FragColor.a = gl_FragColor.b; 
