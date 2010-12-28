@@ -656,7 +656,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [0.01, 0.0];
+  this.velocity = [0.005, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
@@ -767,7 +767,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.01, 0.0];
+  this.velocity = [0.005, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
@@ -1014,8 +1014,8 @@ AtmosphereModule = {
     var _ref, _ref2, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
-    nx = 4 * 5;
-    ny = 3 * 5;
+    nx = 4 * 15;
+    ny = 3 * 15;
     vertices = new Array((ny + 1) * (nx + 1) * 2);
     for (cy = 0; (0 <= ny ? cy <= ny : cy >= ny); (0 <= ny ? cy += 1 : cy -= 1)) {
       for (cx = 0; (0 <= nx ? cx <= nx : cx >= nx); (0 <= nx ? cx += 1 : cx -= 1)) {
@@ -1089,18 +1089,18 @@ AtmosphereModule = {
     Km = 0.0010;
     Km4PI = Km * 4.0 * Math.PI;
     ESun = 20.0;
-    cameraHeight = 10.15;
+    cameraHeight = 10.05;
     innerRadius = 10.0;
     outerRadius = 10.25;
     scale = 1.0 / (outerRadius - innerRadius);
     wavelength = [0.650, 0.570, 0.475];
     wavelength4 = [square(square(wavelength[0])), square(square(wavelength[1])), square(square(wavelength[2]))];
     rayleighScaleDepth = 0.25;
-    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(mulMat3v3(view, sun)));
+    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(sun));
     gl.uniform3f(this.shaderProgram.invWavelength, 1.0 / wavelength4[0], 1.0 / wavelength4[1], 1.0 / wavelength4[2]);
     gl.uniform1f(this.shaderProgram.cameraHeight, cameraHeight);
-    gl.uniform1f(this.shaderProgram.innerRadius, innerRadius);
     gl.uniform1f(this.shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight);
+    gl.uniform1f(this.shaderProgram.innerRadius, innerRadius);
     gl.uniform1f(this.shaderProgram.outerRadiusSqr, outerRadius * outerRadius);
     gl.uniform1f(this.shaderProgram.KrESun, Kr * ESun);
     gl.uniform1f(this.shaderProgram.KmESun, Km * ESun);
@@ -1111,8 +1111,8 @@ AtmosphereModule = {
     gl.uniform1f(this.shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth);
     gl.uniform1f(this.shaderProgram.g, -0.990);
     gl.uniform1f(this.shaderProgram.gSqr, -0.990 * -0.990);
-    nx = 4 * 5;
-    ny = 3 * 5;
+    nx = 4 * 15;
+    ny = 3 * 15;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
     if (saveState.blend) {

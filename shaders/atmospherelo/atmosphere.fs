@@ -57,6 +57,11 @@ void main (void)
 	float miePhase = 1.5 * ((1.0 - gSqr) / (2.0 + gSqr)) * (1.0 + cosSunView*cosSunView) / pow(1.0 + gSqr - 2.0*g*cosSunView, 1.5);
 	gl_FragColor = vec4(raleighColor + miePhase * mieColor, 1.0);
 
-  //gl_FragColor = vec4(viewDirection, 1.0);
+  gl_FragColor.r = min(gl_FragColor.r, 1.0);
+  gl_FragColor.g = min(gl_FragColor.g, 1.0);
+  gl_FragColor.b = min(gl_FragColor.b, 1.0);
+
+  //gl_FragColor = vec4(viewDirection / length(viewDirection), 1.0);
+  //gl_FragColor.b *= -1.0;
 }
 

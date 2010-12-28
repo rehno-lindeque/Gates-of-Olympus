@@ -17,13 +17,13 @@ gameScene.render()
 gui.initialize()
 
 # Manual webgl initialization (for rendering things stand-alone
-customGL = canvas.getContext("experimental-webgl");
-#customGL = canvas.getContext("experimental-webgl",
+#customGL = canvas.getContext("experimental-webgl");
+customGL = canvas.getContext("experimental-webgl",
 #  alpha: true
-#  antialias: false
+  antialias: false
 #  stencil: true
 #  premultipliedAlpha: true
-#)
+)
 #customGL = canvas.getContext("webgl");
 
 ###
@@ -211,8 +211,8 @@ window.render = ->
   look = levelLookAt.backgroundLookAtNode.look
   up = levelLookAt.backgroundLookAtNode.up
   view = lookAtMat4c(
-    eye.x, eye.y, eye.z,
-    look.x, look.y, look.z,
+    eye.x, eye.y, 0.0,
+    look.x, look.y, 0.0,
     up.x, up.y, up.z
   )
 

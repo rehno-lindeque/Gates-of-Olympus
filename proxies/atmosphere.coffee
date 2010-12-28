@@ -152,8 +152,8 @@ AtmosphereModule =
     
     # Create the grid 
     # We'll assume the user has a 4:3 aspect ratio, so we'll construct the grid using the same ratio of quads
-    nx = 4 * 5
-    ny = 3 * 5
+    nx = 4 * 15
+    ny = 3 * 15
     vertices = new Array((ny+1) * (nx+1) * 2)
     for cy in [0..ny]    
       for cx in [0..nx]
@@ -238,7 +238,7 @@ AtmosphereModule =
     ESun = 20.0               # Sun brightness constant
     #g = -0.990               # The Mie phase asymmetry factor
     #exposure = 2.0    
-    cameraHeight = 10.15
+    cameraHeight = 10.05
     innerRadius = 10.0
     outerRadius = 10.25
     scale = 1.0 / (outerRadius - innerRadius)
@@ -247,11 +247,12 @@ AtmosphereModule =
     rayleighScaleDepth = 0.25
     #mieScaleDepth = 0.1
 
-    gl.uniform3fv(@shaderProgram.sun, new Float32Array(mulMat3v3(view,sun)))
+    #gl.uniform3fv(@shaderProgram.sun, new Float32Array(mulMat3v3(view,sun)))
+    gl.uniform3fv(@shaderProgram.sun, new Float32Array(sun))
     gl.uniform3f(@shaderProgram.invWavelength, 1.0 / wavelength4[0], 1.0 / wavelength4[1], 1.0 / wavelength4[2])
     gl.uniform1f(@shaderProgram.cameraHeight, cameraHeight)
-    gl.uniform1f(@shaderProgram.innerRadius, innerRadius)
     gl.uniform1f(@shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight)
+    gl.uniform1f(@shaderProgram.innerRadius, innerRadius)
     gl.uniform1f(@shaderProgram.outerRadiusSqr, outerRadius * outerRadius)
     gl.uniform1f(@shaderProgram.KrESun, Kr * ESun)
     gl.uniform1f(@shaderProgram.KmESun, Km * ESun)
@@ -265,8 +266,8 @@ AtmosphereModule =
     gl.uniform1f(@shaderProgram.gSqr, -0.990 * -0.990)
     
     # Draw geometry
-    nx = 4 * 5
-    ny = 3 * 5
+    nx = 4 * 15
+    ny = 3 * 15
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     
