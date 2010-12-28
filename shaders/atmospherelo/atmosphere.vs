@@ -58,8 +58,8 @@ uniform float scale;                // 1 / (outerRadius - innerRadius)
 uniform float scaleDepth;           // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 uniform float scaleDivScaleDepth;	  // scale / scaleDepth
 
-const int nSamples = 3;
-const float samples = 3.0;
+const int nSamples = 4;
+const float samples = 4.0;
 
 varying vec3 viewDirection;
 varying vec3 mieColor;
@@ -92,7 +92,8 @@ void main(void)
   vec3 ray = normalize(viewDirection); 
 
   // Calculate the intersection of the camera ray with the atmosphere's outer radius
-  float far = -2.0 * ray.z + sqrt(4.0 * (ray.z * ray.z - cameraHeightSqr + outerRadiusSqr));
+  float rayZSqr = ray.z * ray.z;
+  float far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - rayZSqr + outerRadiusSqr);
 
   // Calculate the camera angle in relation to the atmosphere normal
   //float fStartAngle = dot(v3Ray, v3Start) / fHeight;
