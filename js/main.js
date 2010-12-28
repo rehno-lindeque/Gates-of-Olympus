@@ -15,7 +15,9 @@
   canvas.height = window.innerHeight;
   gameScene.render();
   gui.initialize();
-  customGL = canvas.getContext("experimental-webgl");
+  customGL = canvas.getContext("experimental-webgl", {
+    antialias: false
+  });
   /*
   Development
   */
