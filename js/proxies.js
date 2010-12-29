@@ -103,6 +103,11 @@ towerPlacementNode = function() {
               type: "instance",
               target: towerIds[1]
             }
+          ]), towerNode(2, "placementTower" + 2, [
+            {
+              type: "instance",
+              target: towerIds[2]
+            }
           ])
         ]
       }
@@ -118,13 +123,16 @@ Level = function() {
   this.towerNodes = [
     {
       archerTowers: towerNode(0, "archerTowers0", []),
-      catapultTowers: towerNode(1, "catapultTowers0", [])
+      catapultTowers: towerNode(1, "catapultTowers0", []),
+      ballistaTowers: towerNode(2, "ballistaTowers0", [])
     }, {
       archerTowers: towerNode(0, "archerTowers1", []),
-      catapultTowers: towerNode(1, "catapultTowers1", [])
+      catapultTowers: towerNode(1, "catapultTowers1", []),
+      ballistaTowers: towerNode(2, "ballistaTowers1", [])
     }, {
       archerTowers: towerNode(0, "archerTowers2", []),
-      catapultTowers: towerNode(1, "catapultTowers2", [])
+      catapultTowers: towerNode(1, "catapultTowers2", []),
+      ballistaTowers: towerNode(2, "ballistaTowers2", [])
     }
   ];
   this.node = this.createNode();
@@ -136,6 +144,8 @@ Level.prototype.getTowerRoot = function(level, towerType) {
       return this.towerNodes[level].archerTowers;
     case 1:
       return this.towerNodes[level].catapultTowers;
+    case 2:
+      return this.towerNodes[level].ballistaTowers;
     default:
       return null;
   }
@@ -195,7 +205,7 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers]
+    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers]
   };
 };var LevelCamera;
 /*
@@ -408,9 +418,10 @@ GUIDais.prototype.update = function() {
 Top level GUI container
 */
 GUI = function() {
-  this.daises = new Array(2);
+  this.daises = new Array(3);
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
+  this.daises[2] = new GUIDais(2);
   this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
   this.selectedDais = -1;
   this.lightNode = {
@@ -469,7 +480,7 @@ GUI = function() {
             },
             specular: 0.0,
             shine: 0.0,
-            nodes: [this.daises[0].node, this.daises[1].node]
+            nodes: [this.daises[0].node, this.daises[1].node, this.daises[2].node]
           }
         ]
       }
@@ -481,8 +492,11 @@ GUI.prototype.initialize = function() {
   SceneJS.withNode(this.daises[0].id).bind("picked", function(event) {
     return alert("#0 picked!");
   });
-  return SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
+  SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
     return alert("#1 picked!");
+  });
+  return SceneJS.withNode(this.daises[2].id).bind("picked", function(event) {
+    return alert("#2 picked!");
   });
 };
 GUI.prototype.update = function() {

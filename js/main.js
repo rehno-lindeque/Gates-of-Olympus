@@ -118,6 +118,9 @@
       case key2:
         gui.selectDais(1);
         break;
+      case key3:
+        gui.selectDais(2);
+        break;
       case keyESC:
         gui.deselectDais();
         break;
@@ -185,7 +188,7 @@
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
     _result = [];
-    for (c = 0; c <= 1; c++) {
+    for (c = 0; c <= 2; c++) {
       _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
     return _result;

@@ -16,6 +16,7 @@ class Towers
   constructor: ->
     SceneJS.createNode BlenderExport.ArcherTower
     SceneJS.createNode BlenderExport.CatapultTower
+    SceneJS.createNode BlenderExport.BallistaTower
     
     @towers = new Array (sqrGridSize * levels)
     for c in [0...(sqrGridSize * levels)]

@@ -95,6 +95,9 @@ void main(void)
   float rayZSqr = ray.z * ray.z;
   float far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - rayZSqr + outerRadiusSqr);
 
+  // Temporary: help with precision problems...
+  far = min(far, sqrt(cameraHeightSqr + outerRadiusSqr));
+
   // Calculate the camera angle in relation to the atmosphere normal
   //float fStartAngle = dot(v3Ray, v3Start) / fHeight;
   float startCosAngle = ray.z;                    // Because the camera is static (camera position is (0, 0, cameraHeight))

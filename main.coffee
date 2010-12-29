@@ -147,6 +147,7 @@ keyDown = (event) ->
   switch event.keyCode
     when key1   then gui.selectDais(0)
     when key2   then gui.selectDais(1)
+    when key3   then gui.selectDais(2)
     when keyESC then gui.deselectDais()
   updateTowerPlacement()
 
@@ -235,7 +236,7 @@ window.render = ->
   sun.render(customGL, view, projection, timeline.time)
 
   # Render the gui additions
-  for c in [0..1]
+  for c in [0..2]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
