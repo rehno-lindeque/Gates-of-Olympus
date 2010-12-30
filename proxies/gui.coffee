@@ -47,9 +47,9 @@ class GUI
       ]
 
   initialize: ->
-    SceneJS.withNode(@daises[0].id).bind("picked", (event) -> alert "#0 picked!")
-    SceneJS.withNode(@daises[1].id).bind("picked", (event) -> alert "#1 picked!")
-    SceneJS.withNode(@daises[2].id).bind("picked", (event) -> alert "#2 picked!")
+    for c in [0..numTowerTypes-1]
+      SceneJS.withNode(@daises[c].id).bind("picked", (event) -> gui.selectDais(c))
+
   
   update: ->
     for c in [0..numTowerTypes-1]

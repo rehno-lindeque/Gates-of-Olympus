@@ -489,15 +489,17 @@ GUI = function() {
   return this;
 };
 GUI.prototype.initialize = function() {
-  SceneJS.withNode(this.daises[0].id).bind("picked", function(event) {
-    return alert("#0 picked!");
-  });
-  SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
-    return alert("#1 picked!");
-  });
-  return SceneJS.withNode(this.daises[2].id).bind("picked", function(event) {
-    return alert("#2 picked!");
-  });
+  var _i, _result, c;
+  _result = [];
+  for (_i = 0; (0 <= numTowerTypes - 1 ? _i <= numTowerTypes - 1 : _i >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _i += 1 : _i -= 1)) {
+    (function() {
+      var c = _i;
+      return _result.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
+        return gui.selectDais(c);
+      }));
+    }).call(this);
+  }
+  return _result;
 };
 GUI.prototype.update = function() {
   var _result, c;
