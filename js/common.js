@@ -5,7 +5,7 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 */
 graft = function(parent, children) {
   var _a;
-  parent.nodes = (typeof (_a = parent.nodes) !== "undefined" && _a !== null) ? Array.concat(parent.nodes, children) : children;
+  parent.nodes = (typeof (_a = parent.nodes) !== "undefined" && _a !== null) ? parent.nodes.concat(children) : children;
   return parent;
 };
 compileShader = function(gl, id) {

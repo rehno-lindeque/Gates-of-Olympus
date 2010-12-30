@@ -7,28 +7,34 @@ guiDaisNode = (id, index) ->
   id: id
   x: index * 1.5
   nodes: [
-      type: "rotate"
-      sid: "rotZ"
-      angle: guiDaisRotPosition[index*2]
-      z: 1.0
+      type: "translate"
+      y: 2.5
       nodes: [
           type: "rotate"
-          sid: "rotX"
+          sid: "rotZ"
           angle: guiDaisRotPosition[index*2]
-          x: 1.0
+          z: 1.0
           nodes: [
-              type: "texture"
-              layers: [{ uri: "textures/dais.jpg" }]
+              type: "rotate"
+              sid: "rotX"
+              angle: guiDaisRotPosition[index*2]
+              x: 1.0
               nodes: [
-                type: "instance"
-                target: "NumberedDais"
-              ]
-            ,
-              type: "texture"
-              layers: [{ uri: towerTextureURI[index] }]
-              nodes: [
-                  type: "instance"
-                  target: towerIds[index]
+                  type: "texture"
+                  layers: [
+                    { uri: "textures/dais1normals.png", applyTo: "normals" },
+                    { uri: "textures/dais.jpg", applyTo: "baseColor" }]
+                  nodes: [
+                    type: "instance"
+                    target: "NumberedDais"
+                  ]
+                ,
+                  type: "texture"
+                  layers: [{ uri: towerTextureURI[index] }]
+                  nodes: [
+                      type: "instance"
+                      target: towerIds[index]
+                    ]
                 ]
             ]
         ]
@@ -38,12 +44,12 @@ class GUIDais
   constructor: (index) ->
     @index = index
     @id = "dais" + index
-    # @node = SceneJS.createNode guiDaisNode(@id, index)
-    @node = guiDaisNode(@id, index)
-    
+    @daisClouds = new DaisClouds(index)
+    @node = graft(guiDaisNode(@id, index), [@daisClouds.node])
+  
   update: ->
     SceneJS.withNode(@id)
-      .node(0).set(
+      .node(0).node(0).set(
         angle: guiDaisRotPosition[@index*2]
         z: 1.0
       ).node(0).set(

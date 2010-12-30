@@ -332,41 +332,51 @@ guiDaisNode = function(id, index) {
     x: index * 1.5,
     nodes: [
       {
-        type: "rotate",
-        sid: "rotZ",
-        angle: guiDaisRotPosition[index * 2],
-        z: 1.0,
+        type: "translate",
+        y: 2.5,
         nodes: [
           {
             type: "rotate",
-            sid: "rotX",
+            sid: "rotZ",
             angle: guiDaisRotPosition[index * 2],
-            x: 1.0,
+            z: 1.0,
             nodes: [
               {
-                type: "texture",
-                layers: [
-                  {
-                    uri: "textures/dais.jpg"
-                  }
-                ],
+                type: "rotate",
+                sid: "rotX",
+                angle: guiDaisRotPosition[index * 2],
+                x: 1.0,
                 nodes: [
                   {
-                    type: "instance",
-                    target: "NumberedDais"
-                  }
-                ]
-              }, {
-                type: "texture",
-                layers: [
-                  {
-                    uri: towerTextureURI[index]
-                  }
-                ],
-                nodes: [
-                  {
-                    type: "instance",
-                    target: towerIds[index]
+                    type: "texture",
+                    layers: [
+                      {
+                        uri: "textures/dais1normals.png",
+                        applyTo: "normals"
+                      }, {
+                        uri: "textures/dais.jpg",
+                        applyTo: "baseColor"
+                      }
+                    ],
+                    nodes: [
+                      {
+                        type: "instance",
+                        target: "NumberedDais"
+                      }
+                    ]
+                  }, {
+                    type: "texture",
+                    layers: [
+                      {
+                        uri: towerTextureURI[index]
+                      }
+                    ],
+                    nodes: [
+                      {
+                        type: "instance",
+                        target: towerIds[index]
+                      }
+                    ]
                   }
                 ]
               }
@@ -380,11 +390,12 @@ guiDaisNode = function(id, index) {
 GUIDais = function(index) {
   this.index = index;
   this.id = "dais" + index;
-  this.node = guiDaisNode(this.id, index);
+  this.daisClouds = new DaisClouds(index);
+  this.node = graft(guiDaisNode(this.id, index), [this.daisClouds.node]);
   return this;
 };
 GUIDais.prototype.update = function() {
-  return SceneJS.withNode(this.id).node(0).set({
+  return SceneJS.withNode(this.id).node(0).node(0).set({
     angle: guiDaisRotPosition[this.index * 2],
     z: 1.0
   }).node(0).set({
@@ -412,8 +423,8 @@ GUI = function() {
     diffuse: true,
     specular: false,
     dir: {
-      x: 1.0,
-      y: 1.0,
+      x: 0.3,
+      y: 0.3,
       z: -1.0
     }
   };
@@ -438,20 +449,29 @@ GUI = function() {
     y: 4.0,
     nodes: [
       {
-        type: "material",
-        baseColor: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        specularColor: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        specular: 0.0,
-        shine: 0.0
-      }, this.daises[0].node, this.daises[1].node
+        type: "scale",
+        x: 1.4,
+        y: 1.4,
+        z: 1.4,
+        nodes: [
+          {
+            type: "material",
+            baseColor: {
+              r: 0.0,
+              g: 0.0,
+              b: 0.0
+            },
+            specularColor: {
+              r: 1.0,
+              g: 1.0,
+              b: 1.0
+            },
+            specular: 0.0,
+            shine: 0.0,
+            nodes: [this.daises[0].node, this.daises[1].node]
+          }
+        ]
+      }
     ]
   };
   return this;
@@ -747,10 +767,11 @@ Sun proxy
 */
 Sun = function() {
   this.velocity = [0.01, 0.0];
+  this.position = [0.0, 0.0, 0.0];
   return this;
 };
 Sun.prototype.render = function(gl, view, projection, time) {
-  var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
+  var cosAzim, cosIncl, orbit, sinAzim, sinIncl;
   orbit = [Math.PI * 0.3 + this.velocity[0] * time, this.velocity[1] * time];
   if (!SunModule.vertexBuffer) {
     SunModule.createResources(gl);
@@ -759,6 +780,299 @@ Sun.prototype.render = function(gl, view, projection, time) {
   sinIncl = Math.sin(orbit[0]);
   cosAzim = Math.cos(orbit[1]);
   sinAzim = Math.sin(orbit[1]);
-  position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
-  return SunModule.render(gl, view, projection, position);
+  this.position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
+  return SunModule.render(gl, view, projection, this.position);
+};var DaisClouds, DaisCloudsModule, DaisCloudsNode;
+/*
+Copyright 2010, Rehno Lindeque.
+This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
+*/
+/*
+A scenejs extension that renders a cloud particles around the daises
+*/
+/*
+Dais Clouds Module
+*/
+DaisCloudsModule = {
+  vertexBuffer: null,
+  shaderProgram: null,
+  numParticles: 200,
+  createResources: function(gl) {
+    var _a, fragmentShader, k, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [];
+    _a = (this.numParticles * 3 - 1);
+    for (k = 0; (0 <= _a ? k <= _a : k >= _a); (0 <= _a ? k += 1 : k -= 1)) {
+      vertices[k] = ((Math.random() - 0.5) * 2.0) * ((Math.random() - 0.5) * 2.0);
+    }
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "cloudparticle-vs");
+    fragmentShader = compileShader(gl, "cloudparticle-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+    }
+    return null;
+  },
+  render: function(gl, view, projection) {
+    var k, saveState, shaderProgram;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.enable(gl.BLEND);
+    gl.blendEquation(gl.FUNC_ADD);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    shaderProgram = this.shaderProgram;
+    gl.useProgram(shaderProgram);
+    for (k = 1; k <= 7; k++) {
+      gl.disableVertexAttribArray(k);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.drawArrays(gl.POINTS, 0, this.numParticles);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
+    return null;
+  }
+};
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  return DaisCloudsModule.destroyResources();
+});
+/*
+Dias clouds node type
+*/
+DaisCloudsNode = SceneJS.createNodeType("dais-clouds");
+DaisCloudsNode.prototype._render = function(traversalContext) {
+  if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
+    this._renderNodes(traversalContext);
+    this.view = mulMat4(SceneJS._viewTransformModule.getTransform().matrix, SceneJS._modelTransformModule.getTransform().matrix);
+    this.projection = SceneJS._projectionModule.getTransform().matrix;
+  }
+  return null;
+};
+DaisCloudsNode.prototype.getView = function() {
+  return this.view;
+};
+DaisCloudsNode.prototype.getProjection = function() {
+  return this.projection;
+};
+/*
+Dias clouds proxy
+*/
+DaisClouds = function(index) {
+  this.node = {
+    type: "dais-clouds",
+    id: "dais" + index + "clouds"
+  };
+  return this;
+};
+DaisClouds.prototype.withNode = function() {
+  return SceneJS.withNode(this.node.id);
+};
+DaisClouds.prototype.render = function(gl, time) {
+  var nodeRef, projection, view;
+  nodeRef = this.withNode();
+  view = nodeRef.get("view");
+  projection = nodeRef.get("projection");
+  if (!DaisCloudsModule.vertexBuffer) {
+    DaisCloudsModule.createResources(gl);
+  }
+  return DaisCloudsModule.render(gl, view, projection);
+};var Atmosphere, AtmosphereModule;
+/*
+Copyright 2010, Rehno Lindeque.
+
+ * This file is Dual licensed under the MIT or GPL Version 2 licenses.
+ * It is intended to be compatible with http://scenejs.org/license so that changes can be back-ported.
+*/
+/*
+A scenejs extension that renders the atmosphere (atmospheric scattering) using a full-screen quad and some procedural shaders.
+*/
+/*
+Atmosphere Module
+*/
+AtmosphereModule = {
+  vertexBuffer: null,
+  shaderProgram: null,
+  transmittanceProgram: null,
+  transmittanceTexture: null,
+  createTransmittanceResources: function(gl) {
+    var fragmentShader, frameBuffer, textureHeight, textureWidth, vertexShader;
+    this.transmittanceProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-hi-transmittance-fs");
+    gl.attachShader(this.transmittanceProgram, vertexShader);
+    gl.attachShader(this.transmittanceProgram, fragmentShader);
+    gl.linkProgram(this.transmittanceProgram);
+    if (!gl.getProgramParameter(this.transmittanceProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.transmittanceProgram);
+    this.transmittanceProgram.vertexPosition = gl.getAttribLocation(this.transmittanceProgram, "vertexPosition");
+    textureWidth = 256;
+    textureHeight = 64;
+    this.transmittanceTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.transmittanceTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.enableVertexAttribArray(this.transmittanceProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    frameBuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.transmittanceTexture, 0);
+    gl.viewport(0, 0, textureWidth, textureHeight);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.deleteFramebuffer(frameBuffer);
+    return null;
+  },
+  createResourcesHi: function(gl) {
+    var fragmentShader, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-hi-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    this.shaderProgram.camera = gl.getUniformLocation(this.shaderProgram, "camera");
+    this.shaderProgram.sun = gl.getUniformLocation(this.shaderProgram, "sun");
+    this.shaderProgram.invProjection = gl.getUniformLocation(this.shaderProgram, "invProjection");
+    this.shaderProgram.invView = gl.getUniformLocation(this.shaderProgram, "invView");
+    this.shaderProgram.exposure = gl.getUniformLocation(this.shaderProgram, "exposure");
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    return null;
+  },
+  renderHi: function(gl, invView, invProjection, sun) {
+    var saveState;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.depthMask(false);
+    gl.useProgram(this.shaderProgram);
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
+    gl.uniform3f(this.shaderProgram.sun, sun);
+    gl.uniformMatrix4fv(this.shaderProgram.invProjection, false, new Float32Array(invProjection));
+    gl.uniformMatrix4fv(this.shaderProgram.invView, false, new Float32Array(invView));
+    gl.uniform1f(this.shaderProgram.exposure, 1.0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
+    return null;
+  },
+  createResourcesLo: function(gl) {
+    var fragmentShader, vertexShader, vertices;
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    fragmentShader = compileShader(gl, "atmosphere-lo-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    return null;
+  },
+  renderLo: function(gl, invView, invProjection, sun) {
+    var saveState;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.depthMask(false);
+    gl.useProgram(this.shaderProgram);
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+    }
+    return null;
+  }
+};
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  return AtmosphereModule.destroyResources();
+});
+/*
+Cloud dome node type
+*/
+Atmosphere = function() {};
+Atmosphere.prototype.render = function(gl, invView, invProjection, sun) {
+  if (!AtmosphereModule.vertexBuffer) {
+    AtmosphereModule.createResourcesLo(gl);
+  }
+  AtmosphereModule.renderLo(gl, invView, invProjection, sun);
+  return null;
 };

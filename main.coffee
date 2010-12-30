@@ -33,6 +33,13 @@ marchSound.addEventListener('ended', marchSoundListener, false)
 
 # Manual webgl initialization (for rendering things stand-alone
 customGL = canvas.getContext("experimental-webgl");
+#customGL = canvas.getContext("experimental-webgl",
+#  alpha: true
+#  antialias: false
+#  stencil: true
+#  premultipliedAlpha: true
+#)
+#customGL = canvas.getContext("webgl");
 
 ###
 Development
@@ -217,6 +224,9 @@ window.render = ->
  
   # Render the scene
   gameScene.render()
+  
+  # Render the gui additions
+  #gui.daises[0].daisClouds.render(customGL, timeline.time)
 
   # Calculate common rendering parameters
   eye = levelLookAt.backgroundLookAtNode.eye
@@ -237,12 +247,17 @@ window.render = ->
   )
   
   # Render the atmospheric dome
-  if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
-  CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
+  #if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
+  #CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
+  atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position)
   
   # Render astronomical objects
   moon.render(customGL, view, projection, timeline.time)
   sun.render(customGL, view, projection, timeline.time)
+
+  # Render the gui additions
+  for c in [0..1]
+    gui.daises[c].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);
 

@@ -27,9 +27,3 @@ SceneJS._eventModule.addListener(
   () -> canvas = null
 )
 
-SceneJS._eventModule.addListener(
-  SceneJS._eventModule.RESET
-  () ->
-    DaisCloudsModule.destroyResources()
-)
-

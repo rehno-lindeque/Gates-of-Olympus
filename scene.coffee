@@ -16,6 +16,7 @@ levelLookAt = new LevelLookAt(levelCamera.node, backgroundCamera.node)
 guiCamera = new GUICamera(gui, levelCamera)
 moon = new Moon
 sun = new Sun
+atmosphere = new Atmosphere
 
 ###
 The main scene definition

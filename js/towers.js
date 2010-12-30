@@ -1,4 +1,4 @@
-var Towers;
+var Towers, archerTowerUpdate, catapultTowerUpdate;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -6,6 +6,8 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 Tower types
 */
+archerTowerUpdate = function(index) {};
+catapultTowerUpdate = function(index) {};
 /*
 Collection of all towers
 */
@@ -20,3 +22,4 @@ Towers = function() {
   }
   return this;
 };
+Towers.prototype.update = function() {};
