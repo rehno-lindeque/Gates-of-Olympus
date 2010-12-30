@@ -670,12 +670,12 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [0.005, 0.0];
+  this.velocity = [-0.0006, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
   var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
-  orbit = [this.velocity[0] * time, this.velocity[1] * time];
+  orbit = [Math.PI * 0.1 + this.velocity[0] * time, Math.PI * -0.14 + this.velocity[1] * time];
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
@@ -781,13 +781,13 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.005, 0.0];
+  this.velocity = [0.0005, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
 Sun.prototype.render = function(gl, view, projection, time) {
   var cosAzim, cosIncl, orbit, sinAzim, sinIncl;
-  orbit = [Math.PI * 0.3 + this.velocity[0] * time, this.velocity[1] * time];
+  orbit = [Math.PI * 0.3 + this.velocity[0] * time, Math.PI * 0.9 + this.velocity[1] * time];
   if (!SunModule.vertexBuffer) {
     SunModule.createResources(gl);
   }
