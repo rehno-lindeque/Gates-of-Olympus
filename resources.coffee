@@ -10,6 +10,9 @@ Tower resources
 towerIds = ["ArcherTower", "CatapultTower", "BallistaTower"]
 towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/ballista.jpg"]
 
+creatureIds = ["Scorpion", "Fish"]
+creatureTextureURI = ["textures/scorpion.jpg", "textures/fish.jpg"]
+
 ###
 Platform resources
 ###

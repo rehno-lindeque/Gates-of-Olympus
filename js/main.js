@@ -29,7 +29,7 @@
   /*
   Game logic
   */
-  level.creatures.addCreature(Scorpion);
+  level.creatures.addCreature(Fish);
   /*
   User input
   */

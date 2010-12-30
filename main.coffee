@@ -43,7 +43,8 @@ Game logic
 #level.createTowers()
 
 # Creatures
-level.creatures.addCreature(Scorpion)
+#level.creatures.addCreature(Scorpion)
+level.creatures.addCreature(Fish)
 
 ###
 User input 
