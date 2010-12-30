@@ -162,6 +162,7 @@ mouseUp = ->
   if towerPlacement.level != -1 and gui.selectedDais != -1
     level.addTower(towerPlacement, gui.selectedDais)
   mouseDragging = false
+  SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY)
 
 mouseMove = (event) ->
   if mouseDragging

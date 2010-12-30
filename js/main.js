@@ -136,7 +136,8 @@
     if (towerPlacement.level !== -1 && gui.selectedDais !== -1) {
       level.addTower(towerPlacement, gui.selectedDais);
     }
-    return (mouseDragging = false);
+    mouseDragging = false;
+    return SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY);
   };
   mouseMove = function(event) {
     if (mouseDragging) {
