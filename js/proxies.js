@@ -262,14 +262,14 @@ LevelCamera.prototype.reconfigure = function(canvasSize) {
 The look-at proxy for the main game scene
 */
 LevelLookAt = function(cameraNode, backgroundCameraNode) {
-  this.angle = 0.0;
+  this.angle = Math.PI * 0.25;
   this.radius = 10.0;
   this.lookAtNode = {
     type: "lookAt",
     id: "SceneLookAt",
     eye: {
-      x: 0.0,
-      y: -this.radius,
+      x: (Math.sin(this.angle)) * this.radius,
+      y: (Math.cos(this.angle)) * -this.radius,
       z: 7.0
     },
     look: {
@@ -288,8 +288,8 @@ LevelLookAt = function(cameraNode, backgroundCameraNode) {
     type: "lookAt",
     id: "BackgroundLookAt",
     eye: {
-      x: 0.0,
-      y: -this.radius,
+      x: (Math.sin(this.angle)) * this.radius,
+      y: (Math.cos(this.angle)) * -this.radius,
       z: 7.0
     },
     look: {
