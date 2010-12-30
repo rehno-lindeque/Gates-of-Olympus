@@ -200,6 +200,10 @@ window.render = ->
   
   gui.update()
   level.update()
+
+  # Animate the sun light
+  lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.2)
+  levelCamera.updateLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
   
   # Update game events
   timeline.update(1);

@@ -162,7 +162,7 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var _ref, _result, c, eye, look, optics, projection, up, view;
+    var _ref, _result, c, eye, lightAmount, look, optics, projection, up, view;
     _ref = (2 * numTowerTypes - 1);
     for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
@@ -178,6 +178,8 @@
     }
     gui.update();
     level.update();
+    lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.2);
+    levelCamera.updateLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
     timeline.update(1);
     gameScene.render();
     eye = levelLookAt.backgroundLookAtNode.eye;

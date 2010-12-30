@@ -51,5 +51,3 @@ sceneNode =
 
 gameScene = SceneJS.createNode(sceneNode)
 
-
-

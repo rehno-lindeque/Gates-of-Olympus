@@ -19,6 +19,7 @@ class LevelCamera
       optics: @optics
       nodes: [
           type:      "light"
+          id:        "levelLight"
           mode:      "dir"
           color:     { r: 1.0, g: 1.0, b: 1.0 }
           diffuse:   true
@@ -36,9 +37,15 @@ class LevelCamera
         ]
   
   withNode: -> SceneJS.withNode "sceneCamera"
+
+  withLightNode: -> SceneJS.withNode "levelLight"
   
   reconfigure: (canvasSize) -> 
     @optics.left  = -12.5 * (canvasSize[0] / canvasSize[1])
     @optics.right =  12.5 * (canvasSize[0] / canvasSize[1])
     @withNode().set("optics", @optics)
   
+  updateLight: (color, lightDir) -> 
+    @withLightNode()
+      .set("color", {r: color[0], g: color[1], b: color[2]})
+      .set("dir", {x: lightDir[0], y: lightDir[1], z: lightDir[2]})
