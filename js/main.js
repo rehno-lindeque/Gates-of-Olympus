@@ -27,7 +27,9 @@
 
   marchSound.addEventListener('ended', marchSoundListener, false)
   */
-  customGL = canvas.getContext("experimental-webgl");
+  customGL = canvas.getContext("experimental-webgl", {
+    antialias: false
+  });
   /*
   Development
   */
@@ -39,7 +41,7 @@
   /*
   Game logic
   */
-  level.creatures.addCreature(Scorpion);
+  level.creatures.addCreature(Fish);
   floodInit();
   /*
   User input
@@ -127,6 +129,8 @@
       gui.selectDais(0);
     } else if (_a === key2) {
       gui.selectDais(1);
+    } else if (_a === key3) {
+      gui.selectDais(2);
     } else if (_a === keyESC) {
       gui.deselectDais();
     }
@@ -188,14 +192,14 @@
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
-    view = lookAtMat4c(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
+    view = lookAtMat4c(eye.x, eye.y, 0.0, look.x, look.y, 1.0, up.x, up.y, up.z);
     optics = backgroundCamera.optics;
     projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
-    atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position);
+    atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
     _a = [];
-    for (c = 0; c <= 1; c++) {
+    for (c = 0; c <= 2; c++) {
       _a.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
     return _a;

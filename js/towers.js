@@ -15,6 +15,7 @@ Towers = function() {
   var _a, c;
   SceneJS.createNode(BlenderExport.ArcherTower);
   SceneJS.createNode(BlenderExport.CatapultTower);
+  SceneJS.createNode(BlenderExport.BallistaTower);
   this.towers = new Array(sqrGridSize * levels);
   _a = (sqrGridSize * levels);
   for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {

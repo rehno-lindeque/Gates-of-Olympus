@@ -27,6 +27,7 @@ towerPlacementNode = ->
     nodes: [
       towerNode(0, "placementTower"+0, [{ type: "instance", target: towerIds[0] }])
       towerNode(1, "placementTower"+1, [{ type: "instance", target: towerIds[1] }])
+      towerNode(2, "placementTower"+2, [{ type: "instance", target: towerIds[2] }])
     ]
   ]
 
@@ -41,12 +42,15 @@ class Level
     @towerNodes = [
         archerTowers:   towerNode(0, "archerTowers0", [])
         catapultTowers: towerNode(1, "catapultTowers0", [])
+        ballistaTowers: towerNode(2, "ballistaTowers0", [])
       ,
         archerTowers:   towerNode(0, "archerTowers1", [])
         catapultTowers: towerNode(1, "catapultTowers1", [])
+        ballistaTowers: towerNode(2, "ballistaTowers1", [])
       ,
         archerTowers:   towerNode(0, "archerTowers2", [])
         catapultTowers: towerNode(1, "catapultTowers2", [])
+        ballistaTowers: towerNode(2, "ballistaTowers2", [])
       ]
     @node = @createNode()
   
@@ -55,6 +59,7 @@ class Level
     switch towerType
       when 0 then @towerNodes[level].archerTowers
       when 1 then @towerNodes[level].catapultTowers
+      when 2 then @towerNodes[level].ballistaTowers
       else null
   
   # Add a tower of the specified type at the position indicated by the tower placement
@@ -135,5 +140,6 @@ class Level
       platformGeometry("level" + k)
       @towerNodes[k].archerTowers
       @towerNodes[k].catapultTowers
+      @towerNodes[k].ballistaTowers
     ]
 

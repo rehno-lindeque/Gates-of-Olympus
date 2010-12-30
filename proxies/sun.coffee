@@ -117,7 +117,7 @@ class Sun
   constructor: ->    
     # Control the sun position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @velocity = [0.01, 0.0]
+    @velocity = [0.005, 0.0]
     @position = [0.0, 0.0, 0.0]
   
   render: (gl, view, projection, time) ->

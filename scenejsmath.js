@@ -18,6 +18,10 @@ negateVector4 = function(v) {
   return [-v[0],-v[1],-v[2],-v[3]];
 }
 
+negateVector3 = function(v) {
+  return [-v[0],-v[1],-v[2]];
+}
+
 addVec4 = function(u, v) {
   return [u[0] + v[0],u[1] + v[1],u[2] + v[2],u[3] + v[3]];
 }
@@ -130,6 +134,10 @@ normalizeVec3 = function(v) {
 
 mat4 = function() {
   return new Array(16);
+}
+
+mat3 = function() {
+  return new Array(9);
 }
 
 dupMat4 = function(m) {
@@ -340,6 +348,14 @@ mulMat4v4 = function(m, v) {
   ];
 }
 
+mulMat3v3 = function(m, v) {
+  return [
+    m[0] * v[0] + m[3] * v[1] + m[6] * v[2],
+    m[1] * v[0] + m[4] * v[1] + m[7] * v[2],
+    m[2] * v[0] + m[5] * v[1] + m[8] * v[2]
+  ];
+}
+
 transposeMat4 = function(m) {
   var r = mat4();
   var i = 0;
@@ -347,6 +363,18 @@ transposeMat4 = function(m) {
   for (i = 0; i < 4; ++i) {
     for (j = 0; j < 4; ++j) {
       r[i + j * 4] = m[i * 4 + j];
+    }
+  }
+  return r;
+}
+
+transposeMat3 = function(m) {
+  var r = mat3();
+  var i = 0;
+  var j = 0;
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 3; ++j) {
+      r[i + j * 3] = m[i * 3 + j];
     }
   }
   return r;

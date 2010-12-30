@@ -23,6 +23,7 @@
 
   <script id="fullscreenquad-vs" type="x-shader/x-vertex" src="shaders/fullscreenquad.vs"></script>
   <script id="atmosphere-lo-fs" type="x-shader/x-fragment" src="shaders/atmospherelo/atmosphere.fs"></script>
+  <script id="atmosphere-lo-vs" type="x-shader/x-vertex" src="shaders/atmospherelo/atmosphere.vs"></script>
   <script id="atmosphere-hi-common-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/common.fs"></script>
   <script id="atmosphere-hi-transmittance-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/transmittance.fs"></script>  
   <script id="atmosphere-hi-fs" type="x-shader/x-fragment" src="shaders/atmospherehi/atmosphere.fs"></script>
@@ -39,7 +40,9 @@
   <script type="application/javascript" src="gui/NumberedDais.js"></script>
   <script type="application/javascript" src="towers/Archer.js"></script>
   <script type="application/javascript" src="towers/Catapult.js"></script>
+  <script type="application/javascript" src="towers/Ballista.js"></script>
   <script type="application/javascript" src="creatures/Scorpion.js"></script>
+  <script type="application/javascript" src="creatures/Fish.js"></script>
 
   <!-- Stylesheet -->
 
@@ -55,6 +58,8 @@
     div#container {
     }
     div#hints {
+      -moz-border-radius: 13px;
+      border-radius: 13px;
       background: rgba(25, 20, 10, 0.8);
       color: #cca;
       font-size: smaller;
@@ -79,6 +84,8 @@
     div#daisStats .enabled {
       background: rgba(70, 65, 50, 0.6);
       border: 1px solid rgba(70, 65, 50, 0.8);
+      -moz-border-radius: 5px;
+      border-radius: 5px;
       color: #cca;
       width: 150px;
       padding: 10px;
@@ -143,7 +150,7 @@
   <div id="daisStats">
   
     <div id="daisStats0" class="disabled">
-      <h2>Ballista Tower</h2>
+      <h2>Archer Tower</h2>
       <div>
         Damage: 10<br />
         Level: 1
@@ -157,9 +164,12 @@
       </div>
     </div>    
     <div id="daisStats2" class="disabled">
-      <h2>Lightning Tower</h2>
+      <h2>Ballista Tower</h2>
+      <div>
+        Damage: 10<br />
+        Level: 1
+      </div>
     </div>
-    
     <div id="daisStats5" class="disabled">
       <h2>Shrine of Zeus</h2>
     </div>
@@ -182,8 +192,9 @@
       <li>Drag the screen left and right to change the view.</li>
       <li>Select towers using the number keys:
         <ol>
-          <li>Ballista Tower</li>
+          <li>Archer Tower</li>
           <li>Catapult Tower</li>
+          <li>Ballista Tower</li>
         </ol>
       </li>
     </ul>

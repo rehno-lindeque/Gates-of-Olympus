@@ -32,13 +32,13 @@ marchSound.addEventListener('ended', marchSoundListener, false)
 ###
 
 # Manual webgl initialization (for rendering things stand-alone
-customGL = canvas.getContext("experimental-webgl");
-#customGL = canvas.getContext("experimental-webgl",
+#customGL = canvas.getContext("experimental-webgl");
+customGL = canvas.getContext("experimental-webgl",
 #  alpha: true
-#  antialias: false
+  antialias: false
 #  stencil: true
 #  premultipliedAlpha: true
-#)
+)
 #customGL = canvas.getContext("webgl");
 
 ###
@@ -58,7 +58,8 @@ Game logic
 #level.createTowers()
 
 # Creatures
-level.creatures.addCreature(Scorpion)
+#level.creatures.addCreature(Scorpion)
+level.creatures.addCreature(Fish)
 
 #floydInit()
 floodInit()
@@ -166,6 +167,7 @@ keyDown = (event) ->
   switch event.keyCode
     when key1   then gui.selectDais(0)
     when key2   then gui.selectDais(1)
+    when key3   then gui.selectDais(2)
     when keyESC then gui.deselectDais()
   updateTowerPlacement()
 
@@ -233,8 +235,8 @@ window.render = ->
   look = levelLookAt.backgroundLookAtNode.look
   up = levelLookAt.backgroundLookAtNode.up
   view = lookAtMat4c(
-    eye.x, eye.y, eye.z,
-    look.x, look.y, look.z,
+    eye.x, eye.y, 0.0,
+    look.x, look.y, 1.0,
     up.x, up.y, up.z
   )
 
@@ -249,14 +251,15 @@ window.render = ->
   # Render the atmospheric dome
   #if not CloudDomeModule.vertexBuffer then CloudDomeModule.createResources(customGL) 
   #CloudDomeModule.renderDome(customGL, inverseMat4(projection), inverseMat4(view))
-  atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position)
+  #atmosphere.render(customGL, inverseMat4(projection), inverseMat4(view), sun.position)
+  atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position)
   
   # Render astronomical objects
   moon.render(customGL, view, projection, timeline.time)
   sun.render(customGL, view, projection, timeline.time)
 
   # Render the gui additions
-  for c in [0..1]
+  for c in [0..2]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);

@@ -1,4 +1,4 @@
-var platformGeometry, towerIds, towerTextureURI;
+var creatureIds, creatureTextureURI, platformGeometry, towerIds, towerTextureURI;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -6,8 +6,10 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 Tower resources
 */
-towerIds = ["ArcherTower", "CatapultTower", "LightningTower"];
-towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/lightning.jpg"];
+towerIds = ["ArcherTower", "CatapultTower", "BallistaTower"];
+towerTextureURI = ["textures/archer.jpg", "textures/catapult.jpg", "textures/ballista.jpg"];
+creatureIds = ["Scorpion", "Fish"];
+creatureTextureURI = ["textures/scorpion.jpg", "textures/fish.jpg"];
 /*
 Platform resources
 */

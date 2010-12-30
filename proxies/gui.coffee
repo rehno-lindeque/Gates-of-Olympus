@@ -4,9 +4,10 @@ Top level GUI container
 
 class GUI
   constructor: () ->
-    @daises = new Array 2
+    @daises = new Array 3
     @daises[0] = new GUIDais 0
     @daises[1] = new GUIDais 1
+    @daises[2] = new GUIDais 2
     @daisGeometry = SceneJS.createNode BlenderExport.NumberedDais
     @selectedDais = -1
     @lightNode =
@@ -40,6 +41,7 @@ class GUI
           nodes: [
             @daises[0].node
             @daises[1].node
+            @daises[2].node
           ]
         ]
       ]
@@ -47,6 +49,7 @@ class GUI
   initialize: ->
     SceneJS.withNode(@daises[0].id).bind("picked", (event) -> alert "#0 picked!")
     SceneJS.withNode(@daises[1].id).bind("picked", (event) -> alert "#1 picked!")
+    SceneJS.withNode(@daises[2].id).bind("picked", (event) -> alert "#2 picked!")
   
   update: ->
     @daises[0].update()

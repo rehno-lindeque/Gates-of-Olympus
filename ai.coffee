@@ -142,7 +142,11 @@ floodFillGenPath = (start,goal,lev) ->
     cur = shortestIndex
     shortest = Infinity
     shortestIndex = -1
-  
+ 
+# need to sort out this pathfinding, clean up.
+
+ 
+ 
 towerPlacement = 
   level: -1
   cell: { x: -1, y: -1 }

@@ -103,6 +103,11 @@ towerPlacementNode = function() {
               type: "instance",
               target: towerIds[1]
             }
+          ]), towerNode(2, "placementTower" + 2, [
+            {
+              type: "instance",
+              target: towerIds[2]
+            }
           ])
         ]
       }
@@ -118,13 +123,16 @@ Level = function() {
   this.towerNodes = [
     {
       archerTowers: towerNode(0, "archerTowers0", []),
-      catapultTowers: towerNode(1, "catapultTowers0", [])
+      catapultTowers: towerNode(1, "catapultTowers0", []),
+      ballistaTowers: towerNode(2, "ballistaTowers0", [])
     }, {
       archerTowers: towerNode(0, "archerTowers1", []),
-      catapultTowers: towerNode(1, "catapultTowers1", [])
+      catapultTowers: towerNode(1, "catapultTowers1", []),
+      ballistaTowers: towerNode(2, "ballistaTowers1", [])
     }, {
       archerTowers: towerNode(0, "archerTowers2", []),
-      catapultTowers: towerNode(1, "catapultTowers2", [])
+      catapultTowers: towerNode(1, "catapultTowers2", []),
+      ballistaTowers: towerNode(2, "ballistaTowers2", [])
     }
   ];
   this.node = this.createNode();
@@ -135,6 +143,8 @@ Level.prototype.getTowerRoot = function(level, towerType) {
     return this.towerNodes[level].archerTowers;
   } else if (towerType === 1) {
     return this.towerNodes[level].catapultTowers;
+  } else if (towerType === 2) {
+    return this.towerNodes[level].ballistaTowers;
   } else {
     return null;
   }
@@ -194,7 +204,7 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers]
+    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers]
   };
 };var LevelCamera;
 /*
@@ -407,9 +417,10 @@ GUIDais.prototype.update = function() {
 Top level GUI container
 */
 GUI = function() {
-  this.daises = new Array(2);
+  this.daises = new Array(3);
   this.daises[0] = new GUIDais(0);
   this.daises[1] = new GUIDais(1);
+  this.daises[2] = new GUIDais(2);
   this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
   this.selectedDais = -1;
   this.lightNode = {
@@ -468,7 +479,7 @@ GUI = function() {
             },
             specular: 0.0,
             shine: 0.0,
-            nodes: [this.daises[0].node, this.daises[1].node]
+            nodes: [this.daises[0].node, this.daises[1].node, this.daises[2].node]
           }
         ]
       }
@@ -480,8 +491,11 @@ GUI.prototype.initialize = function() {
   SceneJS.withNode(this.daises[0].id).bind("picked", function(event) {
     return alert("#0 picked!");
   });
-  return SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
+  SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
     return alert("#1 picked!");
+  });
+  return SceneJS.withNode(this.daises[2].id).bind("picked", function(event) {
+    return alert("#2 picked!");
   });
 };
 GUI.prototype.update = function() {
@@ -655,7 +669,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [0.01, 0.0];
+  this.velocity = [0.005, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
@@ -766,7 +780,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.01, 0.0];
+  this.velocity = [0.005, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
@@ -923,6 +937,7 @@ Atmosphere Module
 */
 AtmosphereModule = {
   vertexBuffer: null,
+  indexBuffer: null,
   shaderProgram: null,
   transmittanceProgram: null,
   transmittanceTexture: null,
@@ -997,7 +1012,7 @@ AtmosphereModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.uniform3f(this.shaderProgram.camera, 0.0, 0.0, 1.0);
-    gl.uniform3f(this.shaderProgram.sun, sun);
+    gl.uniform3fv(this.shaderProgram.sun, sun);
     gl.uniformMatrix4fv(this.shaderProgram.invProjection, false, new Float32Array(invProjection));
     gl.uniformMatrix4fv(this.shaderProgram.invView, false, new Float32Array(invView));
     gl.uniform1f(this.shaderProgram.exposure, 1.0);
@@ -1009,13 +1024,37 @@ AtmosphereModule = {
     return null;
   },
   createResourcesLo: function(gl) {
-    var fragmentShader, vertexShader, vertices;
+    var _a, _b, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
+    this.indexBuffer = gl.createBuffer();
+    nx = 4 * 15;
+    ny = 3 * 15;
+    vertices = new Array((ny + 1) * (nx + 1) * 2);
+    for (cy = 0; (0 <= ny ? cy <= ny : cy >= ny); (0 <= ny ? cy += 1 : cy -= 1)) {
+      for (cx = 0; (0 <= nx ? cx <= nx : cx >= nx); (0 <= nx ? cx += 1 : cx -= 1)) {
+        vertices[(cy * (nx + 1) + cx) * 2 + 0] = -1.0 + (cx * 2) / nx;
+        vertices[(cy * (nx + 1) + cx) * 2 + 1] = -1.0 + (cy * 2) / ny;
+      }
+    }
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    indices = new Array(ny * nx * 6);
+    _a = (ny - 1);
+    for (cy = 0; (0 <= _a ? cy <= _a : cy >= _a); (0 <= _a ? cy += 1 : cy -= 1)) {
+      _b = (nx - 1);
+      for (cx = 0; (0 <= _b ? cx <= _b : cx >= _b); (0 <= _b ? cx += 1 : cx -= 1)) {
+        indices[(cy * nx + cx) * 6 + 0] = ((cy + 0) * (nx + 1) + cx + 0);
+        indices[(cy * nx + cx) * 6 + 1] = ((cy + 0) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 2] = ((cy + 1) * (nx + 1) + cx + 0);
+        indices[(cy * nx + cx) * 6 + 3] = ((cy + 0) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 4] = ((cy + 1) * (nx + 1) + cx + 1);
+        indices[(cy * nx + cx) * 6 + 5] = ((cy + 1) * (nx + 1) + cx + 0);
+      }
+    }
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     this.shaderProgram = gl.createProgram();
-    vertexShader = compileShader(gl, "fullscreenquad-vs");
+    vertexShader = compileShader(gl, "atmosphere-lo-vs");
     fragmentShader = compileShader(gl, "atmosphere-lo-fs");
     gl.attachShader(this.shaderProgram, vertexShader);
     gl.attachShader(this.shaderProgram, fragmentShader);
@@ -1023,26 +1062,74 @@ AtmosphereModule = {
     if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
       alert("Could not initialise shaders");
     }
+    this.shaderProgram.invProjection = gl.getUniformLocation(this.shaderProgram, "invProjection");
+    this.shaderProgram.invView = gl.getUniformLocation(this.shaderProgram, "invView");
+    this.shaderProgram.sun = gl.getUniformLocation(this.shaderProgram, "sun");
+    this.shaderProgram.invWavelength = gl.getUniformLocation(this.shaderProgram, "invWavelength");
+    this.shaderProgram.cameraHeight = gl.getUniformLocation(this.shaderProgram, "cameraHeight");
+    this.shaderProgram.cameraHeightSqr = gl.getUniformLocation(this.shaderProgram, "cameraHeightSqr");
+    this.shaderProgram.innerRadius = gl.getUniformLocation(this.shaderProgram, "innerRadius");
+    this.shaderProgram.outerRadiusSqr = gl.getUniformLocation(this.shaderProgram, "outerRadiusSqr");
+    this.shaderProgram.KrESun = gl.getUniformLocation(this.shaderProgram, "KrESun");
+    this.shaderProgram.KmESun = gl.getUniformLocation(this.shaderProgram, "KmESun");
+    this.shaderProgram.Kr4PI = gl.getUniformLocation(this.shaderProgram, "Kr4PI");
+    this.shaderProgram.Km4PI = gl.getUniformLocation(this.shaderProgram, "Km4PI");
+    this.shaderProgram.scale = gl.getUniformLocation(this.shaderProgram, "scale");
+    this.shaderProgram.scaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDepth");
+    this.shaderProgram.scaleDivScaleDepth = gl.getUniformLocation(this.shaderProgram, "scaleDivScaleDepth");
+    this.shaderProgram.g = gl.getUniformLocation(this.shaderProgram, "g");
+    this.shaderProgram.gSqr = gl.getUniformLocation(this.shaderProgram, "gSqr");
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
     return null;
   },
-  renderLo: function(gl, invView, invProjection, sun) {
-    var saveState;
+  renderLo: function(gl, view, invProjection, nearZ, sun) {
+    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
     saveState = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     };
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.enable(gl.BLEND);
+    gl.disable(gl.BLEND);
     gl.depthMask(false);
     gl.useProgram(this.shaderProgram);
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
+    gl.uniform2f(this.shaderProgram.invProjection, invProjection[0] / nearZ, invProjection[5] / nearZ);
+    gl.uniformMatrix3fv(this.shaderProgram.invView, false, new Float32Array(transposeMat3(view)));
+    Kr = 0.0025;
+    Kr4PI = Kr * 4.0 * Math.PI;
+    Km = 0.0010;
+    Km4PI = Km * 4.0 * Math.PI;
+    ESun = 20.0;
+    cameraHeight = 10.05;
+    innerRadius = 10.0;
+    outerRadius = 10.25;
+    scale = 1.0 / (outerRadius - innerRadius);
+    wavelength = [0.650, 0.570, 0.475];
+    wavelength4 = [square(square(wavelength[0])), square(square(wavelength[1])), square(square(wavelength[2]))];
+    rayleighScaleDepth = 0.25;
+    gl.uniform3fv(this.shaderProgram.sun, new Float32Array(sun));
+    gl.uniform3f(this.shaderProgram.invWavelength, 1.0 / wavelength4[0], 1.0 / wavelength4[1], 1.0 / wavelength4[2]);
+    gl.uniform1f(this.shaderProgram.cameraHeight, cameraHeight);
+    gl.uniform1f(this.shaderProgram.cameraHeightSqr, cameraHeight * cameraHeight);
+    gl.uniform1f(this.shaderProgram.innerRadius, innerRadius);
+    gl.uniform1f(this.shaderProgram.outerRadiusSqr, outerRadius * outerRadius);
+    gl.uniform1f(this.shaderProgram.KrESun, Kr * ESun);
+    gl.uniform1f(this.shaderProgram.KmESun, Km * ESun);
+    gl.uniform1f(this.shaderProgram.Kr4PI, Kr4PI);
+    gl.uniform1f(this.shaderProgram.Km4PI, Km4PI);
+    gl.uniform1f(this.shaderProgram.scale, scale);
+    gl.uniform1f(this.shaderProgram.scaleDepth, rayleighScaleDepth);
+    gl.uniform1f(this.shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth);
+    gl.uniform1f(this.shaderProgram.g, -0.990);
+    gl.uniform1f(this.shaderProgram.gSqr, -0.990 * -0.990);
+    nx = 4 * 15;
+    ny = 3 * 15;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
+    if (saveState.blend) {
+      gl.enable(gl.BLEND);
     }
     gl.depthMask(true);
     return null;
@@ -1069,10 +1156,10 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Cloud dome node type
 */
 Atmosphere = function() {};
-Atmosphere.prototype.render = function(gl, invView, invProjection, sun) {
+Atmosphere.prototype.render = function(gl, view, invProjection, nearZ, sun) {
   if (!AtmosphereModule.vertexBuffer) {
     AtmosphereModule.createResourcesLo(gl);
   }
-  AtmosphereModule.renderLo(gl, invView, invProjection, sun);
+  AtmosphereModule.renderLo(gl, view, invProjection, nearZ, sun);
   return null;
 };
