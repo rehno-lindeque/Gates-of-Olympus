@@ -190,8 +190,8 @@ window.render = ->
   # Animate the gui daises
   for c in [0..(2*numTowerTypes-1)]
     guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005
-    guiDaisRotVelocity[c] -= 0.0005 if guiDaisRotPosition[c] > 0
-    guiDaisRotVelocity[c] += 0.0005 if guiDaisRotPosition[c] < 0
+    guiDaisRotVelocity[c] -= 0.0003 if guiDaisRotPosition[c] > 0
+    guiDaisRotVelocity[c] += 0.0003 if guiDaisRotPosition[c] < 0
     guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5)
     guiDaisRotPosition[c] += guiDaisRotVelocity[c]
     guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)

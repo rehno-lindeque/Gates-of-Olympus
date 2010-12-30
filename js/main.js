@@ -166,10 +166,10 @@
     for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
       if (guiDaisRotPosition[c] > 0) {
-        guiDaisRotVelocity[c] -= 0.0005;
+        guiDaisRotVelocity[c] -= 0.0003;
       }
       if (guiDaisRotPosition[c] < 0) {
-        guiDaisRotVelocity[c] += 0.0005;
+        guiDaisRotVelocity[c] += 0.0003;
       }
       guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5);
       guiDaisRotPosition[c] += guiDaisRotVelocity[c];
