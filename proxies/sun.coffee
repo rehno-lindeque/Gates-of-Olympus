@@ -117,11 +117,11 @@ class Sun
   constructor: ->    
     # Control the sun position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @velocity = [0.005, 0.0]
+    @velocity = [0.0005, 0.0]
     @position = [0.0, 0.0, 0.0]
   
   render: (gl, view, projection, time) ->
-    orbit = [ Math.PI * 0.3 + @velocity[0] * time, @velocity[1] * time ]
+    orbit = [ Math.PI * 0.3 + @velocity[0] * time, Math.PI * 0.9 + @velocity[1] * time ]
     if not SunModule.vertexBuffer then SunModule.createResources(gl)
     
     # Since gates of olympus uses a left-handed coordinate system with

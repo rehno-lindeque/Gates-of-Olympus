@@ -59,7 +59,8 @@ Game logic
 
 # Creatures
 #level.creatures.addCreature(Scorpion)
-level.creatures.addCreature(Fish)
+#level.creatures.addCreature(Fish)
+level.creatures.addCreature(Snake)
 
 #floydInit()
 floodInit()
@@ -182,6 +183,7 @@ mouseUp = ->
     level.addTower(towerPlacement, gui.selectedDais)
     dirtyLevel[towerPlacement.level] = true
   mouseDragging = false
+  SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY)
 
 mouseMove = (event) ->
   if mouseDragging
@@ -208,11 +210,11 @@ window.onresize = ->
 
 window.render = ->
   # Animate the gui daises
-  for c in [0...numTowerTypes]
-    guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1
-    guiDaisRotVelocity[c] -= 0.001 if guiDaisRotPosition[c] > 0
-    guiDaisRotVelocity[c] += 0.001 if guiDaisRotPosition[c] < 0
-    guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.1, 0.1)
+  for c in [0..(2*numTowerTypes-1)]
+    guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005
+    guiDaisRotVelocity[c] -= 0.0003 if guiDaisRotPosition[c] > 0
+    guiDaisRotVelocity[c] += 0.0003 if guiDaisRotPosition[c] < 0
+    guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5)
     guiDaisRotPosition[c] += guiDaisRotVelocity[c]
     guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)
   
@@ -259,7 +261,7 @@ window.render = ->
   sun.render(customGL, view, projection, timeline.time)
 
   # Render the gui additions
-  for c in [0..2]
+  for c in [0..numTowerTypes-1]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
 
 interval = window.setInterval("window.render()", 10);

@@ -261,14 +261,14 @@ LevelCamera.prototype.reconfigure = function(canvasSize) {
 The look-at proxy for the main game scene
 */
 LevelLookAt = function(cameraNode, backgroundCameraNode) {
-  this.angle = 0.0;
+  this.angle = Math.PI * 0.25;
   this.radius = 10.0;
   this.lookAtNode = {
     type: "lookAt",
     id: "SceneLookAt",
     eye: {
-      x: 0.0,
-      y: -this.radius,
+      x: (Math.sin(this.angle)) * this.radius,
+      y: (Math.cos(this.angle)) * -this.radius,
       z: 7.0
     },
     look: {
@@ -287,8 +287,8 @@ LevelLookAt = function(cameraNode, backgroundCameraNode) {
     type: "lookAt",
     id: "BackgroundLookAt",
     eye: {
-      x: 0.0,
-      y: -this.radius,
+      x: (Math.sin(this.angle)) * this.radius,
+      y: (Math.cos(this.angle)) * -this.radius,
       z: 7.0
     },
     look: {
@@ -488,19 +488,25 @@ GUI = function() {
   return this;
 };
 GUI.prototype.initialize = function() {
-  SceneJS.withNode(this.daises[0].id).bind("picked", function(event) {
-    return alert("#0 picked!");
-  });
-  SceneJS.withNode(this.daises[1].id).bind("picked", function(event) {
-    return alert("#1 picked!");
-  });
-  return SceneJS.withNode(this.daises[2].id).bind("picked", function(event) {
-    return alert("#2 picked!");
-  });
+  var _a, _b, c;
+  _a = [];
+  for (_b = 0; (0 <= numTowerTypes - 1 ? _b <= numTowerTypes - 1 : _b >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _b += 1 : _b -= 1)) {
+    (function() {
+      var c = _b;
+      return _a.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
+        return gui.selectDais(c);
+      }));
+    }).call(this);
+  }
+  return _a;
 };
 GUI.prototype.update = function() {
-  this.daises[0].update();
-  return this.daises[1].update();
+  var _a, c;
+  _a = [];
+  for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
+    _a.push(this.daises[c].update());
+  }
+  return _a;
 };
 GUI.prototype.selectDais = function(daisNumber) {
   if (this.selectedDais >= 0) {
@@ -669,12 +675,12 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [0.005, 0.0];
+  this.velocity = [-0.0006, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
   var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
-  orbit = [this.velocity[0] * time, this.velocity[1] * time];
+  orbit = [Math.PI * 0.1 + this.velocity[0] * time, Math.PI * -0.14 + this.velocity[1] * time];
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
   }
@@ -780,13 +786,13 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.005, 0.0];
+  this.velocity = [0.0005, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
 Sun.prototype.render = function(gl, view, projection, time) {
   var cosAzim, cosIncl, orbit, sinAzim, sinIncl;
-  orbit = [Math.PI * 0.3 + this.velocity[0] * time, this.velocity[1] * time];
+  orbit = [Math.PI * 0.3 + this.velocity[0] * time, Math.PI * 0.9 + this.velocity[1] * time];
   if (!SunModule.vertexBuffer) {
     SunModule.createResources(gl);
   }

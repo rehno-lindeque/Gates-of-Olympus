@@ -4,19 +4,20 @@ The look-at proxy for the main game scene
 
 class LevelLookAt
   constructor: (cameraNode, backgroundCameraNode) ->
-    @angle = 0.0
+    @angle = Math.PI * 0.25
     @radius = 10.0
     @lookAtNode = 
       type: "lookAt"
       id:   "SceneLookAt"
-      eye:  { x: 0.0, y: -@radius, z: 7.0 }
+      #eye:  { x: 0.0, y: -@radius, z: 7.0 }
+      eye:  { x: (Math.sin @angle) * @radius, y: (Math.cos @angle) * -@radius, z: 7.0 }
       look: { x: 0.0, y: 0.0, z: 0.0 }
       up:   { x: 0.0, y: 0.0, z: 1.0 }
       nodes: [ cameraNode ]
     @backgroundLookAtNode =
       type: "lookAt"
       id:   "BackgroundLookAt"
-      eye:  { x: 0.0, y: -@radius, z: 7.0 }
+      eye:  { x: (Math.sin @angle) * @radius, y: (Math.cos @angle) * -@radius, z: 7.0 }
       look: { x: 0.0, y: 0.0, z: 0.0 }
       up:   { x: 0.0, y: 0.0, z: 1.0 }
       nodes: [ backgroundCameraNode ]

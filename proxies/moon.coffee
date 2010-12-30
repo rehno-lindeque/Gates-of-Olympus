@@ -157,11 +157,11 @@ class Moon
     
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @velocity = [0.005, 0.0]
+    @velocity = [-0.0006, 0.0]
   
   render: (gl, view, projection, time) ->
-    #orbit = [ @velocity[0] * time, Math.PI * 0.5 + @velocity[1] * time ]
-    orbit = [ @velocity[0] * time, @velocity[1] * time ]
+    orbit = [ Math.PI * 0.1 + @velocity[0] * time, Math.PI * -0.14 + @velocity[1] * time ]
+    #orbit = [ @velocity[0] * time, @velocity[1] * time ]
     if not MoonModule.vertexBuffer then MoonModule.createResources(gl)
     
     # Since gates of olympus uses a left-handed coordinate system with

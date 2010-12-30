@@ -41,7 +41,7 @@
   /*
   Game logic
   */
-  level.creatures.addCreature(Fish);
+  level.creatures.addCreature(Snake);
   floodInit();
   /*
   User input
@@ -146,7 +146,8 @@
       level.addTower(towerPlacement, gui.selectedDais);
       dirtyLevel[towerPlacement.level] = true;
     }
-    return (mouseDragging = false);
+    mouseDragging = false;
+    return SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY);
   };
   mouseMove = function(event) {
     if (mouseDragging) {
@@ -171,16 +172,17 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var _a, c, eye, look, optics, projection, up, view;
-    for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
-      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
+    var _a, _b, c, eye, look, optics, projection, up, view;
+    _a = (2 * numTowerTypes - 1);
+    for (c = 0; (0 <= _a ? c <= _a : c >= _a); (0 <= _a ? c += 1 : c -= 1)) {
+      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
       if (guiDaisRotPosition[c] > 0) {
-        guiDaisRotVelocity[c] -= 0.001;
+        guiDaisRotVelocity[c] -= 0.0003;
       }
       if (guiDaisRotPosition[c] < 0) {
-        guiDaisRotVelocity[c] += 0.001;
+        guiDaisRotVelocity[c] += 0.0003;
       }
-      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.1, 0.1);
+      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5);
       guiDaisRotPosition[c] += guiDaisRotVelocity[c];
       guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
@@ -198,11 +200,11 @@
     atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
-    _a = [];
-    for (c = 0; c <= 2; c++) {
-      _a.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
+    _b = [];
+    for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
+      _b.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
-    return _a;
+    return _b;
   };
   interval = window.setInterval("window.render()", 10);
 })();
