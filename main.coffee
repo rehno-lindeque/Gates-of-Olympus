@@ -44,7 +44,8 @@ Game logic
 
 # Creatures
 #level.creatures.addCreature(Scorpion)
-level.creatures.addCreature(Fish)
+#level.creatures.addCreature(Fish)
+level.creatures.addCreature(Snake)
 
 ###
 User input 

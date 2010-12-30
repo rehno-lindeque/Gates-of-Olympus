@@ -72,9 +72,6 @@ platformScaleLengths = [
   platformScales[2] * 0.5 * cellScale * gridSize 
 ]
 
-# Towers
-numTowerTypes = 3
-
 # State
 guiDaisRotVelocity = [
   0.0, 0.0

@@ -34,6 +34,14 @@ class Fish extends Creature
   create: () ->
     super()
 
+class Snake extends Creature
+  constructor: () ->
+    @create()
+    @index = 2
+  
+  create: () ->
+    super()
+
 ###
 Collection of all creatures
 ###
@@ -43,6 +51,7 @@ class Creatures
     @creatures = new Array()
     SceneJS.createNode BlenderExport.Scorpion
     SceneJS.createNode BlenderExport.Fish
+    SceneJS.createNode BlenderExport.Snake
     #@geometries = new Array()
     #@geometries[0] = SceneJS.createNode BlenderExport.Scorpion
     @node = 
@@ -60,6 +69,10 @@ class Creatures
         type: "texture"
         id:   creatureIds[1] + "tex"
         layers: [ uri: creatureTextureURI[1] ]
+      ,
+        type: "texture"
+        id:   creatureIds[2] + "tex"
+        layers: [ uri: creatureTextureURI[2] ]
       ]
   
   addCreature: (CreaturePrototype) ->

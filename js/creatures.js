@@ -1,4 +1,4 @@
-var Creature, Creatures, Fish, Scorpion;
+var Creature, Creatures, Fish, Scorpion, Snake;
 var __extends = function(child, parent) {
     var ctor = function(){};
     ctor.prototype = parent.prototype;
@@ -45,6 +45,15 @@ __extends(Fish, Creature);
 Fish.prototype.create = function() {
   return Fish.__super__.create.call(this);
 };
+Snake = function() {
+  this.create();
+  this.index = 2;
+  return this;
+};
+__extends(Snake, Creature);
+Snake.prototype.create = function() {
+  return Snake.__super__.create.call(this);
+};
 /*
 Collection of all creatures
 */
@@ -52,6 +61,7 @@ Creatures = function() {
   this.creatures = new Array();
   SceneJS.createNode(BlenderExport.Scorpion);
   SceneJS.createNode(BlenderExport.Fish);
+  SceneJS.createNode(BlenderExport.Snake);
   this.node = {
     type: "material",
     id: "creatures",
@@ -82,6 +92,14 @@ Creatures = function() {
         layers: [
           {
             uri: creatureTextureURI[1]
+          }
+        ]
+      }, {
+        type: "texture",
+        id: creatureIds[2] + "tex",
+        layers: [
+          {
+            uri: creatureTextureURI[2]
           }
         ]
       }
