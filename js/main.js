@@ -161,16 +161,17 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var _result, c, eye, look, optics, projection, up, view;
-    for (c = 0; (0 <= numTowerTypes ? c < numTowerTypes : c > numTowerTypes); (0 <= numTowerTypes ? c += 1 : c -= 1)) {
-      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.1;
+    var _ref, _result, c, eye, look, optics, projection, up, view;
+    _ref = (2 * numTowerTypes - 1);
+    for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
+      guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
       if (guiDaisRotPosition[c] > 0) {
-        guiDaisRotVelocity[c] -= 0.001;
+        guiDaisRotVelocity[c] -= 0.0005;
       }
       if (guiDaisRotPosition[c] < 0) {
-        guiDaisRotVelocity[c] += 0.001;
+        guiDaisRotVelocity[c] += 0.0005;
       }
-      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.1, 0.1);
+      guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5);
       guiDaisRotPosition[c] += guiDaisRotVelocity[c];
       guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
@@ -188,7 +189,7 @@
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
     _result = [];
-    for (c = 0; c <= 2; c++) {
+    for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
       _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
     return _result;

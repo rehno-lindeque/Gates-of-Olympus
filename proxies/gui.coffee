@@ -52,8 +52,8 @@ class GUI
     SceneJS.withNode(@daises[2].id).bind("picked", (event) -> alert "#2 picked!")
   
   update: ->
-    @daises[0].update()
-    @daises[1].update()
+    for c in [0..numTowerTypes-1]
+      @daises[c].update()
   
   selectDais: (daisNumber) ->
     if @selectedDais >= 0

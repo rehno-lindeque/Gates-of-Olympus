@@ -500,8 +500,12 @@ GUI.prototype.initialize = function() {
   });
 };
 GUI.prototype.update = function() {
-  this.daises[0].update();
-  return this.daises[1].update();
+  var _result, c;
+  _result = [];
+  for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
+    _result.push(this.daises[c].update());
+  }
+  return _result;
 };
 GUI.prototype.selectDais = function(daisNumber) {
   if (this.selectedDais >= 0) {
