@@ -21,3 +21,7 @@ class Towers
     @towers = new Array (sqrGridSize * levels)
     for c in [0...(sqrGridSize * levels)]
       @towers[c] = -1
+    
+    # For testing only: Place holes
+    @towers[10] = -2
+    @towers[sqrGridSize + 18] = -2
