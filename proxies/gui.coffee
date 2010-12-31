@@ -10,14 +10,14 @@ class GUI
     @daises[2] = new GUIDais 2
     @daisGeometry = SceneJS.createNode BlenderExport.NumberedDais
     @selectedDais = -1
-    @lightNode =
-      type:      "light"
-      mode:      "dir"
-      color:     { r: 0.9, g: 0.9, b: 0.9 }
-      diffuse:   true
-      specular:  false
-      #dir:       { x: 1.0, y: 1.0, z: -1.0 }
-      dir:       { x: 0.3, y: 0.3, z: -1.0 }
+    #@lightNode =
+    #  type:      "light"
+    #  mode:      "dir"
+    #  color:     { r: 0.9, g: 0.9, b: 0.9 }
+    #  diffuse:   true
+    #  specular:  false
+    #  #dir:       { x: 1.0, y: 1.0, z: -1.0 }
+    #  dir:       { x: 0.3, y: 0.3, z: -1.0 }
     @lookAtNode =
       type: "lookAt"
       eye:  { x: 0.0, y: -10.0, z: 4.0 }
@@ -49,7 +49,6 @@ class GUI
   initialize: ->
     for c in [0..numTowerTypes-1]
       SceneJS.withNode(@daises[c].id).bind("picked", (event) -> gui.selectDais(c))
-
   
   update: ->
     for c in [0..numTowerTypes-1]

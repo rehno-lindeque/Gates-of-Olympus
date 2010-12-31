@@ -227,22 +227,6 @@ LevelCamera = function(levelNode) {
     optics: this.optics,
     nodes: [
       {
-        type: "light",
-        id: "levelLight",
-        mode: "dir",
-        color: {
-          r: 1.0,
-          g: 1.0,
-          b: 1.0
-        },
-        diffuse: true,
-        specular: false,
-        dir: {
-          x: 1.0,
-          y: 1.0,
-          z: -1.0
-        }
-      }, {
         type: "matrix",
         elements: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, platformScaleFactor, 0.0, 0.0, 0.0, 1.0],
         nodes: [levelNode]
@@ -254,24 +238,10 @@ LevelCamera = function(levelNode) {
 LevelCamera.prototype.withNode = function() {
   return SceneJS.withNode("sceneCamera");
 };
-LevelCamera.prototype.withLightNode = function() {
-  return SceneJS.withNode("levelLight");
-};
 LevelCamera.prototype.reconfigure = function(canvasSize) {
   this.optics.left = -12.5 * (canvasSize[0] / canvasSize[1]);
   this.optics.right = 12.5 * (canvasSize[0] / canvasSize[1]);
   return this.withNode().set("optics", this.optics);
-};
-LevelCamera.prototype.updateLight = function(color, lightDir) {
-  return this.withLightNode().set("color", {
-    r: color[0],
-    g: color[1],
-    b: color[2]
-  }).set("dir", {
-    x: lightDir[0],
-    y: lightDir[1],
-    z: lightDir[2]
-  });
 };var LevelLookAt;
 /*
 The look-at proxy for the main game scene
@@ -439,22 +409,6 @@ GUI = function() {
   this.daises[2] = new GUIDais(2);
   this.daisGeometry = SceneJS.createNode(BlenderExport.NumberedDais);
   this.selectedDais = -1;
-  this.lightNode = {
-    type: "light",
-    mode: "dir",
-    color: {
-      r: 0.9,
-      g: 0.9,
-      b: 0.9
-    },
-    diffuse: true,
-    specular: false,
-    dir: {
-      x: 0.3,
-      y: 0.3,
-      z: -1.0
-    }
-  };
   this.lookAtNode = {
     type: "lookAt",
     eye: {
@@ -546,7 +500,7 @@ GUICamera = function(gui, referenceCamera) {
     type: "camera",
     id: "guiCamera",
     optics: levelCamera.optics,
-    nodes: [gui.lightNode, gui.node]
+    nodes: [gui.node]
   };
   return this;
 };
@@ -692,10 +646,11 @@ Moon proxy
 */
 Moon = function() {
   this.velocity = [-0.0006, 0.0];
+  this.position = [0.0, 0.0, 0.0];
   return this;
 };
 Moon.prototype.render = function(gl, view, projection, time) {
-  var cosAzim, cosIncl, orbit, position, sinAzim, sinIncl;
+  var cosAzim, cosIncl, orbit, sinAzim, sinIncl;
   orbit = [Math.PI * 0.1 + this.velocity[0] * time, Math.PI * -0.14 + this.velocity[1] * time];
   if (!MoonModule.vertexBuffer) {
     MoonModule.createResources(gl);
@@ -704,8 +659,8 @@ Moon.prototype.render = function(gl, view, projection, time) {
   sinIncl = Math.sin(orbit[0]);
   cosAzim = Math.cos(orbit[1]);
   sinAzim = Math.sin(orbit[1]);
-  position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
-  return MoonModule.render(gl, view, projection, position);
+  this.position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
+  return MoonModule.render(gl, view, projection, this.position);
 };var Sun, SunModule;
 /*
 A proxy for the sun

@@ -7,7 +7,7 @@ class GUICamera
       id:   "guiCamera"
       optics: levelCamera.optics
       nodes: [
-          gui.lightNode
+          #gui.lightNode
           gui.node
         ] # camera
   

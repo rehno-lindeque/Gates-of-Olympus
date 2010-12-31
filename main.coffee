@@ -10,10 +10,10 @@ Copyright 2010, Rehno Lindeque.
 Initialization and rendering loop
 ###
 
-canvas = document.getElementById(sceneNode.canvasId)
+canvas = document.getElementById(scene.node.canvasId)
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
-gameScene.render()
+scene.withNode().render()
 gui.initialize()
 
 # Manual webgl initialization (for rendering things stand-alone
@@ -163,7 +163,7 @@ mouseUp = ->
   if towerPlacement.level != -1 and gui.selectedDais != -1
     level.addTower(towerPlacement, gui.selectedDais)
   mouseDragging = false
-  SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY)
+  scene.withNode().pick(mouseLastX, mouseLastY)
 
 mouseMove = (event) ->
   if mouseDragging
@@ -201,15 +201,17 @@ window.render = ->
   gui.update()
   level.update()
 
-  # Animate the sun light
-  lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.2)
-  levelCamera.updateLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
-  
+  # Animate the sun / moon lighting
+  lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.5)
+  scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
+  lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75)
+  scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
+
   # Update game events
   timeline.update(1);
  
   # Render the scene
-  gameScene.render()
+  scene.withNode().render()
   
   # Render the gui additions
   #gui.daises[0].daisClouds.render(customGL, timeline.time)

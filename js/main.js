@@ -10,10 +10,10 @@
   /*
   Initialization and rendering loop
   */
-  canvas = document.getElementById(sceneNode.canvasId);
+  canvas = document.getElementById(scene.node.canvasId);
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  gameScene.render();
+  scene.withNode().render();
   gui.initialize();
   customGL = canvas.getContext("experimental-webgl", {
     antialias: false
@@ -137,7 +137,7 @@
       level.addTower(towerPlacement, gui.selectedDais);
     }
     mouseDragging = false;
-    return SceneJS.withNode("gameScene").pick(mouseLastX, mouseLastY);
+    return scene.withNode().pick(mouseLastX, mouseLastY);
   };
   mouseMove = function(event) {
     if (mouseDragging) {
@@ -178,10 +178,12 @@
     }
     gui.update();
     level.update();
-    lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.2);
-    levelCamera.updateLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
+    lightAmount = clamp(sun.position[2] + 0.5, 0.2, 1.5);
+    scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
+    lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75);
+    scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position));
     timeline.update(1);
-    gameScene.render();
+    scene.withNode().render();
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
