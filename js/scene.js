@@ -77,7 +77,7 @@ Scene = function() {
               y: -1.0,
               z: -1.0
             }
-          }, graft(gui.lookAtNode, [guiCamera.node]), levelLookAt.node, levelLookAt.backgroundLookAtNode
+          }, levelLookAt.node, graft(gui.lookAtNode, [guiCamera.node]), levelLookAt.backgroundLookAtNode
         ]
       }
     ]

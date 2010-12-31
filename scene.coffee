@@ -59,9 +59,9 @@ class Scene
           specular:  false
           dir:       { x: -1.0, y: -1.0, z: -1.0 }
         ,
-          graft(gui.lookAtNode, [guiCamera.node])
-        ,
           levelLookAt.node
+        ,
+          graft(gui.lookAtNode, [guiCamera.node])
         ,
           levelLookAt.backgroundLookAtNode
         ]

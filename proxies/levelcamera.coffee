@@ -18,15 +18,31 @@ class LevelCamera
       id:   "sceneCamera"
       optics: @optics
       nodes: [
-          type: "matrix"
-          elements: [
-            1.0, 0.0, 0.0, 0.0
-            0.0, 1.0, 0.0, 0.0
-            0.0, 0.0, 1.0, platformScaleFactor
-            0.0, 0.0, 0.0, 1.0
-          ]
-          nodes: [ levelNode ]
+        type:      "light"
+        id:        "sunLight"
+        mode:      "dir"
+        color:     { r: 1.0, g: 1.0, b: 1.0 }
+        diffuse:   true
+        specular:  false
+        dir:       { x: 1.0, y: 1.0, z: -1.0 }
+      ,
+        type:      "light"
+        id:        "moonLight"
+        mode:      "dir"
+        color:     { r: 0.5, g: 0.5, b: 0.5 }
+        diffuse:   true
+        specular:  false
+        dir:       { x: -1.0, y: -1.0, z: -1.0 }
+      ,
+        type: "matrix"
+        elements: [
+          1.0, 0.0, 0.0, 0.0
+          0.0, 1.0, 0.0, 0.0
+          0.0, 0.0, 1.0, platformScaleFactor
+          0.0, 0.0, 0.0, 1.0
         ]
+        nodes: [ levelNode ]
+      ]
   
   withNode: -> SceneJS.withNode "sceneCamera"
 
