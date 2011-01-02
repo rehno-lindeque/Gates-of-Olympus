@@ -205,7 +205,35 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: [platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers]
+    nodes: [this.platformGeometry("level" + k), this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers]
+  };
+};
+Level.prototype.platformGeometry = function(platformId) {
+  var cx, cy, gridIndex, i, n, p, s;
+  s = gridSize * cellScale;
+  n = gridSize;
+  p = new Array((n + 1) * (n + 1) * 3);
+  i = new Array(n * n * 6);
+  for (cy = 0; (0 <= n ? cy <= n : cy >= n); (0 <= n ? cy += 1 : cy -= 1)) {
+    for (cx = 0; (0 <= n ? cx <= n : cx >= n); (0 <= n ? cx += 1 : cx -= 1)) {
+      p[((cy * (n + 1) + cx) * 3 + 0)] = s * (cx) / n - s * 0.5;
+      p[((cy * (n + 1) + cx) * 3 + 1)] = s * (cy) / n - s * 0.5;
+      p[((cy * (n + 1) + cx) * 3 + 2)] = 0.0;
+    }
+  }
+  for (cy = 0; (0 <= n - 1 ? cy <= n - 1 : cy >= n - 1); (0 <= n - 1 ? cy += 1 : cy -= 1)) {
+    for (cx = 0; (0 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (0 <= n - 1 ? cx += 1 : cx -= 1)) {
+      gridIndex = (cy * n + cx) * 6;
+      i.splice.apply(i, [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
+    }
+  }
+  return {
+    type: "geometry",
+    resource: platformId,
+    id: platformId,
+    primitive: "triangles",
+    positions: p,
+    indices: i
   };
 };var LevelCamera;
 /*

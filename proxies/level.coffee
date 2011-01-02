@@ -137,9 +137,41 @@ class Level
     type: "translate"
     z: platformHeights[k]
     nodes: [
-      platformGeometry("level" + k)
+      @platformGeometry("level" + k)
       @towerNodes[k].archerTowers
       @towerNodes[k].catapultTowers
       @towerNodes[k].ballistaTowers
     ]
+  
+  # Create the platform geometry
+  platformGeometry: (platformId) ->
+    s = gridSize * cellScale  # scale size of the grid in world space
+    n = gridSize
+    p = new Array((n+1) * (n+1) * 3)
+    i = new Array(n * n * 6)
+    
+    for cy in [0..n]
+      for cx in [0..n]
+        p[((cy * (n+1) + cx) * 3 + 0)] = s * (cx  ) / n - s * 0.5
+        p[((cy * (n+1) + cx) * 3 + 1)] = s * (cy  ) / n - s * 0.5
+        p[((cy * (n+1) + cx) * 3 + 2)] = 0.0
+    
+    for cy in [0..n-1]
+      for cx in [0..n-1]
+        gridIndex = (cy*n + cx) * 6
+        i[gridIndex + 0..gridIndex + 5] = [
+          (cy  )*(n+1) + (cx + 0), 
+          (cy  )*(n+1) + (cx + 1),
+          (cy+1)*(n+1) + (cx + 0),
+          (cy+1)*(n+1) + (cx + 0),
+          (cy  )*(n+1) + (cx + 1),
+          (cy+1)*(n+1) + (cx + 1)
+        ]
+    
+    type:   "geometry"
+    resource: platformId
+    id: platformId
+    primitive: "triangles"
+    positions: p
+    indices: i
 
