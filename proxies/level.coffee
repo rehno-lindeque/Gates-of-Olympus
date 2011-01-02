@@ -158,7 +158,7 @@ class Level
     
     for cy in [0..n-1]
       for cx in [cy%2..n-1]
-        gridIndex = (cy*n + cx * 2) * 6
+        gridIndex = (cy*n + cx) * 6
         i[gridIndex + 0..gridIndex + 5] = [
           (cy  )*(n+1) + (cx + 0), 
           (cy  )*(n+1) + (cx + 1),
