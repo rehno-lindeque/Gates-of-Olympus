@@ -157,8 +157,8 @@ class Level
         p[((cy * (n+1) + cx) * 3 + 2)] = 0.0
     
     for cy in [0..n-1]
-      for cx in [0..n-1]
-        gridIndex = (cy*n + cx*2) * 6
+      for cx in [cy%2..n-1]
+        gridIndex = (cy*n + cx * 2) * 6
         i[gridIndex + 0..gridIndex + 5] = [
           (cy  )*(n+1) + (cx + 0), 
           (cy  )*(n+1) + (cx + 1),
@@ -167,6 +167,7 @@ class Level
           (cy  )*(n+1) + (cx + 1),
           (cy+1)*(n+1) + (cx + 1)
         ]
+        cx += 1
     [
       type:   "geometry"
       resource: platformId

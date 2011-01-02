@@ -222,9 +222,10 @@ Level.prototype.platformGeometry = function(platformId) {
     }
   }
   for (cy = 0; (0 <= n - 1 ? cy <= n - 1 : cy >= n - 1); (0 <= n - 1 ? cy += 1 : cy -= 1)) {
-    for (cx = 0; (0 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (0 <= n - 1 ? cx += 1 : cx -= 1)) {
+    for (cx = cy % 2; (cy % 2 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (cy % 2 <= n - 1 ? cx += 1 : cx -= 1)) {
       gridIndex = (cy * n + cx * 2) * 6;
       i.splice.apply(i, [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
+      cx += 1;
     }
   }
   return [
