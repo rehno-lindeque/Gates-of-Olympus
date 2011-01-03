@@ -28,10 +28,16 @@ class Towers
     for c in [0...(sqrGridSize * levels)]
       @towers[c] = -1
       
+    # For testing only: Place holes
+    @towers[10] = -2
+    @towers[sqrGridSize + 18] = -2
+      
   update: ->
     # for now lets just switch on the tower id to decide the logic, can do this better later if necessaary
     #for c in [0...(sqrGridSize * levels)]
       #switch @towers[c]
         #when 0 archerTowerUpdate(c)
         #when 1 catapultTowerUpdate(c)
-        
+    
+ 
+

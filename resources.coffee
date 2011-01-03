@@ -15,22 +15,5 @@ creatureIds = ["Scorpion", "Fish", "Snake"]
 creatureTextureURI = ["textures/scorpion.jpg", "textures/fish.jpg", "textures/snake.jpg"]
 numCreatureTypes = creatureIds.length
 
-###
-Platform resources
-###
 
-platformGeometry = (platformId) -> 
-  s = gridSize * cellScale * 0.5  # scale size of the grid in world space
-  
-  type:   "geometry"
-  resource: platformId
-  id: platformId
-  primitive: "triangles"
-  positions: [
-      -s,  s,  0
-       s,  s,  0
-       s, -s,  0
-      -s, -s,  0
-    ]
-  indices: [0,  1,  2, 0, 2, 3]
 

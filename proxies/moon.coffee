@@ -158,6 +158,7 @@ class Moon
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
     @velocity = [-0.0006, 0.0]
+    @position = [0.0, 0.0, 0.0]
   
   render: (gl, view, projection, time) ->
     orbit = [ Math.PI * 0.1 + @velocity[0] * time, Math.PI * -0.14 + @velocity[1] * time ]
@@ -172,7 +173,7 @@ class Moon
     sinAzim = Math.sin(orbit[1])
     #position = [cosIncl * cosAzim, cosIncl * sinAzim, sinIncl]
     #position = [cosIncl * sinAzim, sinIncl, cosIncl * cosAzim]
-    position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
+    @position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
     
-    MoonModule.render(gl, view, projection, position)
+    MoonModule.render(gl, view, projection, @position)
 
