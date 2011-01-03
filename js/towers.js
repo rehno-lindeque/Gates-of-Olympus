@@ -19,7 +19,8 @@ Towers = function() {
   for (c = 0; (0 <= _ref ? c < _ref : c > _ref); (0 <= _ref ? c += 1 : c -= 1)) {
     this.towers[c] = -1;
   }
-  this.towers[10] = -2;
-  this.towers[sqrGridSize + 18] = -2;
+  this.towers[sqrGridSize - 23] = -2;
+  this.towers[sqrGridSize + 15] = -2;
+  this.towers[2 * sqrGridSize + 32] = -2;
   return this;
 };

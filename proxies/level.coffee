@@ -156,7 +156,7 @@ class Level
 
     normals = new Array((n+1) * (n+1) * 3)
     #i = new Array(n * n * 6)
-    i = [new Array(n * n * 3 - holes[0]), new Array(n * n * 3 - holes[1])]
+    i = [new Array(n * n * 3 - 6 * holes[0]), new Array(n * n * 3 - 6 * holes[1])]
     
     for cy in [0..n]
       for cx in [0..n]
@@ -170,10 +170,11 @@ class Level
     holes = [0, 0]
     for cy in [0..n-1]
       for cx in [0..n-1]
-        gridIndex = (cy*n + cx - holes[(cy+cx)%2]) * 6
+        gridIndex = (cy*n + cx) * 6
         if @towers.towers[nn * index + cy * n + cx] == -2
           holes[(cy+cx)%2] += 1
         else
+          gridIndex -= holes[(cy+cx)%2] * 6
           i[(cy+cx)%2][gridIndex + 0..gridIndex + 5] = [
             (cy  )*(n+1) + (cx + 0), 
             (cy  )*(n+1) + (cx + 1),

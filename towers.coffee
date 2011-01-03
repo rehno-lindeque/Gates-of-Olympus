@@ -23,5 +23,6 @@ class Towers
       @towers[c] = -1
     
     # For testing only: Place holes
-    @towers[10] = -2
-    @towers[sqrGridSize + 18] = -2
+    @towers[sqrGridSize-23] = -2
+    @towers[sqrGridSize + 15] = -2
+    @towers[2*sqrGridSize + 32] = -2
