@@ -14,13 +14,23 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 Creature types
 */
+/*
+creatureMaxHP = new Array(numCreatureTypes)
+creatureMaxHP[0] = 120
+creatureMaxHP[1] = 80
+creatureMaxHP[2] = 100
+*/
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.pos = [0.0, 0.0, 0.0];
+  this.pos = [0.0, 0.0, platformHeights[0] + 10.0];
   this.rot = 0.0;
   this.level = 0;
-  this.index = 6 + 6 * gridSize;
-  this.health = 0;
+  this.gridIndex = 6 + 6 * gridSize;
+  this.maxHealth = 100;
+  this.health = 100;
+  this.state = 0;
+  this.speed = 0.1;
+  this.fallVelocity = [0.0, 0.0, -this.speed];
   return null;
 };
 Creature.prototype.getId = function() {
@@ -29,8 +39,54 @@ Creature.prototype.getId = function() {
 Creature.prototype.getTextureURI = function() {
   return creatureTextureURI[this.index];
 };
+Creature.prototype.getGridIndex = function() {
+  var index;
+  index = positionToIndex(this.pos[0], this.pos[1], this.level);
+  this.gridIndex = index;
+  return index;
+};
+Creature.prototype.update = function() {
+  var cellX, cellY, dist, fallTime, g, index, tmp, vel;
+  if (this.state === 0) {
+    this.pos[0] += this.fallVelocity[0];
+    this.pos[1] += this.fallVelocity[1];
+    this.pos[2] += this.fallVelocity[2];
+    if (this.pos[2] < (platformHeights[this.level] - platformHeightOffset + 0.1)) {
+      this.state = 1;
+    }
+  } else if (this.state === 1) {
+    tmp = 1;
+    if (this.gridIndex !== levelGoals[this.level]) {
+      vel = getMove(this.pos[0], this.pos[1], this.level);
+      this.pos[0] = this.pos[0] + vel.x * this.speed;
+      this.pos[1] = this.pos[1] + vel.y * this.speed;
+      this.rot = 180 * Math.atan2(vel.y, vel.x) / Math.PI - 90;
+    } else {
+      if (this.level === 2) {
+        this.state = 2;
+      } else {
+        this.state = 0;
+        this.level++;
+        cellX = Math.floor(this.gridIndex % gridSize);
+        cellY = Math.floor(this.gridIndex / gridSize) % gridSize;
+        g = indexToPosition(cellX, cellY, this.level);
+        dist = (platformHeights[this.level] - platformHeightOffset + 0.1) - (platformHeights[this.level - 1] - platformHeightOffset + 0.1);
+        dist = Math.abs(dist);
+        fallTime = dist / this.speed;
+        this.fallVelocity.x = (g.x - this.pos[0]) / fallTime;
+        this.fallVelocity.y = (g.y - this.pos[1]) / fallTime;
+        this.fallVelocity.z = -this.speed;
+      }
+    }
+  }
+  index = positionToIndex(this.pos[0], this.pos[1], this.level);
+  return (this.gridIndex = index);
+};
 Scorpion = function() {
   this.create();
+  this.maxHealth = 100;
+  this.health = this.maxHealth;
+  this.speed = 0.02;
   this.index = 0;
   return this;
 };
@@ -40,6 +96,9 @@ Scorpion.prototype.create = function() {
 };
 Fish = function() {
   this.create();
+  this.maxHealth = 80;
+  this.health = this.maxHealth;
+  this.speed = 0.04;
   this.index = 1;
   return this;
 };
@@ -49,6 +108,9 @@ Fish.prototype.create = function() {
 };
 Snake = function() {
   this.create();
+  this.maxHealth = 120;
+  this.health = this.maxHealth;
+  this.speed = 0.06;
   this.index = 2;
   return this;
 };
@@ -137,38 +199,14 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var c, creatures;
+  var _a, _b, _c, c, creature, creatures;
   c = 0;
   creatures = this.creatures;
-  /*
-  floodInit()
-  start = 6+ 0*gridSize
-  goal  = 6+ 11*gridSize
-  x = creatures[c].pos[0]
-  y = creatures[c].pos[1]
-  index = positionToIndex(x,y)
-  creatures[c].index = index
-
-  if (index != goal)
-
-    vel = getMove(creatures[c].pos[0],creatures[c].pos[1],creatures[c].level)
-
-    #if (!vel? || dirtyLevel[creatures[c].level])
-    #  floodFillGenPath(index,goal)
-    #  vel = getMove(creatures[c].pos[0],creatures[c].pos[1], goal)
-
-    creatures[c].pos[0] = x + vel.x*0.1
-    creatures[c].pos[1] = y + vel.y*0.1
-    creatures[c].rot = 180*Math.atan2(vel.y,vel.x)/Math.PI - 90
-  else
-    resetPos = indexToPosition(6,1)
-    creatures[c].pos[0] = resetPos.x
-    creatures[c].pos[1] = resetPos.y
-    creatures[c].level  = 0
-    creatures[c].pos[2] = platformHeights[creatures[c].level] - 1.75
-    creatures[c].index = positionToIndex(resetPos.x,resetPos.y)
-    dirtyLevel[0] = true  # temp hack
-  */
+  _b = creatures;
+  for (_a = 0, _c = _b.length; _a < _c; _a++) {
+    creature = _b[_a];
+    creature.update();
+  }
   SceneJS.withNode("creatures").eachNode(function() {
     return this.eachNode(function() {
       this.set({

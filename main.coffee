@@ -59,8 +59,8 @@ Game logic
 
 # Creatures
 #level.creatures.addCreature(Scorpion)
-#level.creatures.addCreature(Fish)
-level.creatures.addCreature(Snake)
+level.creatures.addCreature(Fish)
+#level.creatures.addCreature(Snake)
 
 #floydInit()
 floodInit()

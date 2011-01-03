@@ -18,14 +18,17 @@ dirtyLevel[2] = true
 
 levelGoals = new Array (levels)
 
-levelGoals[0] = 6 + 11*gridSize
-levelGoals[1] = 6 + 11*gridSize + sqrGridSize
-levelGoals[2] = 6 + 11*gridSize + 2*sqrGridSize
+
+initializeLevelGoals = () ->
+  levelGoals[0] = 0 +0*gridSize
+  levelGoals[1] = 11+11*gridSize + sqrGridSize
+  levelGoals[2] = 0 + 0*gridSize + 2*sqrGridSize
 
 for i in [0..sqrGridSize*levels -1]
   #path[i] = new Array (sqrGridSize)
   next[i] = new Array (sqrGridSize)
 
+initializeLevelGoals()
 
 ###
 Pathfinding - Floyd warshall for now, might be slow
@@ -69,9 +72,22 @@ getPath = (i, j) ->
   return null
   
 ###
-
   
-positionToIndex = (x,y) ->
+positionToIndex = (x,y,level) ->
+  curPosX = Math.floor((x / (cellScale * platformScales[level])) + gridHalfSize)
+  curPosY = Math.floor((y / (cellScale * platformScales[level])) + gridHalfSize)
+  index = curPosX + gridSize*curPosY + sqrGridSize*level
+  return index
+  
+indexToPosition = (x,y,level) -> # x y as indices
+  y = y % gridSize # y will be larger than gridSize if level > 0
+  posX = cellScale * platformScales[level] * (x - gridHalfSize) + cellScale * platformScales[level] * 0.5 
+  posY = cellScale * platformScales[level] * (y - gridHalfSize) + cellScale * platformScales[level] * 0.5 
+  pos = { x: posX, y: posY}
+  return pos
+  
+### temp backups of original code
+ positionToIndex = (x,y) ->
   curPosX = Math.floor((x/cellScale) + gridSize/2)
   curPosY = Math.floor((y/cellScale) + gridSize/2)
   index = curPosX + gridSize*curPosY
@@ -82,11 +98,12 @@ indexToPosition = (x,y) -> # x y as indices
   posY = cellScale * (y - gridSize / 2) + cellScale * 0.5 
   pos = { x: posX, y: posY}
   return pos
+###
 
 
   # flood for now
 floodInit = ->
-  for i in [0..sqrGridSize-1]
+  for i in [0..sqrGridSize*3-1]
     #for j in [0..gridSize-1]
     grid[i] = 0
   
@@ -109,7 +126,7 @@ floodFill = (goal,lev) ->
             if (level.towers.towers[index] != -1) 
               grid[index] = Infinity
             else
-              shortestThroughNode = grid[pos] + Math.abs(i) + Math.abs(j)         #might not be necessary
+              shortestThroughNode = grid[pos] + Math.abs(i) + Math.abs(j)         # + 1
               if (shortestThroughNode < grid[index] || grid[index] == 0)
                 if (grid[index] == 0)
                   Q[l] = index
@@ -121,8 +138,9 @@ floodFill = (goal,lev) ->
   # now step back from goal and find path
 
 # backtracks from goal to start
-floodFillGenPath = (start,goal,lev) ->
+floodFillGenPath = (start,lev) ->
   cur = start
+  goal = levelGoals[lev]
   shortest = Infinity
   shortestIndex = -1
   while (cur != goal)
@@ -143,22 +161,14 @@ floodFillGenPath = (start,goal,lev) ->
     shortest = Infinity
     shortestIndex = -1
  
-# need to sort out this pathfinding, clean up.
-
- 
- 
-towerPlacement = 
-  level: -1
-  cell: { x: -1, y: -1 }
-
 getMove = (x,y,lev) ->
-  index = positionToIndex(x,y)
+  index = positionToIndex(x,y,lev)
     
   nextCell = next[index][levelGoals[lev]]
   nextCellX = Math.floor(nextCell % gridSize)
   nextCellY = Math.floor(nextCell / gridSize)
   
-  nextPos = indexToPosition(nextCellX,nextCellY)
+  nextPos = indexToPosition(nextCellX,nextCellY,lev)
   velX = nextPos.x - x
   velY = nextPos.y - y
   if (velX == 0 && velY ==0)
@@ -170,19 +180,26 @@ getMove = (x,y,lev) ->
   return vel
   
 # notes -> to check block, simply see if the floodfill visits all squares, hold counter
+# i think do it as follows:  have a grid that for each square states whether a creep resides there
+# then go through that list after floodfill is done and see if all those squares were updated with a distance
+
 updateAI = ->
-  for i in [0..2]
-    if (dirtyLevel[i])
-      floodFill(levelGoals[i],i)
+  #for i in [0..2]
+   # if (dirtyLevel[i])  # a level is dirty when a tower is placed
+  floodFill(levelGoals[0],0)
+  floodFill(levelGoals[1],1)
+  floodFill(levelGoals[2],2)
       
   # work out paths for creeps on level i
+
   for creature in level.creatures.creatures
     lev = creature.level
-    index = creature.index
+    index = creature.getGridIndex()
     # for now this is not gonna be as efficient as I would like, basically 
     # regenerate each path for each creep on a node. this should be shared
-    if (dirtyLevel[lev])
-      floodFillGenPath(index,levelGoals[lev],lev)
+    #if (dirtyLevel[lev])
+    if (creature.state == 1) # roaming
+      floodFillGenPath(index,lev)
         
   # everything ready
   for i in [0..2]

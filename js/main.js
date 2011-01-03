@@ -41,7 +41,7 @@
   /*
   Game logic
   */
-  level.creatures.addCreature(Snake);
+  level.creatures.addCreature(Fish);
   floodInit();
   /*
   User input
