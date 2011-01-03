@@ -205,16 +205,23 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: this.platformGeometry("level" + k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers])
+    nodes: this.platformGeometry("level" + k, k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers])
   };
 };
-Level.prototype.platformGeometry = function(platformId) {
-  var cx, cy, gridIndex, i, n, normals, p, s;
+Level.prototype.platformGeometry = function(platformId, index) {
+  var cx, cy, gridIndex, holes, i, n, nn, normals, p, s;
   s = gridSize * cellScale;
   n = gridSize;
+  nn = sqrGridSize;
   p = new Array((n + 1) * (n + 1) * 3);
+  holes = [0, 0];
+  for (i = nn * index; (nn * index <= nn * (index + 1) - 1 ? i <= nn * (index + 1) - 1 : i >= nn * (index + 1) - 1); (nn * index <= nn * (index + 1) - 1 ? i += 1 : i -= 1)) {
+    if (this.towers.towers[i] === -2) {
+      holes[i % 2] += 1;
+    }
+  }
   normals = new Array((n + 1) * (n + 1) * 3);
-  i = [new Array(n * n * 3), new Array(n * n * 3)];
+  i = [new Array(n * n * 3 - holes[0]), new Array(n * n * 3 - holes[1])];
   for (cy = 0; (0 <= n ? cy <= n : cy >= n); (0 <= n ? cy += 1 : cy -= 1)) {
     for (cx = 0; (0 <= n ? cx <= n : cx >= n); (0 <= n ? cx += 1 : cx -= 1)) {
       p[((cy * (n + 1) + cx) * 3 + 0)] = s * (cx) / n - s * 0.5;
@@ -225,10 +232,15 @@ Level.prototype.platformGeometry = function(platformId) {
       normals[((cy * (n + 1) + cx) * 3 + 2)] = 1.0;
     }
   }
+  holes = [0, 0];
   for (cy = 0; (0 <= n - 1 ? cy <= n - 1 : cy >= n - 1); (0 <= n - 1 ? cy += 1 : cy -= 1)) {
     for (cx = 0; (0 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (0 <= n - 1 ? cx += 1 : cx -= 1)) {
-      gridIndex = (cy * n + cx) * 6;
-      i[(cy + cx) % 2].splice.apply(i[(cy + cx) % 2], [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
+      gridIndex = (cy * n + cx - holes[(cy + cx) % 2]) * 6;
+      if (this.towers.towers[nn * index + cy * n + cx] === -2) {
+        holes[(cy + cx) % 2] += 1;
+      } else {
+        i[(cy + cx) % 2].splice.apply(i[(cy + cx) % 2], [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
+      }
     }
   }
   return [

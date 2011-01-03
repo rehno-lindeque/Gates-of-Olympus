@@ -137,20 +137,26 @@ class Level
   createPlatformNode: (k) ->
     type: "translate"
     z: platformHeights[k]
-    nodes: @platformGeometry("level" + k).concat([
+    nodes: @platformGeometry("level"+ k, k).concat([
       @towerNodes[k].archerTowers
       @towerNodes[k].catapultTowers
       @towerNodes[k].ballistaTowers
     ])
   
   # Create the platform geometry
-  platformGeometry: (platformId) ->
+  platformGeometry: (platformId, index) ->
     s = gridSize * cellScale  # scale size of the grid in world space
     n = gridSize
+    nn = sqrGridSize
     p = new Array((n+1) * (n+1) * 3)
+
+    holes = [0, 0]
+    for i in [nn * index..nn * (index+1) - 1]
+      if @towers.towers[i] == -2 then holes[i%2] += 1
+
     normals = new Array((n+1) * (n+1) * 3)
     #i = new Array(n * n * 6)
-    i = [new Array(n * n * 3), new Array(n * n * 3)]
+    i = [new Array(n * n * 3 - holes[0]), new Array(n * n * 3 - holes[1])]
     
     for cy in [0..n]
       for cx in [0..n]
@@ -161,17 +167,21 @@ class Level
         normals[((cy * (n+1) + cx) * 3 + 1)] = 0.0
         normals[((cy * (n+1) + cx) * 3 + 2)] = 1.0
     
+    holes = [0, 0]
     for cy in [0..n-1]
       for cx in [0..n-1]
-        gridIndex = (cy*n + cx) * 6
-        i[(cy+cx)%2][gridIndex + 0..gridIndex + 5] = [
-          (cy  )*(n+1) + (cx + 0), 
-          (cy  )*(n+1) + (cx + 1),
-          (cy+1)*(n+1) + (cx + 0),
-          (cy+1)*(n+1) + (cx + 0),
-          (cy  )*(n+1) + (cx + 1),
-          (cy+1)*(n+1) + (cx + 1)
-        ]
+        gridIndex = (cy*n + cx - holes[(cy+cx)%2]) * 6
+        if @towers.towers[nn * index + cy * n + cx] == -2
+          holes[(cy+cx)%2] += 1
+        else
+          i[(cy+cx)%2][gridIndex + 0..gridIndex + 5] = [
+            (cy  )*(n+1) + (cx + 0), 
+            (cy  )*(n+1) + (cx + 1),
+            (cy+1)*(n+1) + (cx + 0),
+            (cy+1)*(n+1) + (cx + 0),
+            (cy  )*(n+1) + (cx + 1),
+            (cy+1)*(n+1) + (cx + 1)
+          ]
 
     #[
     #  type:   "geometry"
