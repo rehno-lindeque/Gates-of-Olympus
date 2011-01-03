@@ -181,9 +181,9 @@ Level.prototype.createNode = function() {
   return {
     type: "material",
     baseColor: {
-      r: 0.75,
-      g: 0.78,
-      b: 0.85
+      r: 0.45,
+      g: 0.48,
+      b: 0.55
     },
     specularColor: {
       r: 0.9,
@@ -209,33 +209,61 @@ Level.prototype.createPlatformNode = function(k) {
   };
 };
 Level.prototype.platformGeometry = function(platformId) {
-  var cx, cy, gridIndex, i, n, p, s;
+  var cx, cy, gridIndex, i, n, normals, p, s;
   s = gridSize * cellScale;
   n = gridSize;
   p = new Array((n + 1) * (n + 1) * 3);
-  i = new Array(n * n * 3);
+  normals = new Array((n + 1) * (n + 1) * 3);
+  i = [new Array(n * n * 3), new Array(n * n * 3)];
   for (cy = 0; (0 <= n ? cy <= n : cy >= n); (0 <= n ? cy += 1 : cy -= 1)) {
     for (cx = 0; (0 <= n ? cx <= n : cx >= n); (0 <= n ? cx += 1 : cx -= 1)) {
       p[((cy * (n + 1) + cx) * 3 + 0)] = s * (cx) / n - s * 0.5;
       p[((cy * (n + 1) + cx) * 3 + 1)] = s * (cy) / n - s * 0.5;
       p[((cy * (n + 1) + cx) * 3 + 2)] = 0.0;
+      normals[((cy * (n + 1) + cx) * 3 + 0)] = 0.0;
+      normals[((cy * (n + 1) + cx) * 3 + 1)] = 0.0;
+      normals[((cy * (n + 1) + cx) * 3 + 2)] = 1.0;
     }
   }
   for (cy = 0; (0 <= n - 1 ? cy <= n - 1 : cy >= n - 1); (0 <= n - 1 ? cy += 1 : cy -= 1)) {
-    for (cx = cy % 2; (cy % 2 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (cy % 2 <= n - 1 ? cx += 1 : cx -= 1)) {
+    for (cx = 0; (0 <= n - 1 ? cx <= n - 1 : cx >= n - 1); (0 <= n - 1 ? cx += 1 : cx -= 1)) {
       gridIndex = (cy * n + cx) * 6;
-      i.splice.apply(i, [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
-      cx += 1;
+      i[(cy + cx) % 2].splice.apply(i[(cy + cx) % 2], [gridIndex + 0, gridIndex + 5 - gridIndex + 0 + 1].concat([(cy) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 0), (cy + 1) * (n + 1) + (cx + 0), (cy) * (n + 1) + (cx + 1), (cy + 1) * (n + 1) + (cx + 1)]));
     }
   }
   return [
     {
       type: "geometry",
-      resource: platformId,
-      id: platformId,
-      primitive: "triangles",
       positions: p,
-      indices: i
+      normals: normals,
+      nodes: [
+        {
+          type: "geometry",
+          primitive: "triangles",
+          indices: i[0]
+        }, {
+          type: "material",
+          baseColor: {
+            r: 0.35,
+            g: 0.37,
+            b: 0.42
+          },
+          specularColor: {
+            r: 0.4,
+            g: 0.4,
+            b: 0.4
+          },
+          specular: 0.9,
+          shine: 6.0,
+          nodes: [
+            {
+              type: "geometry",
+              primitive: "triangles",
+              indices: i[1]
+            }
+          ]
+        }
+      ]
     }
   ];
 };var LevelCamera;

@@ -114,7 +114,8 @@ class Level
   createNode: ->
     type: "material"
     #baseColor:      { r: 0.7, g: 0.7, b: 0.7 }
-    baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
+    #baseColor:      { r: 0.75, g: 0.78, b: 0.85 }
+    baseColor:      { r: 0.45, g: 0.48, b: 0.55 }
     specularColor:  { r: 0.9, g: 0.9, b: 0.9 }
     specular:       0.9
     shine:          6.0
@@ -147,19 +148,23 @@ class Level
     s = gridSize * cellScale  # scale size of the grid in world space
     n = gridSize
     p = new Array((n+1) * (n+1) * 3)
+    normals = new Array((n+1) * (n+1) * 3)
     #i = new Array(n * n * 6)
-    i = new Array(n * n * 3)
+    i = [new Array(n * n * 3), new Array(n * n * 3)]
     
     for cy in [0..n]
       for cx in [0..n]
         p[((cy * (n+1) + cx) * 3 + 0)] = s * (cx  ) / n - s * 0.5
         p[((cy * (n+1) + cx) * 3 + 1)] = s * (cy  ) / n - s * 0.5
         p[((cy * (n+1) + cx) * 3 + 2)] = 0.0
+        normals[((cy * (n+1) + cx) * 3 + 0)] = 0.0
+        normals[((cy * (n+1) + cx) * 3 + 1)] = 0.0
+        normals[((cy * (n+1) + cx) * 3 + 2)] = 1.0
     
     for cy in [0..n-1]
-      for cx in [cy%2..n-1]
+      for cx in [0..n-1]
         gridIndex = (cy*n + cx) * 6
-        i[gridIndex + 0..gridIndex + 5] = [
+        i[(cy+cx)%2][gridIndex + 0..gridIndex + 5] = [
           (cy  )*(n+1) + (cx + 0), 
           (cy  )*(n+1) + (cx + 1),
           (cy+1)*(n+1) + (cx + 0),
@@ -167,13 +172,42 @@ class Level
           (cy  )*(n+1) + (cx + 1),
           (cy+1)*(n+1) + (cx + 1)
         ]
-        cx += 1
+
+    #[
+    #  type:   "geometry"
+    #  resource: platformId
+    #  positions: p
+    #  normals: normals
+    #,
+    #  type: "geometry"
+    #  resource: platformId
+    #  primitive: "triangles"
+    #  id: platformId
+    #  indices: i
+    #  positions: []
+    #  normals: []
+    #]
+
     [
       type:   "geometry"
-      resource: platformId
-      id: platformId
-      primitive: "triangles"
       positions: p
-      indices: i
+      #resource: platformId
+      normals: normals
+      nodes: [
+        type: "geometry"
+        primitive: "triangles"
+        indices: i[0]
+      ,
+        type: "material"
+        baseColor:      { r: 0.35, g: 0.37, b: 0.42 }
+        specularColor:  { r: 0.4, g: 0.4, b: 0.4 }
+        specular:       0.9
+        shine:          6.0
+        nodes: [
+          type: "geometry"
+          primitive: "triangles"
+          indices: i[1]
+        ]
+      ]
     ]
 
