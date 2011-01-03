@@ -34,6 +34,8 @@ initializeLevelGoals()
 Pathfinding - Floyd warshall for now, might be slow
 ###
 
+#
+
 ###
 edgeCost = (i,j) ->
   if i==j
@@ -72,7 +74,7 @@ getPath = (i, j) ->
   return null
   
 ###
-  
+
 positionToIndex = (x,y,level) ->
   curPosX = Math.floor((x / (cellScale * platformScales[level])) + gridHalfSize)
   curPosY = Math.floor((y / (cellScale * platformScales[level])) + gridHalfSize)
@@ -86,14 +88,15 @@ indexToPosition = (x,y,level) -> # x y as indices
   pos = { x: posX, y: posY}
   return pos
   
-### temp backups of original code
- positionToIndex = (x,y) ->
+###
+# temp backups of original code
+positionToIndex = (x,y,level) ->
   curPosX = Math.floor((x/cellScale) + gridSize/2)
   curPosY = Math.floor((y/cellScale) + gridSize/2)
-  index = curPosX + gridSize*curPosY
+  index = curPosX + gridSize*curPosY + sqrGridSize*level
   return index
   
-indexToPosition = (x,y) -> # x y as indices
+indexToPosition = (x,y,level) -> # x y as indices
   posX = cellScale * (x - gridSize / 2) + cellScale * 0.5 
   posY = cellScale * (y - gridSize / 2) + cellScale * 0.5 
   pos = { x: posX, y: posY}

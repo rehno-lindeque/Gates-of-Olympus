@@ -19,35 +19,6 @@ atmosphere = new Atmosphere();
 /*
 The main scene definition
 */
-<<<<<<< HEAD
-sceneNode = {
-  type: "scene",
-  id: "gameScene",
-  canvasId: "gameCanvas",
-  loggingElementId: "scenejsLog",
-  nodes: [
-    {
-      type: "geometry",
-      resource: "tmp",
-      primitive: "triangles",
-      positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      indices: [0, 1, 2]
-    }, {
-      type: "renderer",
-      clear: {
-        depth: true,
-        color: true,
-        stencil: false
-      },
-      clearColor: {
-        r: 0.7,
-        g: 0.7,
-        b: 0.7
-      },
-      nodes: [graft(gui.lookAtNode, [guiCamera.node]), levelLookAt.node, levelLookAt.backgroundLookAtNode]
-    }
-  ]
-=======
 Scene = function() {
   this.node = {
     type: "scene",
@@ -79,7 +50,6 @@ Scene = function() {
   };
   SceneJS.createNode(this.node);
   return this;
->>>>>>> 7bf4af0c826087ff5e223afed4d56626ab317b8e
 };
 Scene.prototype.withNode = function() {
   return SceneJS.withNode("gameScene");

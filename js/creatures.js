@@ -22,10 +22,10 @@ creatureMaxHP[2] = 100
 */
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.pos = [0.0, 0.0, platformHeights[0] + 10.0];
+  this.pos = [0.9 * 12, -0.9 * 12, platformHeights[0] + 10.0];
   this.rot = 0.0;
   this.level = 0;
-  this.gridIndex = 6 + 6 * gridSize;
+  this.gridIndex = 11 + 11 * gridSize;
   this.maxHealth = 100;
   this.health = 100;
   this.state = 0;

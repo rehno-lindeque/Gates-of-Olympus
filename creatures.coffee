@@ -23,7 +23,7 @@ class Creature
     @rot = 0.0
     @level = 0
     #@node = null
-    @gridIndex = 6+ 6*gridSize
+    @gridIndex = 11+ 11*gridSize
     @maxHealth = 100
     @health = 100
     @state = 0            # 0 = Fall, 1 = Roam, 2 = Done, 3 = Dead
