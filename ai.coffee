@@ -5,9 +5,10 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 
 # Pathfinding
 
+
+#pathfinding specific globals
 grid = new Array (sqrGridSize*levels)
 
-#path = new Array (sqrGridSize*levels)
 next = new Array (sqrGridSize*levels)
 
 dirtyLevel = new Array (levels)
@@ -15,28 +16,16 @@ dirtyLevel = new Array (levels)
 dirtyLevel[0] = true
 dirtyLevel[1] = true
 dirtyLevel[2] = true
-
-levelGoals = new Array (levels)
-
-
-initializeLevelGoals = () ->
-  levelGoals[0] = 0 +0*gridSize
-  levelGoals[1] = 11+11*gridSize + sqrGridSize
-  levelGoals[2] = 0 + 0*gridSize + 2*sqrGridSize
-
+ 
 for i in [0..sqrGridSize*levels -1]
   #path[i] = new Array (sqrGridSize)
   next[i] = new Array (sqrGridSize)
 
-initializeLevelGoals()
-
 ###
-Pathfinding - Floyd warshall for now, might be slow
+Pathfinding - Floyd warshall
 ###
 
-#
-
-###
+### - not currently in use, might use later (probably not)
 edgeCost = (i,j) ->
   if i==j
     return 0
@@ -75,58 +64,31 @@ getPath = (i, j) ->
   
 ###
 
-positionToIndex = (x,y,level) ->
-  curPosX = Math.floor((x / (cellScale * platformScales[level])) + gridHalfSize)
-  curPosY = Math.floor((y / (cellScale * platformScales[level])) + gridHalfSize)
-  index = curPosX + gridSize*curPosY + sqrGridSize*level
-  return index
-  
-indexToPosition = (x,y,level) -> # x y as indices
-  y = y % gridSize # y will be larger than gridSize if level > 0
-  posX = cellScale * platformScales[level] * (x - gridHalfSize) + cellScale * platformScales[level] * 0.5 
-  posY = cellScale * platformScales[level] * (y - gridHalfSize) + cellScale * platformScales[level] * 0.5 
-  pos = { x: posX, y: posY}
-  return pos
-  
 ###
-# temp backups of original code
-positionToIndex = (x,y,level) ->
-  curPosX = Math.floor((x/cellScale) + gridSize/2)
-  curPosY = Math.floor((y/cellScale) + gridSize/2)
-  index = curPosX + gridSize*curPosY + sqrGridSize*level
-  return index
-  
-indexToPosition = (x,y,level) -> # x y as indices
-  posX = cellScale * (x - gridSize / 2) + cellScale * 0.5 
-  posY = cellScale * (y - gridSize / 2) + cellScale * 0.5 
-  pos = { x: posX, y: posY}
-  return pos
+flood fill pathfinding
 ###
 
-
-  # flood for now
 floodInit = ->
   for i in [0..sqrGridSize*3-1]
-    #for j in [0..gridSize-1]
     grid[i] = 0
-  
+
+# basic flood fill for now, should be fine 
 floodFill = (goal,lev) ->
   Q = new Array()
   f = 0
-  l = 0
+  l = 1
   Q[f] = goal
-  #Q[l] = sqrGridSize-1
   while (f<=l)
     pos = Q[f]
     f++
     for i in [-1..1]
-      for j in [-1..1] when (Math.abs(i+j) == 1) #(i!= 0 || j!=0)
+      for j in [-1..1] when (Math.abs(i+j) == 1) 
         x = Math.floor(pos % gridSize) + j
         y = Math.floor(pos / gridSize) + i
         if (x>=0 && x < gridSize && y>=(gridSize*lev) && y < (gridSize*(lev+1)))
-          index = (x) + (y)*gridSize #level*sqrGridSize
-          if (index != goal) #grid[index] == 0 &&  this might not work in all situations, so lets see
-            if (level.towers.towers[index] != -1) 
+          index = (x) + (y)*gridSize 
+          if (index != goal) 
+            if (level.towers.towers[index] >= 0) 
               grid[index] = Infinity
             else
               shortestThroughNode = grid[pos] + Math.abs(i) + Math.abs(j)         # + 1
@@ -153,14 +115,13 @@ floodFillGenPath = (start,lev) ->
         y = Math.floor(cur / gridSize) + i
         if (x>=0 && x < gridSize && y>=(gridSize*lev) && y < (gridSize*(lev+1)))
           index = (x) + (y)*gridSize
-          if (grid[index] < shortest && level.towers.towers[index] == -1) 
-            if ((Math.abs(i+j) != 1 && (level.towers.towers[index-j] != -1 || level.towers.towers[index-i*gridSize] != -1))) # corner
-              wow = true
-            else 
+          if (grid[index] < shortest && level.towers.towers[index] < 0) 
+            if (!((Math.abs(i+j) != 1 && (level.towers.towers[index-j] >=0 || level.towers.towers[index-i*gridSize] >= 0)))) # corner
               shortest = grid[index]
               shortestIndex = index
     next[cur][goal] = shortestIndex
     cur = shortestIndex
+    #reset
     shortest = Infinity
     shortestIndex = -1
  
@@ -174,21 +135,20 @@ getMove = (x,y,lev) ->
   nextPos = indexToPosition(nextCellX,nextCellY,lev)
   velX = nextPos.x - x
   velY = nextPos.y - y
-  if (velX == 0 && velY ==0)
-    gotcha=1
-    len = 1
-  else
-    len = Math.sqrt(velX*velX + velY*velY)
+  len = Math.sqrt(velX*velX + velY*velY)
   vel = { x: velX/len, y: velY/len}
   return vel
   
 # notes -> to check block, simply see if the floodfill visits all squares, hold counter
+
 # i think do it as follows:  have a grid that for each square states whether a creep resides there
 # then go through that list after floodfill is done and see if all those squares were updated with a distance
 
 updateAI = ->
   #for i in [0..2]
    # if (dirtyLevel[i])  # a level is dirty when a tower is placed
+   
+  floodInit()
   floodFill(levelGoals[0],0)
   floodFill(levelGoals[1],1)
   floodFill(levelGoals[2],2)
@@ -198,8 +158,8 @@ updateAI = ->
   for creature in level.creatures.creatures
     lev = creature.level
     index = creature.getGridIndex()
-    # for now this is not gonna be as efficient as I would like, basically 
-    # regenerate each path for each creep on a node. this should be shared
+    # for now this is not gonna be very efficient, basically 
+    # regenerate each path for each creep on a node. this should be shared [cache creep locations]
     #if (dirtyLevel[lev])
     if (creature.state == 1) # roaming
       floodFillGenPath(index,lev)

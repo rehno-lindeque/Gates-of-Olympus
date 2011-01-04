@@ -22,7 +22,7 @@ creatureMaxHP[2] = 100
 */
 Creature = function() {};
 Creature.prototype.create = function() {
-  this.pos = [0.9 * 12, -0.9 * 12, platformHeights[0] + 10.0];
+  this.pos = [0.0, 0.0, platformHeights[0] + 10.0];
   this.rot = 0.0;
   this.level = 0;
   this.gridIndex = 11 + 11 * gridSize;
@@ -46,7 +46,7 @@ Creature.prototype.getGridIndex = function() {
   return index;
 };
 Creature.prototype.update = function() {
-  var cellX, cellY, dist, fallTime, g, index, tmp, vel;
+  var index, tmp, vel;
   if (this.state === 0) {
     this.pos[0] += this.fallVelocity[0];
     this.pos[1] += this.fallVelocity[1];
@@ -67,14 +67,16 @@ Creature.prototype.update = function() {
       } else {
         this.state = 0;
         this.level++;
-        cellX = Math.floor(this.gridIndex % gridSize);
-        cellY = Math.floor(this.gridIndex / gridSize) % gridSize;
-        g = indexToPosition(cellX, cellY, this.level);
-        dist = (platformHeights[this.level] - platformHeightOffset + 0.1) - (platformHeights[this.level - 1] - platformHeightOffset + 0.1);
-        dist = Math.abs(dist);
-        fallTime = dist / this.speed;
-        this.fallVelocity.x = (g.x - this.pos[0]) / fallTime;
-        this.fallVelocity.y = (g.y - this.pos[1]) / fallTime;
+        /*
+        cellX = Math.floor(@gridIndex % gridSize)
+        cellY = Math.floor(@gridIndex / gridSize) % gridSize
+        g = indexToPosition(cellX, cellY, @level)
+        dist = (platformHeights[@level] - platformHeightOffset + 0.1) - (platformHeights[@level-1] - platformHeightOffset + 0.1)
+        dist = Math.abs(dist)
+        fallTime = dist/@speed
+        @fallVelocity.x = (g.x - @pos[0]) / fallTime
+        @fallVelocity.y = (g.y - @pos[1]) / fallTime
+        */
         this.fallVelocity.z = -this.speed;
       }
     }

@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, indexToPosition, initializeLevelGoals, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levelGoals, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, positionToIndex, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010, Rehno Lindeque.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -20,6 +20,24 @@ clamp = function(x, y, z) {
 };
 lerp = function(t, x, y) {
   return x * (1.0 - t) + y * t;
+};
+positionToIndex = function(x, y, level) {
+  var curPosX, curPosY, index;
+  curPosX = Math.floor((x / cellScale) + gridSize / 2);
+  curPosY = Math.floor((y / cellScale) + gridSize / 2);
+  index = curPosX + gridSize * curPosY + sqrGridSize * level;
+  return index;
+};
+indexToPosition = function(x, y, level) {
+  var pos, posX, posY;
+  y = y % gridSize;
+  posX = cellScale * (x - gridSize / 2) + cellScale * 0.5;
+  posY = cellScale * (y - gridSize / 2) + cellScale * 0.5;
+  pos = {
+    x: posX,
+    y: posY
+  };
+  return pos;
 };
 /*
 Globals
@@ -60,3 +78,10 @@ towerPlacement = {
     y: -1
   }
 };
+levelGoals = new Array(levels);
+initializeLevelGoals = function() {
+  levelGoals[0] = 0 + 0 * gridSize;
+  levelGoals[1] = 6 + 6 * gridSize + sqrGridSize;
+  return (levelGoals[2] = 0 + 0 * gridSize + 2 * sqrGridSize);
+};
+initializeLevelGoals();

@@ -21,8 +21,9 @@ Towers = function() {
   for (c = 0; (0 <= _a ? c < _a : c > _a); (0 <= _a ? c += 1 : c -= 1)) {
     this.towers[c] = -1;
   }
-  this.towers[10] = -2;
-  this.towers[sqrGridSize + 18] = -2;
+  this.towers[levelGoals[0]] = -2;
+  this.towers[levelGoals[1]] = -2;
+  this.towers[levelGoals[2]] = -2;
   return this;
 };
 Towers.prototype.update = function() {};

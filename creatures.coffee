@@ -55,7 +55,6 @@ class Creature
         @state = 1 # roam
         #goal = levelGoals[level]
       
-    
     else if @state == 1 # roaming
       tmp=1
       
@@ -77,7 +76,8 @@ class Creature
         else
           @state = 0 # falling
           @level++
-          # gonna have to increase x y
+          
+          ###
           cellX = Math.floor(@gridIndex % gridSize)
           cellY = Math.floor(@gridIndex / gridSize) % gridSize
           g = indexToPosition(cellX, cellY, @level)
@@ -86,23 +86,9 @@ class Creature
           fallTime = dist/@speed
           @fallVelocity.x = (g.x - @pos[0]) / fallTime
           @fallVelocity.y = (g.y - @pos[1]) / fallTime
+          ###
           @fallVelocity.z = -@speed
-                    
-          
-          #resetPos = indexToPosition(6,1)
-          #creatures[c].pos[0] = resetPos.x
-          #creatures[c].pos[1] = resetPos.y
-          #creatures[c].level  = 0 
-          #creatures[c].pos[2] = platformHeights[creatures[c].level] - 1.75
-          #creatures[c].index = positionToIndex(resetPos.x,resetPos.y)
-          #dirtyLevel[0] = true  # temp hack
-          
-     
-    #floodInit()
-    #start = 6+ 0*gridSize
-    #goal  = 6+ 11*gridSize
-    
-    
+            
     index = positionToIndex(@pos[0],@pos[1],@level) 
     @gridIndex = index
    

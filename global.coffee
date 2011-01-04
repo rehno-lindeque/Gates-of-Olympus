@@ -14,6 +14,20 @@ clamp = (x, y, z) -> if (x < y) then y else (if x > z then z else x)
 lerp = (t, x, y) -> x * (1.0 - t) + y * t
 
 
+# index to position and vice versa
+
+positionToIndex = (x,y,level) ->
+  curPosX = Math.floor((x/cellScale) + gridSize/2)
+  curPosY = Math.floor((y/cellScale) + gridSize/2)
+  index = curPosX + gridSize*curPosY + sqrGridSize*level
+  return index
+  
+indexToPosition = (x,y,level) -> # x y as indices, y in the range 0-35 (dont ask why)
+  y = y % gridSize # y will be larger than gridSize if level > 0
+  posX = cellScale * (x - gridSize / 2) + cellScale * 0.5 
+  posY = cellScale * (y - gridSize / 2) + cellScale * 0.5 
+  pos = { x: posX, y: posY}
+  return pos
 
 ###
 Globals
@@ -92,5 +106,17 @@ guiDaisRotPosition = [
 towerPlacement = 
   level: -1
   cell: { x: -1, y: -1 }
+  
+# goals
+
+levelGoals = new Array (levels)
+
+
+initializeLevelGoals = () ->
+  levelGoals[0] = 0 +0*gridSize
+  levelGoals[1] = 6+6*gridSize + sqrGridSize
+  levelGoals[2] = 0 + 0*gridSize + 2*sqrGridSize
+
+initializeLevelGoals()
 
 
