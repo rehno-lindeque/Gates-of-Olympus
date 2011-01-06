@@ -139,14 +139,15 @@ Level = function() {
   return this;
 };
 Level.prototype.getTowerRoot = function(level, towerType) {
-  if (towerType === 0) {
-    return this.towerNodes[level].archerTowers;
-  } else if (towerType === 1) {
-    return this.towerNodes[level].catapultTowers;
-  } else if (towerType === 2) {
-    return this.towerNodes[level].ballistaTowers;
-  } else {
-    return null;
+  switch (towerType) {
+    case 0:
+      return this.towerNodes[level].archerTowers;
+    case 1:
+      return this.towerNodes[level].catapultTowers;
+    case 2:
+      return this.towerNodes[level].ballistaTowers;
+    default:
+      return null;
   }
 };
 Level.prototype.addTower = function(towerPlacement, towerType) {
@@ -561,25 +562,25 @@ GUI = function() {
   return this;
 };
 GUI.prototype.initialize = function() {
-  var _a, _b, c;
-  _a = [];
-  for (_b = 0; (0 <= numTowerTypes - 1 ? _b <= numTowerTypes - 1 : _b >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _b += 1 : _b -= 1)) {
+  var _i, _result, c;
+  _result = [];
+  for (_i = 0; (0 <= numTowerTypes - 1 ? _i <= numTowerTypes - 1 : _i >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _i += 1 : _i -= 1)) {
     (function() {
-      var c = _b;
-      return _a.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
+      var c = _i;
+      return _result.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
         return gui.selectDais(c);
       }));
     }).call(this);
   }
-  return _a;
+  return _result;
 };
 GUI.prototype.update = function() {
-  var _a, c;
-  _a = [];
+  var _result, c;
+  _result = [];
   for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
-    _a.push(this.daises[c].update());
+    _result.push(this.daises[c].update());
   }
-  return _a;
+  return _result;
 };
 GUI.prototype.selectDais = function(daisNumber) {
   if (this.selectedDais >= 0) {
@@ -892,12 +893,12 @@ DaisCloudsModule = {
   shaderProgram: null,
   numParticles: 200,
   createResources: function(gl) {
-    var _a, fragmentShader, k, vertexShader, vertices;
+    var _ref, fragmentShader, k, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [];
-    _a = (this.numParticles * 3 - 1);
-    for (k = 0; (0 <= _a ? k <= _a : k >= _a); (0 <= _a ? k += 1 : k -= 1)) {
+    _ref = (this.numParticles * 3 - 1);
+    for (k = 0; (0 <= _ref ? k <= _ref : k >= _ref); (0 <= _ref ? k += 1 : k -= 1)) {
       vertices[k] = ((Math.random() - 0.5) * 2.0) * ((Math.random() - 0.5) * 2.0);
     }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -1104,7 +1105,7 @@ AtmosphereModule = {
     return null;
   },
   createResourcesLo: function(gl) {
-    var _a, _b, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
+    var _ref, _ref2, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     nx = 4 * 15;
@@ -1119,10 +1120,10 @@ AtmosphereModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     indices = new Array(ny * nx * 6);
-    _a = (ny - 1);
-    for (cy = 0; (0 <= _a ? cy <= _a : cy >= _a); (0 <= _a ? cy += 1 : cy -= 1)) {
-      _b = (nx - 1);
-      for (cx = 0; (0 <= _b ? cx <= _b : cx >= _b); (0 <= _b ? cx += 1 : cx -= 1)) {
+    _ref = (ny - 1);
+    for (cy = 0; (0 <= _ref ? cy <= _ref : cy >= _ref); (0 <= _ref ? cy += 1 : cy -= 1)) {
+      _ref2 = (nx - 1);
+      for (cx = 0; (0 <= _ref2 ? cx <= _ref2 : cx >= _ref2); (0 <= _ref2 ? cx += 1 : cx -= 1)) {
         indices[(cy * nx + cx) * 6 + 0] = ((cy + 0) * (nx + 1) + cx + 0);
         indices[(cy * nx + cx) * 6 + 1] = ((cy + 0) * (nx + 1) + cx + 1);
         indices[(cy * nx + cx) * 6 + 2] = ((cy + 1) * (nx + 1) + cx + 0);

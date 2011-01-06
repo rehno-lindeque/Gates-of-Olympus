@@ -201,12 +201,12 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return creature;
 };
 Creatures.prototype.update = function() {
-  var _a, _b, _c, c, creature, creatures;
+  var _i, _len, _ref, c, creature, creatures;
   c = 0;
   creatures = this.creatures;
-  _b = creatures;
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    creature = _b[_a];
+  _ref = creatures;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    creature = _ref[_i];
     creature.update();
   }
   SceneJS.withNode("creatures").eachNode(function() {

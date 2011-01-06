@@ -117,6 +117,10 @@
       display: none;
       overflow: scroll;
     }
+    audio {
+      position: absolute;
+      top: 0;
+    }
   </style>
 
   <!-- Analytics -->
@@ -139,9 +143,6 @@
 <!-- Layout / Containers -->
 
 <body>
- <audio id="march" preload controls>
-	<source src="march.wav">
-  </audio>
   <!--<div style="float: right; margin-right:30px;">-->
 
   <div id="scenejsLog"></div>
@@ -183,7 +184,9 @@
     <div id="daisStats8" class="disabled">
       <h2>Shrine of Poseidon</h2>
     </div>
-    
+    <audio id="march" preload controls>
+	    <source src="march.wav">
+    </audio>  
   </div>
   <div id="hints">
     <h2>Hints</h2>

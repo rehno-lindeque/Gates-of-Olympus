@@ -124,15 +124,19 @@
     return null;
   };
   keyDown = function(event) {
-    var _a;
-    if ((_a = event.keyCode) === key1) {
-      gui.selectDais(0);
-    } else if (_a === key2) {
-      gui.selectDais(1);
-    } else if (_a === key3) {
-      gui.selectDais(2);
-    } else if (_a === keyESC) {
-      gui.deselectDais();
+    switch (event.keyCode) {
+      case key1:
+        gui.selectDais(0);
+        break;
+      case key2:
+        gui.selectDais(1);
+        break;
+      case key3:
+        gui.selectDais(2);
+        break;
+      case keyESC:
+        gui.deselectDais();
+        break;
     }
     return updateTowerPlacement();
   };
@@ -172,9 +176,9 @@
     return guiCamera.reconfigure();
   };
   window.render = function() {
-    var _a, _b, c, eye, lightAmount, look, optics, projection, up, view;
-    _a = (2 * numTowerTypes - 1);
-    for (c = 0; (0 <= _a ? c <= _a : c >= _a); (0 <= _a ? c += 1 : c -= 1)) {
+    var _ref, _result, c, eye, lightAmount, look, optics, projection, up, view;
+    _ref = (2 * numTowerTypes - 1);
+    for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
       if (guiDaisRotPosition[c] > 0) {
         guiDaisRotVelocity[c] -= 0.0003;
@@ -204,11 +208,11 @@
     atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
-    _b = [];
+    _result = [];
     for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
-      _b.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
+      _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
-    return _b;
+    return _result;
   };
   interval = window.setInterval("window.render()", 10);
-})();
+}).call(this);
