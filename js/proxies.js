@@ -1291,7 +1291,7 @@ StoneProjectilesModule = {
     for (k = 1; k <= 7; k++) {
       gl.disableVertexAttribArray(k);
     }
-    this.attributeBuffers.bind(gl);
+    this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     if (saveState.blend) {
@@ -1330,7 +1330,7 @@ Catapult projectiles proxy
 CatapultProjectiles = function(index) {
   this.node = {
     type: "stone-projectiles",
-    id: "catapult-projectiles"
+    id: "catapult-projectiles" + index
   };
   return this;
 };

@@ -9,27 +9,65 @@ CircularAttributeBuffers = function(size, lifeTime) {
   this.size = size;
   this.lifeTime = lifeTime;
   this.t = 0.0;
+  this.bottomOffset = 0;
+  this.topOffset = 0;
   this.vertices = new Array(this.size);
-  this.vertexBuffers = null;
-  this.vertexQueue = [];
+  this.attributeBuffers = [];
+  this.attributeQueues = [[]];
+  this.attributeInfos = [];
   return this;
 };
 CircularAttributeBuffers.prototype.create = function(gl) {
-  this.vertexBuffers = [gl.createBuffer()];
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffers[0]);
-  return gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW);
+  this.attributeBuffers = [gl.createBuffer()];
+  this.attributeInfos = [
+    {
+      elements: 3
+    }
+  ];
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
+  return gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[0].elements, gl.STREAM_DRAW);
 };
-CircularAttributeBuffers.prototype.bind = function(gl) {
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-  gl.enableVertexAttribArray(shaderProgram.vertexPosition);
-  return gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+CircularAttributeBuffers.prototype.push = function(elements) {
+  var _result, k;
+  _result = [];
+  for (k = 0; (0 <= attributeBuffers.size - 1 ? k <= attributeBuffers.size - 1 : k >= attributeBuffers.size - 1); (0 <= attributeBuffers.size - 1 ? k += 1 : k -= 1)) {
+    _result.push(this.attributeQueues[k].concat(elements[k]));
+  }
+  return _result;
+};
+CircularAttributeBuffers.prototype.update = function(t) {
+  var _i, _len, _ref, queue;
+  this.t = t;
+  _ref = this.attributeQueues;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    queue = _ref[_i];
+    if (this.topOffset + queue.size < this.size) {
+      gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[0].elements);
+    }
+  }
+  return (this.attributeQueues = [[]]);
+};
+CircularAttributeBuffers.prototype.bind = function(gl, shaderLocations) {
+  var _i, _len, _ref, _result, k;
+  _result = []; _ref = this.attributeBuffers.size;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    k = _ref[_i];
+    _result.push((function() {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[k]);
+      gl.enableVertexAttribArray(shaderLocations[k]);
+      return gl.vertexAttribPointer(shaderLocations[k], 3, gl.FLOAT, false, 0, 0);
+    }).call(this));
+  }
+  return _result;
 };
 CircularAttributeBuffers.prototype.destroy = function() {
-  var _i, _len, _ref, vb;
-  _ref = this.vertexBuffers;
+  var _i, _len, _ref, buffer;
+  _ref = this.attributeBuffers;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    vb = _ref[_i];
-    vb.destroy();
+    buffer = _ref[_i];
+    buffer.destroy();
   }
-  return (this.vertexBuffers = null);
+  this.attributeBuffers = [];
+  this.attributeQueues = [[]];
+  return (this.attributeInfos = []);
 };

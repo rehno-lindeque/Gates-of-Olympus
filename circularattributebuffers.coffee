@@ -10,23 +10,47 @@ class CircularAttributeBuffers
     @size = size
     @lifeTime = lifeTime
     @t = 0.0
+    @bottomOffset = 0
+    @topOffset = 0
     @vertices = new Array(@size)
-    @vertexBuffers = null
-    @vertexQueue = []
+    @attributeBuffers = []
+    @attributeQueues = [[]]
+    @attributeInfos = []
   
+  # Create the WebGL resources associated with this object
   create: (gl) ->
-    @vertexBuffers = [gl.createBuffer()]
-    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffers[0])
-    # TODO: Not sure whether this should be STREAM_DRAW or DYNAMIC_DRAW for optimal performance...
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW)
+    
+    # Create an attribute buffer for the vertex position
+    # TODO: Not sure whether this should be STREAM_DRAW or DYNAMIC_DRAW for optimal performance...    
+    @attributeBuffers = [gl.createBuffer()]
+    @attributeInfos = [elements: 3]
+    gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
+    gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[0].elements, gl.STREAM_DRAW)
   
-  bind: (gl) ->
-    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    gl.enableVertexAttribArray(shaderProgram.vertexPosition)
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0)
+  # Push one element onto the buffer (the effective time will be whatever t is when we call update(t)
+  # The elements in total as well as each element itself must be boxed into arrays
+  push: (elements) ->
+    for k in [0..attributeBuffers.size - 1]
+      @attributeQueues[k].concat(elements[k])
+  
+  # Update all the attribute buffers with the elements pushed onto the queue and discard expired elements
+  update: (t) ->
+    @t = t
+    for queue in @attributeQueues
+      if @topOffset + queue.size < @size
+        gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, )
+    @attributeQueues = [[]]
+
+  bind: (gl, shaderLocations) ->
+    for k in @attributeBuffers.size
+      gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
+      gl.enableVertexAttribArray(shaderLocations[k])
+      gl.vertexAttribPointer(shaderLocations[k], 3, gl.FLOAT, false, 0, 0)
   
   destroy: ->
-    for vb in @vertexBuffers
-      vb.destroy()
-    @vertexBuffers = null
+    for buffer in @attributeBuffers
+      buffer.destroy()
+    @attributeBuffers = []
+    @attributeQueues = [[]]
+    @attributeInfos = []
 

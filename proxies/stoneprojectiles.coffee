@@ -62,7 +62,7 @@ StoneProjectilesModule =
     gl.useProgram(shaderProgram)
     
     gl.disableVertexAttribArray(k) for k in [1..7]
-    @attributeBuffers.bind(gl)
+    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition])
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
@@ -109,7 +109,7 @@ class CatapultProjectiles
   constructor: (index) ->
     @node =
       type: "stone-projectiles"
-      id: "catapult-projectiles"
+      id: "catapult-projectiles" + index
   
   withNode: -> SceneJS.withNode @node.id
   
