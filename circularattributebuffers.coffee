@@ -34,10 +34,11 @@ class CircularAttributeBuffers
       @attributeQueues[k].concat(elements[k])
   
   # Update all the attribute buffers with the elements pushed onto the queue and discard expired elements
-  update: (t) ->
+  update: (gl, t) ->
     @t = t
     for queue in @attributeQueues
       if @topOffset + queue.length < @size
+        gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
         gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, new Float32Array(queue))
     @attributeQueues = [[]]
 

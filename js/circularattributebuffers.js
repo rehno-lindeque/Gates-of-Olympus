@@ -35,13 +35,14 @@ CircularAttributeBuffers.prototype.push = function(elements) {
   }
   return _result;
 };
-CircularAttributeBuffers.prototype.update = function(t) {
+CircularAttributeBuffers.prototype.update = function(gl, t) {
   var _i, _len, _ref, queue;
   this.t = t;
   _ref = this.attributeQueues;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     queue = _ref[_i];
     if (this.topOffset + queue.length < this.size) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
       gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[0].elements, new Float32Array(queue));
     }
   }
