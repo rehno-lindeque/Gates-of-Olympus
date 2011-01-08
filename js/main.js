@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, customGL, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
+  var calcTowerPlacement, canvas, customGL, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, renderScene, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
@@ -151,7 +151,8 @@
       dirtyLevel[towerPlacement.level] = true;
     }
     mouseDragging = false;
-    return scene.withNode().pick(mouseLastX, mouseLastY);
+    scene.withNode().pick(mouseLastX, mouseLastY);
+    return renderScene();
   };
   mouseMove = function(event) {
     if (mouseDragging) {
@@ -175,8 +176,26 @@
     levelCamera.reconfigure(canvasSize);
     return guiCamera.reconfigure();
   };
+  renderScene = function() {
+    var _result, c, eye, look, optics, projection, up, view;
+    scene.withNode().render();
+    eye = levelLookAt.backgroundLookAtNode.eye;
+    look = levelLookAt.backgroundLookAtNode.look;
+    up = levelLookAt.backgroundLookAtNode.up;
+    view = lookAtMat4c(eye.x, eye.y, 0.0, look.x, look.y, 1.0, up.x, up.y, up.z);
+    optics = backgroundCamera.optics;
+    projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
+    atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
+    moon.render(customGL, view, projection, timeline.time);
+    sun.render(customGL, view, projection, timeline.time);
+    _result = [];
+    for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
+      _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
+    }
+    return _result;
+  };
   window.render = function() {
-    var _ref, _result, c, eye, lightAmount, look, optics, projection, up, view;
+    var _ref, c, lightAmount;
     _ref = (2 * numTowerTypes - 1);
     for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
@@ -198,21 +217,7 @@
     lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75);
     scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position));
     timeline.update(1);
-    scene.withNode().render();
-    eye = levelLookAt.backgroundLookAtNode.eye;
-    look = levelLookAt.backgroundLookAtNode.look;
-    up = levelLookAt.backgroundLookAtNode.up;
-    view = lookAtMat4c(eye.x, eye.y, 0.0, look.x, look.y, 1.0, up.x, up.y, up.z);
-    optics = backgroundCamera.optics;
-    projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
-    atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
-    moon.render(customGL, view, projection, timeline.time);
-    sun.render(customGL, view, projection, timeline.time);
-    _result = [];
-    for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
-      _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
-    }
-    return _result;
+    return renderScene();
   };
   interval = window.setInterval("window.render()", 10);
 }).call(this);
