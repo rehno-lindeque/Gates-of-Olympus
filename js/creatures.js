@@ -198,6 +198,33 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
       ]
     }
   ]);
+  SceneJS.withNode("creatures").node(creature.index).node(3).node(0).add("nodes", [
+    {
+      type: "billboard",
+      id: "hpBar",
+      nodes: [
+        {
+          type: "texture",
+          layers: [
+            {
+              uri: "textures/moon.png"
+            }
+          ],
+          nodes: [
+            {
+              type: "geometry",
+              resource: "bill",
+              primitive: "triangles",
+              positions: [-0.5, 0.1, 0, -0.5, -0.1, 0, 0.5, -0.1, 0, 0.5, 0.1, 0],
+              normals: [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+              uv: [0, 1, 0, 0, 1, 0, 1, 1],
+              indices: [0, 1, 2, 0, 2, 3]
+            }
+          ]
+        }
+      ]
+    }
+  ]);
   return creature;
 };
 Creatures.prototype.update = function() {
