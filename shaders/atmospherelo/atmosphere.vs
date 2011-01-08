@@ -93,7 +93,8 @@ void main(void)
 
   // Calculate the intersection of the camera ray with the atmosphere's outer radius
   float rayZSqr = ray.z * ray.z;
-  float far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - rayZSqr + outerRadiusSqr);
+
+  float far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - cameraHeightSqr + outerRadiusSqr);
 
   // Temporary: help with precision problems...
   far = min(far, sqrt(cameraHeightSqr + outerRadiusSqr));
