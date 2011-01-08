@@ -76,7 +76,9 @@ void main(void)
   gl_Position = vec4(vertexPosition, 0.0, 1.0);
 	
   // Calculate the view direction in world space
-  viewDirection = vec3(vertexPosition / invProjection, -1.0);
+  //viewDirection = vec3(vertexPosition / invProjection, -1.0);
+  // (Note: not sure why, but it seems like the projection x and y axis have to be swapped...)
+  viewDirection = vec3(vertexPosition / invProjection.yx, -1.0);
   viewDirection = invView * viewDirection;
  
   // OLD: (Remove) Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
@@ -94,7 +96,12 @@ void main(void)
   // Calculate the intersection of the camera ray with the atmosphere's outer radius
   float rayZSqr = ray.z * ray.z;
 
-  float far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - cameraHeightSqr + outerRadiusSqr);
+  float far = 0.0;
+  float innerSqrtSum = rayZSqr * cameraHeightSqr - cameraHeightSqr + innerRadius*innerRadius;
+  if(innerSqrtSum < 0.0 || ray.z >= 0.0)
+    far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - cameraHeightSqr + outerRadiusSqr);
+  else
+    far = -ray.z * cameraHeight - sqrt(innerSqrtSum);
 
   // Temporary: help with precision problems...
   far = min(far, sqrt(cameraHeightSqr + outerRadiusSqr));
