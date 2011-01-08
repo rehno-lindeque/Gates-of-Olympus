@@ -152,8 +152,7 @@
   <div id="container">
     <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
-  <div id="daisStats">
-  
+  <div id="daisStats">  
     <div id="daisStats0" class="disabled">
       <h2>Archer Tower</h2>
       <div>
@@ -187,9 +186,6 @@
     <div id="daisStats8" class="disabled">
       <h2>Shrine of Poseidon</h2>
     </div>
-    <audio id="march" preload controls>
-	    <source src="march.wav">
-    </audio>  
   </div>
   <div id="hints">
     <h2>Hints</h2>
@@ -208,6 +204,19 @@
     <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
   </div>
   <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fgatesofolympus.com%2F&amp;layout=button_count&amp;show_faces=true&amp;width=420&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;" allowTransparency="true"></iframe>
+  <audio id="march" preload controls>
+    <source src="march.wav">
+  </audio>  
+
+  <!-- Disable text selection -->
+  <script type="application/javascript">
+    var hintsElement = document.getElementById("hints");
+    hintsElement.style.MozUserSelect="none";
+    hintsElement.onmousedown=function(){return false};
+    var daisStatsElement = document.getElementById("daisStats");
+    daisStatsElement.style.MozUserSelect="none";
+    daisStatsElement.onmousedown=function(){return false};
+  </script>
 
   <!-- Game logic -->
 
