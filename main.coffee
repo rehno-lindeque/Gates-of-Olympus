@@ -188,7 +188,7 @@ mouseUp = ->
   scene.withNode().pick(mouseLastX, mouseLastY)
   
   # Render the scene after picking to avoid flickering
-  renderScene()
+  renderExtras()
 
 mouseMove = (event) ->
   if mouseDragging
@@ -213,10 +213,7 @@ window.onresize = ->
   levelCamera.reconfigure(canvasSize)
   guiCamera.reconfigure()
 
-renderScene = ->
-  # Render the scenejs scene
-  scene.withNode().render()
-  
+renderExtras = ->
   # Render the gui additions
   #gui.daises[0].daisClouds.render(customGL, timeline.time)
 
@@ -252,6 +249,11 @@ renderScene = ->
   for c in [0..numTowerTypes-1]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
 
+renderScene = ->
+  # Render the scenejs scene
+  scene.withNode().render()
+  renderExtras()
+
 window.render = ->
   # Animate the gui daises
   for c in [0..(2*numTowerTypes-1)]
@@ -272,7 +274,7 @@ window.render = ->
   scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
   lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75)
   scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
-
+  
   # Update game events
   timeline.update(1);
   
@@ -282,6 +284,4 @@ window.render = ->
 interval = window.setInterval("window.render()", 10);
 
 #SceneJS.withNode("gameScene").start({ fps: 100 });
-
-
 
