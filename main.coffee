@@ -265,8 +265,10 @@ window.render = ->
     guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)
   
   gui.update()
-  # ai must be updated before level, as creatures get updated there
+  
+  # AI must be updated before level, as creatures get updated there
   updateAI()
+  
   level.update()
 
   # Animate the sun / moon lighting

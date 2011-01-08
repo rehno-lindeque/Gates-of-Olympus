@@ -45,7 +45,7 @@ StoneProjectilesModule =
   destroyResources: ->
     if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
       if @shaderProgram then @shaderProgram.destroy()
-      if @vertexBuffer then @vertexBuffer.destroy()
+      if @attributeBuffers then @attributeBuffers.destroy()
     null
   
   render: (gl, view, projection) ->
@@ -54,34 +54,26 @@ StoneProjectilesModule =
       blend:     gl.getParameter(gl.BLEND)
       depthTest: gl.getParameter(gl.DEPTH_TEST)
 
-    gl.enable(gl.BLEND)    
-    gl.blendEquation(gl.FUNC_ADD)
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    #gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
-
-    #gl.disable(gl.DEPTH_TEST)
-    gl.depthMask(false)
+    gl.disable(gl.BLEND)    
+    #gl.depthMask(false)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
     gl.useProgram(shaderProgram)
-
-    gl.disableVertexAttribArray(k) for k in [1..7]
     
-    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    gl.enableVertexAttribArray(shaderProgram.vertexPosition)
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0)
+    gl.disableVertexAttribArray(k) for k in [1..7]
+    @attributeBuffers.bind(gl)
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
     # Draw geometry
-    gl.drawArrays(gl.POINTS, 0, @numParticles)
+    # todo
+    #gl.drawArrays(gl.POINTS, 0, @numParticles)
     
     # Restore gl state
-    if not saveState.blend then gl.disable(gl.BLEND)
-    #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
-    gl.depthMask(true)
+    if saveState.blend then gl.enable(gl.BLEND)
+    #gl.depthMask(true)
     null
 
 ###
@@ -125,6 +117,6 @@ class CatapultProjectiles
     nodeRef = @withNode()
     view = nodeRef.get "view"
     projection = nodeRef.get "projection"
-    if not DaisCloudsModule.vertexBuffer then DaisCloudsModule.createResources(gl)
-    DaisCloudsModule.render(gl, view, projection)
+    if not StoneProjectilesModule.shaderProgram then StoneProjectilesModule.createResources(gl)
+    StoneProjectilesModule.render(gl, view, projection)
 

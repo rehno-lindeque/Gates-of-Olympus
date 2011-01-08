@@ -1273,8 +1273,8 @@ StoneProjectilesModule = {
       if (this.shaderProgram) {
         this.shaderProgram.destroy();
       }
-      if (this.vertexBuffer) {
-        this.vertexBuffer.destroy();
+      if (this.attributeBuffers) {
+        this.attributeBuffers.destroy();
       }
     }
     return null;
@@ -1285,25 +1285,18 @@ StoneProjectilesModule = {
       blend: gl.getParameter(gl.BLEND),
       depthTest: gl.getParameter(gl.DEPTH_TEST)
     };
-    gl.enable(gl.BLEND);
-    gl.blendEquation(gl.FUNC_ADD);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.depthMask(false);
+    gl.disable(gl.BLEND);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
     for (k = 1; k <= 7; k++) {
       gl.disableVertexAttribArray(k);
     }
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    this.attributeBuffers.bind(gl);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
-    gl.drawArrays(gl.POINTS, 0, this.numParticles);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
+    if (saveState.blend) {
+      gl.enable(gl.BLEND);
     }
-    gl.depthMask(true);
     return null;
   }
 };
@@ -1349,8 +1342,8 @@ CatapultProjectiles.prototype.render = function(gl, time) {
   nodeRef = this.withNode();
   view = nodeRef.get("view");
   projection = nodeRef.get("projection");
-  if (!DaisCloudsModule.vertexBuffer) {
-    DaisCloudsModule.createResources(gl);
+  if (!StoneProjectilesModule.shaderProgram) {
+    StoneProjectilesModule.createResources(gl);
   }
-  return DaisCloudsModule.render(gl, view, projection);
+  return StoneProjectilesModule.render(gl, view, projection);
 };
