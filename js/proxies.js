@@ -893,7 +893,7 @@ Sun.prototype.render = function(gl, view, projection, time) {
   cosAzim = Math.cos(orbit[1]);
   sinAzim = Math.sin(orbit[1]);
   this.position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
-  return SunModule.render(gl, view, projection, this.position);
+  return null;
 };var DaisClouds, DaisCloudsModule, DaisCloudsNode;
 /*
 A scenejs extension that renders a cloud particles around the daises
