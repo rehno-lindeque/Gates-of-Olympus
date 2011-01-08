@@ -1,5 +1,6 @@
 #!/bin/sh
 coffee --no-wrap -c -o js scenejsext.coffee
+coffee --no-wrap -c -o js circularattributebuffer.coffee
 coffee --no-wrap -c -o js global.coffee
 coffee --no-wrap -c -o js common.coffee
 coffee --no-wrap -c -o js resources.coffee
