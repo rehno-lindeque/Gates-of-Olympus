@@ -1359,9 +1359,5 @@ CatapultProjectiles.prototype.render = function(gl, time) {
   nodeRef = this.withNode();
   view = nodeRef.get("view");
   projection = nodeRef.get("projection");
-  if (!StoneProjectilesModule.shaderProgram) {
-    StoneProjectilesModule.createResources(gl);
-  }
-  StoneProjectilesModule.attributeBuffers.update(time);
-  return StoneProjectilesModule.render(gl, view, projection);
+  return !StoneProjectilesModule.shaderProgram ? StoneProjectilesModule.createResources(gl) : null;
 };
