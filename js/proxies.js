@@ -1121,8 +1121,8 @@ AtmosphereModule = {
     var _ref, _ref2, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
-    nx = 4 * 15;
-    ny = 3 * 15;
+    nx = 4 * 30;
+    ny = 3 * 30;
     vertices = new Array((ny + 1) * (nx + 1) * 2);
     for (cy = 0; (0 <= ny ? cy <= ny : cy >= ny); (0 <= ny ? cy += 1 : cy -= 1)) {
       for (cx = 0; (0 <= nx ? cx <= nx : cx >= nx); (0 <= nx ? cx += 1 : cx -= 1)) {
@@ -1196,7 +1196,7 @@ AtmosphereModule = {
     Km = 0.0010;
     Km4PI = Km * 4.0 * Math.PI;
     ESun = 20.0;
-    cameraHeight = 10.05;
+    cameraHeight = 10.01;
     innerRadius = 10.0;
     outerRadius = 10.25;
     scale = 1.0 / (outerRadius - innerRadius);
@@ -1218,8 +1218,8 @@ AtmosphereModule = {
     gl.uniform1f(this.shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth);
     gl.uniform1f(this.shaderProgram.g, -0.990);
     gl.uniform1f(this.shaderProgram.gSqr, -0.990 * -0.990);
-    nx = 4 * 15;
-    ny = 3 * 15;
+    nx = 4 * 30;
+    ny = 3 * 30;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
     if (saveState.blend) {

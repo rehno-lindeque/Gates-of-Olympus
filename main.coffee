@@ -223,7 +223,7 @@ renderExtras = ->
   up = levelLookAt.backgroundLookAtNode.up
   view = lookAtMat4c(
     eye.x, eye.y, 0.0,
-    look.x, look.y, 1.0,
+    look.x, look.y, 0.6,
     up.x, up.y, up.z
   )
 

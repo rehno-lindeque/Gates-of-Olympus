@@ -58,8 +58,8 @@ uniform float scale;                // 1 / (outerRadius - innerRadius)
 uniform float scaleDepth;           // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 uniform float scaleDivScaleDepth;	  // scale / scaleDepth
 
-const int nSamples = 8;
-const float samples = 8.0;
+const int nSamples = 5;
+const float samples = 5.0;
 
 varying vec3 viewDirection;
 varying vec3 mieColor;
@@ -78,7 +78,8 @@ void main(void)
   // Calculate the view direction in world space
   //viewDirection = vec3(vertexPosition / invProjection, -1.0);
   // (Note: not sure why, but it seems like the projection x and y axis have to be swapped...)
-  viewDirection = vec3(vertexPosition / invProjection.yx, -1.0);
+  float hackyScale = 1.05; // scale the projection back a bit (todo: remove. this is an ugly hack for the compo...)
+  viewDirection = vec3(vertexPosition / invProjection.yx * hackyScale, -1.0);
   viewDirection = invView * viewDirection;
  
   // OLD: (Remove) Calculate the farther intersection of the ray with the outer atmosphere (which is the far point of the ray passing through the atmosphere)
@@ -101,7 +102,14 @@ void main(void)
   if(innerSqrtSum < 0.0 || ray.z >= 0.0)
     far = -ray.z * cameraHeight + sqrt(rayZSqr * cameraHeightSqr - cameraHeightSqr + outerRadiusSqr);
   else
-    far = -ray.z * cameraHeight - sqrt(innerSqrtSum);
+  {
+    //far = -ray.z * cameraHeight - sqrt(innerSqrtSum);
+
+    // this is a hack to help with the weirdness of having a square grid for vertices...
+    far = -ray.z * cameraHeight;
+    far += 0.5 * sqrt(rayZSqr * cameraHeightSqr - cameraHeightSqr + outerRadiusSqr);
+    far -= 0.5 * sqrt(innerSqrtSum);
+  }
 
   // Temporary: help with precision problems...
   far = min(far, sqrt(cameraHeightSqr + outerRadiusSqr));
