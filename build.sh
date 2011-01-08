@@ -23,6 +23,7 @@ coffee --no-wrap -c -o js/proxies proxies/moon.coffee
 coffee --no-wrap -c -o js/proxies proxies/sun.coffee
 coffee --no-wrap -c -o js/proxies proxies/daisclouds.coffee
 coffee --no-wrap -c -o js/proxies proxies/atmosphere.coffee
+coffee --no-wrap -c -o js/proxies proxies/stoneprojectiles.coffee
 
 cat \
 js/proxies/proxies.js \
@@ -38,6 +39,7 @@ js/proxies/moon.js \
 js/proxies/sun.js \
 js/proxies/daisclouds.js \
 js/proxies/atmosphere.js \
+js/proxies/stoneprojectiles.js \
 > js/proxies.js
 
-coffee           -c -o js main.coffee
+coffee -c -o js main.coffee

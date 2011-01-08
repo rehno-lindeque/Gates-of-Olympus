@@ -1239,4 +1239,118 @@ Atmosphere.prototype.render = function(gl, view, invProjection, nearZ, sun) {
   }
   AtmosphereModule.renderLo(gl, view, invProjection, nearZ, sun);
   return null;
+};var CatapultProjectiles, StoneProjectilesModule, StoneProjectilesNode;
+/*
+A scenejs extension that renders projectiles as point sprites
+*/
+/*
+Projectiles Module
+*/
+StoneProjectilesModule = {
+  attributeBuffers: new CircularAttributeBuffers(200, 2.0),
+  shaderProgram: null,
+  createResources: function(gl) {
+    var fragmentShader, vertexShader;
+    attributeBuffers.create(gl);
+    this.shaderProgram = gl.createProgram();
+    vertexShader = compileShader(gl, "stoneprojectile-vs");
+    fragmentShader = compileShader(gl, "stoneprojectile-fs");
+    gl.attachShader(this.shaderProgram, vertexShader);
+    gl.attachShader(this.shaderProgram, fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders");
+    }
+    gl.useProgram(this.shaderProgram);
+    this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
+    this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    return null;
+  },
+  destroyResources: function() {
+    if (document.getElementById(canvas.canvasId)) {
+      if (this.shaderProgram) {
+        this.shaderProgram.destroy();
+      }
+      if (this.vertexBuffer) {
+        this.vertexBuffer.destroy();
+      }
+    }
+    return null;
+  },
+  render: function(gl, view, projection) {
+    var k, saveState, shaderProgram;
+    saveState = {
+      blend: gl.getParameter(gl.BLEND),
+      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    };
+    gl.enable(gl.BLEND);
+    gl.blendEquation(gl.FUNC_ADD);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    shaderProgram = this.shaderProgram;
+    gl.useProgram(shaderProgram);
+    for (k = 1; k <= 7; k++) {
+      gl.disableVertexAttribArray(k);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
+    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
+    gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.drawArrays(gl.POINTS, 0, this.numParticles);
+    if (!saveState.blend) {
+      gl.disable(gl.BLEND);
+    }
+    gl.depthMask(true);
+    return null;
+  }
+};
+/*
+SceneJS listeners
+*/
+SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
+  return StoneProjectilesModule.destroyResources();
+});
+/*
+Stone projectiles node type
+*/
+StoneProjectilesNode = SceneJS.createNodeType("stone-projectiles");
+StoneProjectilesNode.prototype._render = function(traversalContext) {
+  if (SceneJS._traversalMode === SceneJS._TRAVERSAL_MODE_RENDER) {
+    this._renderNodes(traversalContext);
+    this.view = mulMat4(SceneJS._viewTransformModule.getTransform().matrix, SceneJS._modelTransformModule.getTransform().matrix);
+    this.projection = SceneJS._projectionModule.getTransform().matrix;
+  }
+  return null;
+};
+StoneProjectilesNode.prototype.getView = function() {
+  return this.view;
+};
+StoneProjectilesNode.prototype.getProjection = function() {
+  return this.projection;
+};
+/*
+Catapult projectiles proxy
+*/
+CatapultProjectiles = function(index) {
+  this.node = {
+    type: "stone-projectiles",
+    id: "catapult-projectiles"
+  };
+  return this;
+};
+CatapultProjectiles.prototype.withNode = function() {
+  return SceneJS.withNode(this.node.id);
+};
+CatapultProjectiles.prototype.render = function(gl, time) {
+  var nodeRef, projection, view;
+  nodeRef = this.withNode();
+  view = nodeRef.get("view");
+  projection = nodeRef.get("projection");
+  if (!DaisCloudsModule.vertexBuffer) {
+    DaisCloudsModule.createResources(gl);
+  }
+  return DaisCloudsModule.render(gl, view, projection);
 };
