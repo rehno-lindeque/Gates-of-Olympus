@@ -2,7 +2,7 @@
   var calcTowerPlacement, canvas, customGL, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
-  Copyright 2010, Rehno Lindeque.
+  Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 
   * Please visit http://gatesofolympus.com/.
   * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.

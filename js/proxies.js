@@ -1,5 +1,5 @@
 /*
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */var Skybox;
 /*
@@ -879,10 +879,6 @@ Sun.prototype.render = function(gl, view, projection, time) {
   return SunModule.render(gl, view, projection, this.position);
 };var DaisClouds, DaisCloudsModule, DaisCloudsNode;
 /*
-Copyright 2010, Rehno Lindeque.
-This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
-*/
-/*
 A scenejs extension that renders a cloud particles around the daises
 */
 /*
@@ -1005,7 +1001,7 @@ DaisClouds.prototype.render = function(gl, time) {
   return DaisCloudsModule.render(gl, view, projection);
 };var Atmosphere, AtmosphereModule;
 /*
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 
  * This file is Dual licensed under the MIT or GPL Version 2 licenses.
  * It is intended to be compatible with http://scenejs.org/license so that changes can be back-ported.

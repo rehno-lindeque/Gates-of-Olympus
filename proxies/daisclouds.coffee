@@ -1,7 +1,7 @@
-###
-Copyright 2010, Rehno Lindeque.
-This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
-###
+#
+# Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
+# This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
+#
 
 ###
 A scenejs extension that renders a cloud particles around the daises

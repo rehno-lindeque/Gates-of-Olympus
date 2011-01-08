@@ -1,6 +1,6 @@
 var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, indexToPosition, initializeLevelGoals, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levelGoals, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, positionToIndex, sqrGridSize, square, towerPlacement;
 /*
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
 /*
