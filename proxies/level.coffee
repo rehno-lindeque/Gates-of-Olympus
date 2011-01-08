@@ -119,6 +119,12 @@ class Level
   update: ->
     @creatures.update()
   
+  # Render all the projectiles
+  renderProjectiles: (gl, time) ->
+    for projectiles in @projectiles
+      for projectile in projectiles
+        projectile.render(gl,time)
+  
   # Create the node hierarchy for the level
   createNode: ->
     type: "material"

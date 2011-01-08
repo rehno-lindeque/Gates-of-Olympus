@@ -30,19 +30,19 @@ class CircularAttributeBuffers
   # Push one element onto the buffer (the effective time will be whatever t is when we call update(t)
   # The elements in total as well as each element itself must be boxed into arrays
   push: (elements) ->
-    for k in [0..attributeBuffers.size - 1]
+    for k in [0 .. @attributeBuffers.length - 1]
       @attributeQueues[k].concat(elements[k])
   
   # Update all the attribute buffers with the elements pushed onto the queue and discard expired elements
   update: (t) ->
     @t = t
     for queue in @attributeQueues
-      if @topOffset + queue.size < @size
-        gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, )
+      if @topOffset + queue.length < @size
+        gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, new Float32Array(queue))
     @attributeQueues = [[]]
 
   bind: (gl, shaderLocations) ->
-    for k in @attributeBuffers.size
+    for k in [0 .. @attributeBuffers.length - 1]
       gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
       gl.enableVertexAttribArray(shaderLocations[k])
       gl.vertexAttribPointer(shaderLocations[k], 3, gl.FLOAT, false, 0, 0)

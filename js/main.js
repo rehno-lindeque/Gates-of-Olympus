@@ -187,6 +187,7 @@
     atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
+    level.renderProjectiles(customGL, timeline.time);
     _result = [];
     for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
       _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));

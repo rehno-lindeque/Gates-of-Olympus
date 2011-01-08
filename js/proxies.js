@@ -178,6 +178,22 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
 Level.prototype.update = function() {
   return this.creatures.update();
 };
+Level.prototype.renderProjectiles = function(gl, time) {
+  var _i, _j, _len, _len2, _ref, _ref2, _result, _result2, projectile, projectiles;
+  _result = []; _ref = this.projectiles;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    projectiles = _ref[_i];
+    _result.push((function() {
+      _result2 = []; _ref2 = projectiles;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        projectile = _ref2[_j];
+        _result2.push(projectile.render(gl, time));
+      }
+      return _result2;
+    })());
+  }
+  return _result;
+};
 Level.prototype.createNode = function() {
   return {
     type: "material",
@@ -1252,7 +1268,7 @@ StoneProjectilesModule = {
   shaderProgram: null,
   createResources: function(gl) {
     var fragmentShader, vertexShader;
-    attributeBuffers.create(gl);
+    this.attributeBuffers.create(gl);
     this.shaderProgram = gl.createProgram();
     vertexShader = compileShader(gl, "stoneprojectile-vs");
     fragmentShader = compileShader(gl, "stoneprojectile-fs");
@@ -1346,5 +1362,6 @@ CatapultProjectiles.prototype.render = function(gl, time) {
   if (!StoneProjectilesModule.shaderProgram) {
     StoneProjectilesModule.createResources(gl);
   }
+  StoneProjectilesModule.attributeBuffers.update(time);
   return StoneProjectilesModule.render(gl, view, projection);
 };

@@ -245,6 +245,9 @@ renderExtras = ->
   moon.render(customGL, view, projection, timeline.time)
   sun.render(customGL, view, projection, timeline.time)
 
+  # Render all projectiles
+  level.renderProjectiles(customGL, timeline.time)
+
   # Render the gui additions
   for c in [0..numTowerTypes-1]
     gui.daises[c].daisClouds.render(customGL, timeline.time)

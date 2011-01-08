@@ -17,7 +17,7 @@ StoneProjectilesModule =
   
   createResources: (gl) ->
     # Create the attribute buffers
-    attributeBuffers.create(gl)
+    @attributeBuffers.create(gl)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
@@ -118,5 +118,6 @@ class CatapultProjectiles
     view = nodeRef.get "view"
     projection = nodeRef.get "projection"
     if not StoneProjectilesModule.shaderProgram then StoneProjectilesModule.createResources(gl)
+    StoneProjectilesModule.attributeBuffers.update(time)
     StoneProjectilesModule.render(gl, view, projection)
 
