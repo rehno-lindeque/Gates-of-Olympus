@@ -135,6 +135,7 @@ Level = function() {
       ballistaTowers: towerNode(2, "ballistaTowers2", [])
     }
   ];
+  this.projectiles = [[new CatapultProjectiles(0)], [new CatapultProjectiles(1)], [new CatapultProjectiles(2)]];
   this.node = this.createNode();
   return this;
 };
@@ -205,7 +206,7 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: this.platformGeometry("level" + k, k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers])
+    nodes: this.platformGeometry("level" + k, k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers, this.projectiles[k][0].node])
   };
 };
 Level.prototype.platformGeometry = function(platformId, index) {
