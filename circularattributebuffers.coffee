@@ -37,9 +37,15 @@ class CircularAttributeBuffers
   update: (gl, t) ->
     @t = t
     for queue in @attributeQueues
-      if @topOffset + queue.length < @size
+      if (@topOffset < @bottomOffset && @topOffset + queue.length < @bottomOffset) || (@topOffset >= @bottomOffset && @topOffset + queue.length < @size)
         gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
         gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, new Float32Array(queue))
+      else
+        if (@topOffset < @bottomOffset)
+          num = @bottomOffset - @topOffset
+        else
+          num = @size - @topOffset
+        #todo: more to do here....!!!
     @attributeQueues = [[]]
 
   bind: (gl, shaderLocations) ->
