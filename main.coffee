@@ -1,6 +1,6 @@
 ###
 Gates of Olympus (A multi-layer Tower Defense game...)
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 
 * Please visit http://gatesofolympus.com/.
 * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -183,7 +183,12 @@ mouseUp = ->
     level.addTower(towerPlacement, gui.selectedDais)
     dirtyLevel[towerPlacement.level] = true
   mouseDragging = false
+  
+  # Determine which object has been picked
   scene.withNode().pick(mouseLastX, mouseLastY)
+  
+  # Render the scene after picking to avoid flickering
+  renderExtras()
 
 mouseMove = (event) ->
   if mouseDragging
@@ -208,33 +213,7 @@ window.onresize = ->
   levelCamera.reconfigure(canvasSize)
   guiCamera.reconfigure()
 
-window.render = ->
-  # Animate the gui daises
-  for c in [0..(2*numTowerTypes-1)]
-    guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005
-    guiDaisRotVelocity[c] -= 0.0003 if guiDaisRotPosition[c] > 0
-    guiDaisRotVelocity[c] += 0.0003 if guiDaisRotPosition[c] < 0
-    guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5)
-    guiDaisRotPosition[c] += guiDaisRotVelocity[c]
-    guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)
-  
-  gui.update()
-  # ai must be updated before level, as creatures get updated there
-  updateAI()
-  level.update()
-
-  # Animate the sun / moon lighting
-  lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5)
-  scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
-  lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75)
-  scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
-
-  # Update game events
-  timeline.update(1);
- 
-  # Render the scene
-  scene.withNode().render()
-  
+renderExtras = ->
   # Render the gui additions
   #gui.daises[0].daisClouds.render(customGL, timeline.time)
 
@@ -270,9 +249,39 @@ window.render = ->
   for c in [0..numTowerTypes-1]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
 
+renderScene = ->
+  # Render the scenejs scene
+  scene.withNode().render()
+  renderExtras()
+
+window.render = ->
+  # Animate the gui daises
+  for c in [0..(2*numTowerTypes-1)]
+    guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005
+    guiDaisRotVelocity[c] -= 0.0003 if guiDaisRotPosition[c] > 0
+    guiDaisRotVelocity[c] += 0.0003 if guiDaisRotPosition[c] < 0
+    guiDaisRotVelocity[c] = clamp(guiDaisRotVelocity[c], -0.5, 0.5)
+    guiDaisRotPosition[c] += guiDaisRotVelocity[c]
+    guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)
+  
+  gui.update()
+  # ai must be updated before level, as creatures get updated there
+  updateAI()
+  level.update()
+
+  # Animate the sun / moon lighting
+  lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5)
+  scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position))
+  lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75)
+  scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
+  
+  # Update game events
+  timeline.update(1);
+  
+  # Render the scene
+  renderScene()
+
 interval = window.setInterval("window.render()", 10);
 
 #SceneJS.withNode("gameScene").start({ fps: 100 });
-
-
 

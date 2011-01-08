@@ -8,7 +8,7 @@ var __extends = function(child, parent) {
     child.__super__ = parent.prototype;
   };
 /*
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 */
 /*
@@ -177,7 +177,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
   creature = new CreaturePrototype();
   this.creatures[this.creatures.length] = creature;
-  SceneJS.withNode("creatures").node(creature.index).add("nodes", [
+  return SceneJS.withNode("creatures").node(creature.index).add("nodes", [
     {
       type: "translate",
       x: creature.pos[0],
@@ -194,38 +194,45 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
               target: creature.getId()
             }
           ]
+          /*,
+             type: "billboard",
+             id: "hpBar",
+             nodes: [
+               type: "texture",
+               layers: [ { uri: "textures/moon.png" } ]
+               nodes: [
+                 type: "geometry",
+                 resource: "bill",
+                 primitive: "triangles",
+                 positions : [
+                   -0.5, 0.1, 0,
+                   -0.5, -0.1, 0,
+                   0.5,-0.1, 0,
+                   0.5,0.1, 0
+                 ],
+                 normals : [
+                   0, 1, 0,
+                   0, 1, 0,
+                   0, 1, 0,
+                   0, 1, 0
+                 ],
+                 uv : [
+                   0, 1,
+                   0, 0,
+                   1, 0,
+                   1, 1
+                 ],
+                 indices : [
+                   0, 1, 2,
+                   0, 2, 3
+                 ]
+               ]
+             ]
+             */
         }
       ]
     }
   ]);
-  SceneJS.withNode("creatures").node(creature.index).node(3).node(0).add("nodes", [
-    {
-      type: "billboard",
-      id: "hpBar",
-      nodes: [
-        {
-          type: "texture",
-          layers: [
-            {
-              uri: "textures/moon.png"
-            }
-          ],
-          nodes: [
-            {
-              type: "geometry",
-              resource: "bill",
-              primitive: "triangles",
-              positions: [-0.5, 0.1, 0, -0.5, -0.1, 0, 0.5, -0.1, 0, 0.5, 0.1, 0],
-              normals: [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-              uv: [0, 1, 0, 0, 1, 0, 1, 1],
-              indices: [0, 1, 2, 0, 2, 3]
-            }
-          ]
-        }
-      ]
-    }
-  ]);
-  return creature;
 };
 Creatures.prototype.update = function() {
   var _a, _b, _c, c, creature, creatures;

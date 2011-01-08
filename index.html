@@ -3,7 +3,7 @@
 <head>
 <!-- 
       Gates of Olympus (A multi-layer Tower Defense game...)
-      Copyright 2010, Rehno Lindeque and Theunis Kotze.
+      Copyright 2010-2011, Rehno Lindeque and Theunis Kotze.
 
       * Please visit http://gatesofolympus.com/.
       * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -18,6 +18,7 @@
   <script type="application/javascript" src="scenejs.js"></script>
   <script type="application/javascript" src="scenejsmath.js"></script>
   <script type="application/javascript" src="js/scenejsext.js"></script>
+  <script type="application/javascript" src="js/circularattributebuffers.js"></script>
 
   <!-- Shaders -->
 
@@ -33,6 +34,8 @@
   <script id="sun-vs" type="x-shader/x-vertex" src="shaders/sun.vs"></script>
   <script id="cloudparticle-fs" type="x-shader/x-fragment" src="shaders/cloudparticle.fs"></script>
   <script id="cloudparticle-vs" type="x-shader/x-vertex" src="shaders/cloudparticle.vs"></script>
+  <script id="stoneprojectile-fs" type="x-shader/x-fragment" src="shaders/stoneprojectile.fs"></script>
+  <script id="stoneprojectile-vs" type="x-shader/x-vertex" src="shaders/stoneprojectile.vs"></script>
 
   <!-- Models -->
 
@@ -117,6 +120,10 @@
       display: none;
       overflow: scroll;
     }
+    audio {
+      position: absolute;
+      top: 0;
+    }
   </style>
 
   <!-- Analytics -->
@@ -139,17 +146,13 @@
 <!-- Layout / Containers -->
 
 <body>
- <audio id="march" preload controls>
-	<source src="march.wav">
-  </audio>
   <!--<div style="float: right; margin-right:30px;">-->
 
   <div id="scenejsLog"></div>
   <div id="container">
     <canvas id="gameCanvas" width="300" height="300"></canvas>
   </div>
-  <div id="daisStats">
-  
+  <div id="daisStats">  
     <div id="daisStats0" class="disabled">
       <h2>Archer Tower</h2>
       <div>
@@ -183,7 +186,6 @@
     <div id="daisStats8" class="disabled">
       <h2>Shrine of Poseidon</h2>
     </div>
-    
   </div>
   <div id="hints">
     <h2>Hints</h2>
@@ -202,6 +204,19 @@
     <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
   </div>
   <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fgatesofolympus.com%2F&amp;layout=button_count&amp;show_faces=true&amp;width=420&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;" allowTransparency="true"></iframe>
+  <audio id="march" preload controls>
+    <source src="march.wav">
+  </audio>  
+
+  <!-- Disable text selection -->
+  <script type="application/javascript">
+    var hintsElement = document.getElementById("hints");
+    hintsElement.style.MozUserSelect="none";
+    hintsElement.onmousedown=function(){return false};
+    var daisStatsElement = document.getElementById("daisStats");
+    daisStatsElement.style.MozUserSelect="none";
+    daisStatsElement.onmousedown=function(){return false};
+  </script>
 
   <!-- Game logic -->
 

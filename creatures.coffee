@@ -1,5 +1,5 @@
 ###
-Copyright 2010, Rehno Lindeque.
+Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
@@ -127,6 +127,7 @@ class Snake extends Creature
   create: () ->
     super()
 
+
 ###
 Collection of all creatures
 ###
@@ -171,7 +172,7 @@ class Creatures
         type: "rotate"
         angle: 0.0, z: 1.0
         nodes: [ type: "instance", target: creature.getId() ]
-     ,
+     ###,
         type: "billboard",
         id: "hpBar",
         nodes: [
@@ -204,7 +205,8 @@ class Creatures
               0, 2, 3
             ]
           ]
-        ],
+        ]
+        ###
       ]
     ])
   

@@ -4,32 +4,25 @@
 #
 
 ###
-A scenejs extension that renders a cloud particles around the daises
+A scenejs extension that renders projectiles as point sprites
 ###
 
 ###
-Dais Clouds Module
+Projectiles Module
 ###
 
-DaisCloudsModule =
-  vertexBuffer: null
+StoneProjectilesModule =
+  attributeBuffers: new CircularAttributeBuffers(200, 2.0)
   shaderProgram: null
-  numParticles: 200  
-
+  
   createResources: (gl) ->
-    # Create the vertex buffer
-    @vertexBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    vertices = []
-    for k in [0..(@numParticles*3 - 1)]
-      vertices[k] = ((Math.random() - 0.5) * 2.0) * ((Math.random() - 0.5) * 2.0)
-    
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+    # Create the attribute buffers
+    attributeBuffers.create(gl)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
-    vertexShader = compileShader(gl, "cloudparticle-vs")
-    fragmentShader = compileShader(gl, "cloudparticle-fs")
+    vertexShader = compileShader(gl, "stoneprojectile-vs")
+    fragmentShader = compileShader(gl, "stoneprojectile-fs")
     gl.attachShader(@shaderProgram, vertexShader)
     gl.attachShader(@shaderProgram, fragmentShader)
     gl.linkProgram(@shaderProgram)
@@ -98,42 +91,33 @@ SceneJS listeners
 SceneJS._eventModule.addListener(
   SceneJS._eventModule.RESET
   () ->
-    DaisCloudsModule.destroyResources()
+    StoneProjectilesModule.destroyResources()
 )
 
 ###
-Dias clouds node type
+Stone projectiles node type
 ###
 
-DaisCloudsNode = SceneJS.createNodeType("dais-clouds")
-DaisCloudsNode.prototype._render = (traversalContext) ->
+StoneProjectilesNode = SceneJS.createNodeType("stone-projectiles")
+StoneProjectilesNode.prototype._render = (traversalContext) ->
   if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
     @_renderNodes traversalContext
-    #@view = SceneJS._modelViewTransformModule.getTransform().matrix
     @view = mulMat4(SceneJS._viewTransformModule.getTransform().matrix, SceneJS._modelTransformModule.getTransform().matrix)
-
     @projection = SceneJS._projectionModule.getTransform().matrix
   null
 
-#DaisCloudsNode.prototype.setProxy = (proxy) ->
-#  @proxy = proxy
-#  @_setDirty()
-#  this
-#
-#DaisCloudsNode.prototype.getProxy = -> @proxy
-
-DaisCloudsNode.prototype.getView = -> @view
-DaisCloudsNode.prototype.getProjection = -> @projection
+StoneProjectilesNode.prototype.getView = -> @view
+StoneProjectilesNode.prototype.getProjection = -> @projection
 
 ###
-Dias clouds proxy
+Catapult projectiles proxy
 ###
 
-class DaisClouds  
+class CatapultProjectiles  
   constructor: (index) ->
     @node =
-      type: "dais-clouds"
-      id: "dais" + index + "clouds"
+      type: "stone-projectiles"
+      id: "catapult-projectiles"
   
   withNode: -> SceneJS.withNode @node.id
   
@@ -143,48 +127,4 @@ class DaisClouds
     projection = nodeRef.get "projection"
     if not DaisCloudsModule.vertexBuffer then DaisCloudsModule.createResources(gl)
     DaisCloudsModule.render(gl, view, projection)
-
-#DaisClouds = SceneJS.createNodeType("dais-clouds")
-#
-#DaisClouds.prototype._init = (params) ->
-#  #@setRadius params.radius
-#  null
-#  
-##DaisClouds.prototype.setRadius = (radius) ->
-##  @radius = radius || 100.0
-##  @_setDirty()
-##  this
-#
-##DaisClouds.prototype.getRadius = -> @radius
-#
-#DaisClouds.prototype.renderClouds = ->
-#  gl = canvas.context
-#  
-#  # Change gl state
-#  saveState =
-#    blend:     gl.getParameter(gl.BLEND)
-#    depthTest: gl.getParameter(gl.DEPTH_TEST)    
-#  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-#  gl.enable(gl.BLEND)
-#  #gl.disable(gl.DEPTH_TEST)
-#  
-#  # Bind shaders and parameters
-#  gl.useProgram(shaderProgram)
-#  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-#  gl.vertexAttribPointer(shaderProgram.vertexPosition, 2, gl.FLOAT, false, 0, 0)
-#  
-#  # Draw geometry
-#  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-#  
-#  # Restore gl state
-#  if not saveState.blend then gl.disable(gl.BLEND)
-#  #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
-#  null
-#
-#DaisClouds.prototype._render = (traversalContext) ->
-#  if SceneJS._traversalMode == SceneJS._TRAVERSAL_MODE_RENDER
-#    @_renderNodes traversalContext
-#    if not vertexBuffer then createResources()
-#    @renderClouds()
-#  null
 
