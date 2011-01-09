@@ -362,7 +362,8 @@ LevelCamera.prototype.withNode = function() {
 LevelCamera.prototype.reconfigure = function(canvasSize) {
   this.optics.left = -12.5 * (canvasSize[0] / canvasSize[1]);
   this.optics.right = 12.5 * (canvasSize[0] / canvasSize[1]);
-  return this.withNode().set("optics", this.optics);
+  this.withNode().set("optics", this.optics);
+  return null;
 };var LevelLookAt;
 /*
 The look-at proxy for the main game scene
@@ -512,13 +513,14 @@ GUIDais = function(index) {
   return this;
 };
 GUIDais.prototype.update = function() {
-  return SceneJS.withNode(this.id).node(0).node(0).set({
+  SceneJS.withNode(this.id).node(0).node(0).set({
     angle: guiDaisRotPosition[this.index * 2],
     z: 1.0
   }).node(0).set({
     angle: guiDaisRotPosition[this.index * 2 + 1],
     x: 1.0
   });
+  return null;
 };var GUI;
 /*
 Top level GUI container
