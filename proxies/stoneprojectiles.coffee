@@ -44,6 +44,12 @@ StoneProjectilesModule =
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
     
+    # TEMPORARY: Push some initial particles onto the attribute buffers, just to test with
+    @attributeBuffers.push([
+      [0.1,0.1,0.1],[0.1,1.0,0.1]
+    ])
+    @attributeBuffers.update(gl, 0.0)
+    
     null
   
   destroyResources: ->
@@ -71,8 +77,7 @@ StoneProjectilesModule =
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
     
     # Draw geometry
-    # todo
-    #gl.drawArrays(gl.POINTS, 0, @numParticles)
+    gl.drawArrays(gl.POINTS, @attributeBuffers.getOffset(), @attributeBuffers.getCount())
     
     # Restore gl state
     #if saveState.blend then gl.enable(gl.BLEND)

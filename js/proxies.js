@@ -1277,6 +1277,8 @@ StoneProjectilesModule = {
     gl.enableVertexAttribArray(this.shaderProgram.t);
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
     this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    this.attributeBuffers.push([[0.1, 0.1, 0.1], [0.1, 1.0, 0.1]]);
+    this.attributeBuffers.update(gl, 0.0);
     return null;
   },
   destroyResources: function() {
@@ -1300,6 +1302,7 @@ StoneProjectilesModule = {
     this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetPosition, shaderProgram.t]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.drawArrays(gl.POINTS, this.attributeBuffers.getOffset(), this.attributeBuffers.getCount());
     return null;
   }
 };

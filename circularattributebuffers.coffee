@@ -13,7 +13,7 @@ class CircularAttributeBuffers
     @bottomOffset = 0
     @topOffset = 0
     @attributeBuffers = []
-    @attributeQueues = [[]]
+    @attributeQueues = []
     @attributeInfos = []
   
   # Create the WebGL resources associated with this object
@@ -25,6 +25,7 @@ class CircularAttributeBuffers
       elements: 3
       glType: gl.FLOAT
     )
+    @attributeQueues.push([])
     gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
     gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[0].elements, gl.STREAM_DRAW)
 
@@ -34,6 +35,7 @@ class CircularAttributeBuffers
       elements: 3
       glType: gl.FLOAT
     )
+    @attributeQueues.push([])
     gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[1])
     gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[1].elements, gl.STREAM_DRAW)
 
@@ -43,6 +45,7 @@ class CircularAttributeBuffers
       elements: 1
       glType: gl.FLOAT
     )
+    @attributeQueues.push([])
     gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[2])
     gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[2].elements, gl.STREAM_DRAW)
     null
@@ -51,23 +54,30 @@ class CircularAttributeBuffers
   # The elements in total as well as each element itself must be boxed into arrays
   push: (elements) ->
     # Pre-condition: @elements.length == @attributeQueues.length - 1 (since it should not include "t")
-    for k in [0 .. @elements.length - 1]
+    for k in [0...elements.length]
       @attributeQueues[k].concat(elements[k])
     null
 
   # Get the range of the attribute buffer
   getRange: -> [@bottomOffset, @topOffset]
   
+  # Get the offset to start drawing from
+  getOffset: -> @bottomOffset
+  
+  # Get the number of elements to draw
+  getCount: -> @topOffset - @bottomOffset
+
   # Update all the attribute buffers with the elements pushed onto the queue and discard expired elements
   update: (gl, t) ->
     @t = t
     
     # Add t to the attributes
-    for k in [0..@attributeQueues[0].length-1]
+    for k in [0...@attributeQueues[0].length]
       @attributeQueues[@attributeQueues.length-1].push(t)
     
     # Push all the queues into the buffer objects
-    for queue in @attributeQueues
+    for k in [0...@attributeQueues.length]
+      queue = @attributeQueues[k]
       if (@topOffset < @bottomOffset && @topOffset + queue.length < @bottomOffset) || (@topOffset >= @bottomOffset && @topOffset + queue.length < @size)
         gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
         gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, new Float32Array(queue))
@@ -77,13 +87,12 @@ class CircularAttributeBuffers
         else
           num = @size - @topOffset
         #todo: more to do here....!!!
-    
-    # Clear the queues
-    @attributeQueues = [[]]
+      # Clear the queue
+      @attributeQueues[k] = []
     null
   
   bind: (gl, shaderLocations) ->
-    for k in [0 .. @attributeBuffers.length - 1]
+    for k in [0...@attributeBuffers.length]
       gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
       gl.enableVertexAttribArray(shaderLocations[k])
       gl.vertexAttribPointer(shaderLocations[k], @attributeInfos[k].elements, @attributeInfos[k].glType, false, 0, 0)

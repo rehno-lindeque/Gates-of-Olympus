@@ -12,7 +12,7 @@ CircularAttributeBuffers = function(size, lifeTime) {
   this.bottomOffset = 0;
   this.topOffset = 0;
   this.attributeBuffers = [];
-  this.attributeQueues = [[]];
+  this.attributeQueues = [];
   this.attributeInfos = [];
   return this;
 };
@@ -22,6 +22,7 @@ CircularAttributeBuffers.prototype.create = function(gl) {
     elements: 3,
     glType: gl.FLOAT
   });
+  this.attributeQueues.push([]);
   gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
   gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[0].elements, gl.STREAM_DRAW);
   this.attributeBuffers.push(gl.createBuffer());
@@ -29,6 +30,7 @@ CircularAttributeBuffers.prototype.create = function(gl) {
     elements: 3,
     glType: gl.FLOAT
   });
+  this.attributeQueues.push([]);
   gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[1]);
   gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[1].elements, gl.STREAM_DRAW);
   this.attributeBuffers.push(gl.createBuffer());
@@ -36,13 +38,15 @@ CircularAttributeBuffers.prototype.create = function(gl) {
     elements: 1,
     glType: gl.FLOAT
   });
+  this.attributeQueues.push([]);
   gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[2]);
   gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[2].elements, gl.STREAM_DRAW);
   return null;
 };
 CircularAttributeBuffers.prototype.push = function(elements) {
-  var k;
-  for (k = 0; (0 <= this.elements.length - 1 ? k <= this.elements.length - 1 : k >= this.elements.length - 1); (0 <= this.elements.length - 1 ? k += 1 : k -= 1)) {
+  var _ref, k;
+  _ref = elements.length;
+  for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
     this.attributeQueues[k].concat(elements[k]);
   }
   return null;
@@ -50,15 +54,22 @@ CircularAttributeBuffers.prototype.push = function(elements) {
 CircularAttributeBuffers.prototype.getRange = function() {
   return [this.bottomOffset, this.topOffset];
 };
+CircularAttributeBuffers.prototype.getOffset = function() {
+  return this.bottomOffset;
+};
+CircularAttributeBuffers.prototype.getCount = function() {
+  return this.topOffset - this.bottomOffset;
+};
 CircularAttributeBuffers.prototype.update = function(gl, t) {
-  var _i, _len, _ref, k, num, queue;
+  var _ref, k, num, queue;
   this.t = t;
-  for (k = 0; (0 <= this.attributeQueues[0].length - 1 ? k <= this.attributeQueues[0].length - 1 : k >= this.attributeQueues[0].length - 1); (0 <= this.attributeQueues[0].length - 1 ? k += 1 : k -= 1)) {
+  _ref = this.attributeQueues[0].length;
+  for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
     this.attributeQueues[this.attributeQueues.length - 1].push(t);
   }
-  _ref = this.attributeQueues;
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    queue = _ref[_i];
+  _ref = this.attributeQueues.length;
+  for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
+    queue = this.attributeQueues[k];
     if ((this.topOffset < this.bottomOffset && this.topOffset + queue.length < this.bottomOffset) || ((this.topOffset >= this.bottomOffset) && this.topOffset + queue.length < this.size)) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
       gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[0].elements, new Float32Array(queue));
@@ -69,13 +80,14 @@ CircularAttributeBuffers.prototype.update = function(gl, t) {
         num = this.size - this.topOffset;
       }
     }
+    this.attributeQueues[k] = [];
   }
-  this.attributeQueues = [[]];
   return null;
 };
 CircularAttributeBuffers.prototype.bind = function(gl, shaderLocations) {
-  var k;
-  for (k = 0; (0 <= this.attributeBuffers.length - 1 ? k <= this.attributeBuffers.length - 1 : k >= this.attributeBuffers.length - 1); (0 <= this.attributeBuffers.length - 1 ? k += 1 : k -= 1)) {
+  var _ref, k;
+  _ref = this.attributeBuffers.length;
+  for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[k]);
     gl.enableVertexAttribArray(shaderLocations[k]);
     gl.vertexAttribPointer(shaderLocations[k], this.attributeInfos[k].elements, this.attributeInfos[k].glType, false, 0, 0);
