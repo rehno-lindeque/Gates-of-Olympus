@@ -50,12 +50,11 @@ StoneProjectilesModule =
   
   render: (gl, view, projection) ->
     # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
 
-    gl.disable(gl.BLEND)    
-    #gl.depthMask(false)
+    #gl.disable(gl.BLEND)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
@@ -72,8 +71,7 @@ StoneProjectilesModule =
     #gl.drawArrays(gl.POINTS, 0, @numParticles)
     
     # Restore gl state
-    if saveState.blend then gl.enable(gl.BLEND)
-    #gl.depthMask(true)
+    #if saveState.blend then gl.enable(gl.BLEND)
     null
 
 ###

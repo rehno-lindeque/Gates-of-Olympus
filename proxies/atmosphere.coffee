@@ -210,13 +210,11 @@ AtmosphereModule =
   
   renderLo: (gl, view, invProjection, nearZ, sun) ->
     # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
     #gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    #gl.enable(gl.BLEND)
     gl.disable(gl.BLEND)
-    #gl.disable(gl.DEPTH_TEST)
     gl.depthMask(false)
     
     # Bind shaders and parameters
@@ -272,8 +270,9 @@ AtmosphereModule =
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     
     # Restore gl state
-    if saveState.blend then gl.enable(gl.BLEND)
+    #if saveState.blend then gl.enable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.enable(gl.BLEND)
     gl.depthMask(true)
     null
   

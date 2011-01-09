@@ -57,9 +57,9 @@ DaisCloudsModule =
   
   render: (gl, view, projection) ->
     # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
 
     gl.enable(gl.BLEND)    
     gl.blendEquation(gl.FUNC_ADD)
@@ -86,8 +86,9 @@ DaisCloudsModule =
     gl.drawArrays(gl.POINTS, 0, @numParticles)
     
     # Restore gl state
-    if not saveState.blend then gl.disable(gl.BLEND)
+    #if not saveState.blend then gl.disable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.disable(gl.BLEND)
     gl.depthMask(true)
     null
 

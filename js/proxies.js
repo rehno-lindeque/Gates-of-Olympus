@@ -943,11 +943,7 @@ DaisCloudsModule = {
     return null;
   },
   render: function(gl, view, projection) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var k, shaderProgram;
     gl.enable(gl.BLEND);
     gl.blendEquation(gl.FUNC_ADD);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -963,9 +959,7 @@ DaisCloudsModule = {
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.drawArrays(gl.POINTS, 0, this.numParticles);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
-    }
+    gl.disable(gl.BLEND);
     gl.depthMask(true);
     return null;
   }
@@ -1178,11 +1172,7 @@ AtmosphereModule = {
     return null;
   },
   renderLo: function(gl, view, invProjection, nearZ, sun) {
-    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, scale, wavelength, wavelength4;
     gl.disable(gl.BLEND);
     gl.depthMask(false);
     gl.useProgram(this.shaderProgram);
@@ -1222,9 +1212,7 @@ AtmosphereModule = {
     ny = 3 * 30;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
-    if (saveState.blend) {
-      gl.enable(gl.BLEND);
-    }
+    gl.enable(gl.BLEND);
     gl.depthMask(true);
     return null;
   },
@@ -1297,12 +1285,7 @@ StoneProjectilesModule = {
     return null;
   },
   render: function(gl, view, projection) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
-    gl.disable(gl.BLEND);
+    var k, shaderProgram;
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
     for (k = 1; k <= 7; k++) {
@@ -1311,9 +1294,6 @@ StoneProjectilesModule = {
     this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
-    if (saveState.blend) {
-      gl.enable(gl.BLEND);
-    }
     return null;
   }
 };
