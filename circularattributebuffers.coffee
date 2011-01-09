@@ -72,15 +72,17 @@ class CircularAttributeBuffers
     @t = t
     
     # Add t to the attributes
-    for k in [0...@attributeQueues[0].length]
+    numVertices = @attributeQueues[0].length/@attributeInfos[0].elements
+    if numVertices == 0 then return
+    for k in [0...numVertices]
       @attributeQueues[@attributeQueues.length-1].push(t)
     
     # Push all the queues into the buffer objects
     for k in [0...@attributeQueues.length]
       queue = @attributeQueues[k]
       if (@topOffset < @bottomOffset && @topOffset + queue.length < @bottomOffset) || (@topOffset >= @bottomOffset && @topOffset + queue.length < @size)
-        gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
-        gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[0].elements, new Float32Array(queue))
+        gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
+        gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[k].elements, new Float32Array(queue))
       else
         if (@topOffset < @bottomOffset)
           num = @bottomOffset - @topOffset
@@ -89,6 +91,9 @@ class CircularAttributeBuffers
         #todo: more to do here....!!!
       # Clear the queue
       @attributeQueues[k] = []
+    
+    # Increase the upper bound of the active vertices
+    @topOffset += numVertices
     null
   
   bind: (gl, shaderLocations) ->

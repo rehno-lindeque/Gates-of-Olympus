@@ -1278,6 +1278,8 @@ StoneProjectilesModule = {
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
     this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
     this.attributeBuffers.push([[0.1, 0.1, 0.1], [0.1, 1.0, 0.1]]);
+    this.attributeBuffers.push([[0.5, 0.5, 0.5], [0.1, 1.0, 0.1]]);
+    this.attributeBuffers.push([[2.5, 2.5, 2.5], [2.0, 2.0, 2.0]]);
     this.attributeBuffers.update(gl, 0.0);
     return null;
   },

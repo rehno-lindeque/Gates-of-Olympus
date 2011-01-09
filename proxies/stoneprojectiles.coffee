@@ -48,6 +48,12 @@ StoneProjectilesModule =
     @attributeBuffers.push([
       [0.1,0.1,0.1],[0.1,1.0,0.1]
     ])
+    @attributeBuffers.push([
+      [0.5,0.5,0.5],[0.1,1.0,0.1]
+    ])
+    @attributeBuffers.push([
+      [2.5,2.5,2.5],[2.0,2.0,2.0]
+    ])
     @attributeBuffers.update(gl, 0.0)
     
     null

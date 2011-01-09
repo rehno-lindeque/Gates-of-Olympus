@@ -61,18 +61,21 @@ CircularAttributeBuffers.prototype.getCount = function() {
   return this.topOffset - this.bottomOffset;
 };
 CircularAttributeBuffers.prototype.update = function(gl, t) {
-  var _ref, k, num, queue;
+  var _ref, k, num, numVertices, queue;
   this.t = t;
-  _ref = this.attributeQueues[0].length;
-  for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
+  numVertices = this.attributeQueues[0].length / this.attributeInfos[0].elements;
+  if (numVertices === 0) {
+    return null;
+  }
+  for (k = 0; (0 <= numVertices ? k < numVertices : k > numVertices); (0 <= numVertices ? k += 1 : k -= 1)) {
     this.attributeQueues[this.attributeQueues.length - 1].push(t);
   }
   _ref = this.attributeQueues.length;
   for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
     queue = this.attributeQueues[k];
     if ((this.topOffset < this.bottomOffset && this.topOffset + queue.length < this.bottomOffset) || ((this.topOffset >= this.bottomOffset) && this.topOffset + queue.length < this.size)) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
-      gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[0].elements, new Float32Array(queue));
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[k]);
+      gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[k].elements, new Float32Array(queue));
     } else {
       if (this.topOffset < this.bottomOffset) {
         num = this.bottomOffset - this.topOffset;
@@ -82,6 +85,7 @@ CircularAttributeBuffers.prototype.update = function(gl, t) {
     }
     this.attributeQueues[k] = [];
   }
+  this.topOffset += numVertices;
   return null;
 };
 CircularAttributeBuffers.prototype.bind = function(gl, shaderLocations) {
