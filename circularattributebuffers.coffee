@@ -64,7 +64,7 @@ class CircularAttributeBuffers
     
     # Add t to the attributes
     for k in [0..@attributeQueues[0].length-1]
-      @attributeQueues[@attributeQueues[0].length-1].push(t)
+      @attributeQueues[@attributeQueues.length-1].push(t)
     
     # Push all the queues into the buffer objects
     for queue in @attributeQueues

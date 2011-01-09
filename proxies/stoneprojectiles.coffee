@@ -35,7 +35,11 @@ StoneProjectilesModule =
     # Set shader parameters
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
+    @shaderProgram.targetPosition = gl.getAttribLocation(@shaderProgram, "targetPosition")
+    @shaderProgram.t = gl.getAttribLocation(@shaderProgram, "t")
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    gl.enableVertexAttribArray(@shaderProgram.targetPosition)
+    gl.enableVertexAttribArray(@shaderProgram.t)
     
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
@@ -61,7 +65,7 @@ StoneProjectilesModule =
     gl.useProgram(shaderProgram)
     
     gl.disableVertexAttribArray(k) for k in [1..7]
-    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition])
+    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetPosition, shaderProgram.t])
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
