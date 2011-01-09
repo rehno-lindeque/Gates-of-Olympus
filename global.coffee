@@ -29,6 +29,8 @@ indexToPosition = (x,y,level) -> # x y as indices, y in the range 0-35 (dont ask
   pos = { x: posX, y: posY}
   return pos
 
+positionToGrid = (x,y) -> [ Math.floor((x/cellScale) + gridSize/2), Math.floor((y/cellScale) + gridSize/2) ]
+
 ###
 Globals
 ###

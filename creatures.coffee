@@ -91,7 +91,6 @@ class Creature
             
     index = positionToIndex(@pos[0],@pos[1],@level) 
     @gridIndex = index
-   
     
 class Scorpion extends Creature
   constructor: () ->

@@ -118,6 +118,9 @@ class Level
   # Update the game logic related to the level
   update: ->
     @creatures.update()
+    # Let each creature present itself to the surrounding towers as a target
+    for creature in @creatures.creatures
+      level.towers.present(creature)
   
   # Render all the projectiles
   renderProjectiles: (gl, time) ->

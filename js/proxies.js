@@ -176,7 +176,14 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
   return null;
 };
 Level.prototype.update = function() {
-  return this.creatures.update();
+  var _i, _len, _ref, _result, creature;
+  this.creatures.update();
+  _result = []; _ref = this.creatures.creatures;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    creature = _ref[_i];
+    _result.push(level.towers.present(creature));
+  }
+  return _result;
 };
 Level.prototype.renderProjectiles = function(gl, time) {
   var _i, _j, _len, _len2, _ref, _ref2, _result, _result2, projectile, projectiles;
