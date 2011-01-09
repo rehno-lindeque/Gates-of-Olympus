@@ -724,11 +724,7 @@ MoonModule = {
     return null;
   },
   render: function(gl, view, projection, pos) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var k, shaderProgram;
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     shaderProgram = this.shaderProgram;
@@ -752,9 +748,7 @@ MoonModule = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, null);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
-    }
+    gl.disable(gl.BLEND);
     return null;
   }
 };

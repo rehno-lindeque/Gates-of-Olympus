@@ -78,10 +78,10 @@ MoonModule =
     null
   
   render: (gl, view, projection, pos) ->
-    # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    ## Change gl state
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.enable(gl.BLEND)
     #gl.disable(gl.DEPTH_TEST)
@@ -121,8 +121,9 @@ MoonModule =
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, null)
 
-    if not saveState.blend then gl.disable(gl.BLEND)
+    #if not saveState.blend then gl.disable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.disable(gl.BLEND)
     #gl.depthMask(true)
     null
 
