@@ -12,20 +12,40 @@ class CircularAttributeBuffers
     @t = 0.0
     @bottomOffset = 0
     @topOffset = 0
-    @vertices = new Array(@size)
+    #@vertices = new Array(@size)
     @attributeBuffers = []
     @attributeQueues = [[]]
     @attributeInfos = []
   
   # Create the WebGL resources associated with this object
   create: (gl) ->
-    
     # Create an attribute buffer for the vertex position
     # TODO: Not sure whether this should be STREAM_DRAW or DYNAMIC_DRAW for optimal performance...    
-    @attributeBuffers = [gl.createBuffer()]
-    @attributeInfos = [elements: 3]
+    @attributeBuffers.push(gl.createBuffer())
+    @attributeInfos.push(
+      elements: 3
+      glType: gl.FLOAT
+    )
     gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[0])
     gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[0].elements, gl.STREAM_DRAW)
+
+    # Create an attribute buffer for the target position (this is not generic!)
+    @attributeBuffers.push(gl.createBuffer())
+    @attributeInfos.push(
+      elements: 3
+      glType: gl.FLOAT
+    )
+    gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[1])
+    gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[1].elements, gl.STREAM_DRAW)
+
+    # Create an attribute for the t (time) parameter
+    @attributeBuffers.push(gl.createBuffer())
+    @attributeInfos.push(
+      elements: 1
+      glType: gl.FLOAT
+    )
+    gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[2])
+    gl.bufferData(gl.ARRAY_BUFFER, @size * @attributeInfos[2].elements, gl.STREAM_DRAW)
   
   # Push one element onto the buffer (the effective time will be whatever t is when we call update(t)
   # The elements in total as well as each element itself must be boxed into arrays
@@ -47,12 +67,12 @@ class CircularAttributeBuffers
           num = @size - @topOffset
         #todo: more to do here....!!!
     @attributeQueues = [[]]
-
+  
   bind: (gl, shaderLocations) ->
     for k in [0 .. @attributeBuffers.length - 1]
       gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
       gl.enableVertexAttribArray(shaderLocations[k])
-      gl.vertexAttribPointer(shaderLocations[k], 3, gl.FLOAT, false, 0, 0)
+      gl.vertexAttribPointer(shaderLocations[k], @attributeInfos[k].elements, @attributeInfos[k].glType, false, 0, 0)
   
   destroy: ->
     for buffer in @attributeBuffers
