@@ -55,7 +55,7 @@ class CircularAttributeBuffers
   push: (elements) ->
     # Pre-condition: @elements.length == @attributeQueues.length - 1 (since it should not include "t")
     for k in [0...elements.length]
-      @attributeQueues[k].concat(elements[k])
+      @attributeQueues[k] = @attributeQueues[k].concat(elements[k])
     null
 
   # Get the range of the attribute buffer

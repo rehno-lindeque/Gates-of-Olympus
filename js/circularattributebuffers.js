@@ -47,7 +47,7 @@ CircularAttributeBuffers.prototype.push = function(elements) {
   var _ref, k;
   _ref = elements.length;
   for (k = 0; (0 <= _ref ? k < _ref : k > _ref); (0 <= _ref ? k += 1 : k -= 1)) {
-    this.attributeQueues[k].concat(elements[k]);
+    this.attributeQueues[k] = this.attributeQueues[k].concat(elements[k]);
   }
   return null;
 };
