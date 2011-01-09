@@ -35,10 +35,10 @@ StoneProjectilesModule =
     # Set shader parameters
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
-    @shaderProgram.targetPosition = gl.getAttribLocation(@shaderProgram, "targetPosition")
+    @shaderProgram.targetVector = gl.getAttribLocation(@shaderProgram, "targetVector")
     @shaderProgram.t = gl.getAttribLocation(@shaderProgram, "t")
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
-    gl.enableVertexAttribArray(@shaderProgram.targetPosition)
+    gl.enableVertexAttribArray(@shaderProgram.targetVector)
     gl.enableVertexAttribArray(@shaderProgram.t)
     
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
@@ -71,7 +71,7 @@ StoneProjectilesModule =
     #saveState =
     #  blend:     gl.getParameter(gl.BLEND)
     #  depthTest: gl.getParameter(gl.DEPTH_TEST)
-
+    
     #gl.disable(gl.BLEND)
     
     # Bind shaders and parameters
@@ -79,7 +79,7 @@ StoneProjectilesModule =
     gl.useProgram(shaderProgram)
     
     gl.disableVertexAttribArray(k) for k in [1..7]
-    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetPosition, shaderProgram.t])
+    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t])
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
