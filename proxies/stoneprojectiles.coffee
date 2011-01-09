@@ -43,6 +43,8 @@ StoneProjectilesModule =
     
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
+    @shaderProgram.currentT = gl.getUniformLocation(@shaderProgram, "currentT")
+    @shaderProgram.lifeT = gl.getUniformLocation(@shaderProgram, "lifeT")
     
     # TEMPORARY: Push some initial particles onto the attribute buffers, just to test with
     @attributeBuffers.push([
@@ -81,6 +83,8 @@ StoneProjectilesModule =
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
+    gl.uniform1f(shaderProgram.currentT, @attributeBuffers.t)
+    gl.uniform1f(shaderProgram.lifeT, @attributeBuffers.lifeTime)
     
     # Draw geometry
     gl.drawArrays(gl.POINTS, @attributeBuffers.getOffset(), @attributeBuffers.getCount())

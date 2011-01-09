@@ -1271,6 +1271,8 @@ StoneProjectilesModule = {
     gl.enableVertexAttribArray(this.shaderProgram.t);
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
     this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    this.shaderProgram.currentT = gl.getUniformLocation(this.shaderProgram, "currentT");
+    this.shaderProgram.lifeT = gl.getUniformLocation(this.shaderProgram, "lifeT");
     this.attributeBuffers.push([[0.1, 0.1, 0.1], [0.1, 1.0, 0.1]]);
     this.attributeBuffers.push([[0.5, 0.5, 0.5], [0.1, 1.0, 0.1]]);
     this.attributeBuffers.push([[2.5, 2.5, 2.5], [2.0, 2.0, 2.0]]);
@@ -1298,6 +1300,8 @@ StoneProjectilesModule = {
     this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetPosition, shaderProgram.t]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
+    gl.uniform1f(shaderProgram.currentT, this.attributeBuffers.t);
+    gl.uniform1f(shaderProgram.lifeT, this.attributeBuffers.lifeTime);
     gl.drawArrays(gl.POINTS, this.attributeBuffers.getOffset(), this.attributeBuffers.getCount());
     return null;
   }
