@@ -169,4 +169,36 @@ updateAI = ->
     dirtyLevel[i] = false
       
       
+towerIsBlocking = (index) ->
+  # check for each creep if there is a route to the current goal
+  # the issue with this is: you can build towers on levels where
+  # no creeps are.. how do you know it isnt blocking?
+  # ah.. there must also be a route from each start to each goal
   
+  #first check there is atleast one route from start to goal
+  
+  if (level.towers.towers[index] != -1)
+    return true
+  
+  level.towers.towers[index] = 0
+  towerLevel = Math.floor(index / sqrGridSize)
+  floodInit()
+  floodFill(levelGoals[towerLevel],towerLevel)
+  
+  level.towers.towers[index] = -1
+  
+  #check
+  startIndex = new Array(3)
+  startIndex[0] = positionToIndex(0,0,0)
+  startIndex[1] = levelGoals[0] + sqrGridSize
+  startIndex[2] = levelGoals[1] + sqrGridSize
+  
+ 
+  if (grid[startIndex[towerLevel]] == 0) #next[startIndex][levelGoals[0]
+    return true
+      
+  for c in level.creatures.creatures
+    if (c.level == towerLevel && grid[c.gridIndex] == 0)
+      return true
+  return false
+    

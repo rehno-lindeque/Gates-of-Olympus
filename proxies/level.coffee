@@ -70,7 +70,7 @@ class Level
   addTower: (towerPlacement, towerType) ->
     index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x
     #alert towerPlacement.cell.x + " " + towerPlacement.cell.y
-    if @towers.towers[index] == -1
+    if (@towers.towers[index] == -1 && !towerIsBlocking(index))
       @towers.towers[index] = towerType
       parentNode = @getTowerRoot(towerPlacement.level, towerType)
       node = { type: "instance", target: towerIds[towerType] }
