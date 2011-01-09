@@ -3,8 +3,11 @@ precision highp float;
 #endif
 
 //varying vec2 vTextureCoord;
+varying float expired;
 
 void main(void) {
+  if (expired > 1.0)
+    discard;
   float dist = distance(gl_PointCoord, vec2(0.5, 0.5));
   if(dist > 0.5)
     discard;
