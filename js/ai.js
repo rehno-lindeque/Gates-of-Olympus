@@ -1,4 +1,4 @@
-var dirtyLevel, floodFill, floodFillGenPath, floodInit, getMove, grid, i, next, updateAI;
+var dirtyLevel, floodFill, floodFillGenPath, floodInit, getMove, grid, i, next, towerIsBlocking, updateAI;
 /*
 Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -182,4 +182,30 @@ updateAI = function() {
     _result.push(dirtyLevel[i] = false);
   }
   return _result;
+};
+towerIsBlocking = function(index) {
+  var _i, _len, _ref, c, startIndex, towerLevel;
+  if (level.towers.towers[index] !== -1) {
+    return true;
+  }
+  level.towers.towers[index] = 0;
+  towerLevel = Math.floor(index / sqrGridSize);
+  floodInit();
+  floodFill(levelGoals[towerLevel], towerLevel);
+  level.towers.towers[index] = -1;
+  startIndex = new Array(3);
+  startIndex[0] = positionToIndex(0, 0, 0);
+  startIndex[1] = levelGoals[0] + sqrGridSize;
+  startIndex[2] = levelGoals[1] + sqrGridSize;
+  if (grid[startIndex[towerLevel]] === 0) {
+    return true;
+  }
+  _ref = level.creatures.creatures;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    c = _ref[_i];
+    if (c.level === towerLevel && grid[c.gridIndex] === 0) {
+      return true;
+    }
+  }
+  return false;
 };

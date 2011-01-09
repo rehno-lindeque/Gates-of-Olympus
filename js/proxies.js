@@ -154,7 +154,7 @@ Level.prototype.getTowerRoot = function(level, towerType) {
 Level.prototype.addTower = function(towerPlacement, towerType) {
   var cx, cy, cz, index, node, parentNode;
   index = towerPlacement.level * sqrGridSize + towerPlacement.cell.y * gridSize + towerPlacement.cell.x;
-  if (this.towers.towers[index] === -1) {
+  if (this.towers.towers[index] === -1 && !towerIsBlocking(index)) {
     this.towers.towers[index] = towerType;
     parentNode = this.getTowerRoot(towerPlacement.level, towerType);
     node = {

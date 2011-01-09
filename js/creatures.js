@@ -177,7 +177,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
   creature = new CreaturePrototype();
   this.creatures[this.creatures.length] = creature;
-  SceneJS.withNode("creatures").node(creature.index).add("nodes", [
+  return SceneJS.withNode("creatures").node(creature.index).add("nodes", [
     {
       type: "translate",
       x: creature.pos[0],
@@ -198,7 +198,6 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
       ]
     }
   ]);
-  return creature;
 };
 Creatures.prototype.update = function() {
   var _i, _len, _ref, c, creature, creatures;
