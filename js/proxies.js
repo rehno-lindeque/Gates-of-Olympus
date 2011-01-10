@@ -1257,11 +1257,15 @@ A scenejs extension that renders projectiles as point sprites
 Projectiles Module
 */
 StoneProjectilesModule = {
-  attributeBuffers: new CircularAttributeBuffers(200, 15.0),
+  attributeBuffers: [],
   shaderProgram: null,
+  addAttributes: function(gl, index) {
+    this.attributeBuffers[index] = new CircularAttributeBuffers(200, 15.0);
+    this.attributeBuffers[index].create(gl);
+    return null;
+  },
   createResources: function(gl) {
     var fragmentShader, vertexShader;
-    this.attributeBuffers.create(gl);
     this.shaderProgram = gl.createProgram();
     vertexShader = compileShader(gl, "stoneprojectile-vs");
     fragmentShader = compileShader(gl, "stoneprojectile-fs");
@@ -1285,31 +1289,37 @@ StoneProjectilesModule = {
     return null;
   },
   destroyResources: function() {
+    var _i, _len, _ref, buffer;
     if (document.getElementById(canvas.canvasId)) {
       if (this.shaderProgram) {
         this.shaderProgram.destroy();
       }
       if (this.attributeBuffers) {
-        this.attributeBuffers.destroy();
+        _ref = this.attributeBuffers;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          buffer = _ref[_i];
+          buffer.destroy();
+        }
       }
     }
     return null;
   },
-  render: function(gl, view, projection) {
-    var k, shaderProgram;
+  render: function(gl, view, projection, index) {
+    var buffers, k, shaderProgram;
     gl.disable(gl.DEPTH_TEST);
     gl.depthMask(false);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
-    for (k = 1; k <= 7; k++) {
-      gl.disableVertexAttribArray(k);
-    }
-    this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.uniform1f(shaderProgram.currentT, this.attributeBuffers.t);
     gl.uniform1f(shaderProgram.lifeT, this.attributeBuffers.lifeTime);
-    gl.drawArrays(gl.POINTS, this.attributeBuffers.getOffset(), this.attributeBuffers.getCount());
+    for (k = 3; k <= 7; k++) {
+      gl.disableVertexAttribArray(k);
+    }
+    buffers = this.attributeBuffers[index];
+    buffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t]);
+    gl.drawArrays(gl.POINTS, buffers.getOffset(), buffers.getCount());
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
     return null;
@@ -1343,6 +1353,7 @@ StoneProjectilesNode.prototype.getProjection = function() {
 Catapult projectiles proxy
 */
 CatapultProjectiles = function(index) {
+  this.index = index;
   this.node = {
     type: "stone-projectiles",
     id: "catapult-projectiles" + index
@@ -1357,12 +1368,15 @@ CatapultProjectiles.prototype.render = function(gl, time) {
   nodeRef = this.withNode();
   view = nodeRef.get("view");
   projection = nodeRef.get("projection");
+  if (!StoneProjectilesModule.attributeBuffers[this.index]) {
+    StoneProjectilesModule.addAttributes(gl, this.index);
+  }
   if (!StoneProjectilesModule.shaderProgram) {
     StoneProjectilesModule.createResources(gl);
   }
-  StoneProjectilesModule.attributeBuffers.update(gl, time);
-  return StoneProjectilesModule.render(gl, view, projection);
+  StoneProjectilesModule.attributeBuffers[this.index].update(gl, time);
+  return StoneProjectilesModule.render(gl, view, projection, this.index);
 };
 CatapultProjectiles.prototype.add = function(position, targetVector) {
-  return StoneProjectilesModule.attributeBuffers.push([position, targetVector]);
+  return StoneProjectilesModule.attributeBuffers[this.index].push([position, targetVector]);
 };
