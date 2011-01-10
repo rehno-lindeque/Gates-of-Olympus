@@ -91,7 +91,13 @@ class Creature
             
     index = positionToIndex(@pos[0],@pos[1],@level) 
     @gridIndex = index
-    
+
+  damage: (amount) ->
+    @health -= amount
+    if @health <= 0
+      level.creatures.removeCreature(this)
+    null
+
 class Scorpion extends Creature
   constructor: () ->
     @create()
@@ -99,7 +105,6 @@ class Scorpion extends Creature
     @health = @maxHealth
     @speed = 0.02
     @index = 0
-    
   
   create: () ->
     super()
@@ -206,6 +211,9 @@ class Creatures
         #]
       ]
     ])
+  
+  removeCreature: (creature) ->
+    
   
   update: ->
     c = 0

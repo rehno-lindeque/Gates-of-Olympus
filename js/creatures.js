@@ -84,6 +84,13 @@ Creature.prototype.update = function() {
   index = positionToIndex(this.pos[0], this.pos[1], this.level);
   return (this.gridIndex = index);
 };
+Creature.prototype.damage = function(amount) {
+  this.health -= amount;
+  if (this.health <= 0) {
+    level.creatures.removeCreature(this);
+  }
+  return null;
+};
 Scorpion = function() {
   this.create();
   this.maxHealth = 100;
@@ -199,6 +206,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
     }
   ]);
 };
+Creatures.prototype.removeCreature = function(creature) {};
 Creatures.prototype.update = function() {
   var _i, _len, _ref, c, creature, creatures;
   c = 0;

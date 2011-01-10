@@ -47,16 +47,16 @@ StoneProjectilesModule =
     @shaderProgram.lifeT = gl.getUniformLocation(@shaderProgram, "lifeT")
     
     # TEMPORARY: Push some initial particles onto the attribute buffers, just to test with
-    @attributeBuffers.push([
-      [0.1,0.1,0.1],[0.1,1.0,0.1]
-    ])
-    @attributeBuffers.push([
-      [0.5,0.5,0.5],[0.1,1.0,0.1]
-    ])
-    @attributeBuffers.push([
-      [2.5,2.5,2.5],[2.0,2.0,2.0]
-    ])
-    @attributeBuffers.update(gl, 0.0)
+    #@attributeBuffers.push([
+    #  [0.1,0.1,0.1],[0.1,1.0,0.1]
+    #])
+    #@attributeBuffers.push([
+    #  [0.5,0.5,0.5],[0.1,1.0,0.1]
+    #])
+    #@attributeBuffers.push([
+    #  [2.5,2.5,2.5],[2.0,2.0,2.0]
+    #])
+    #@attributeBuffers.update(gl, 0.0)
     
     null
   
@@ -137,4 +137,8 @@ class CatapultProjectiles
     if not StoneProjectilesModule.shaderProgram then StoneProjectilesModule.createResources(gl)
     StoneProjectilesModule.attributeBuffers.update(gl, time)
     StoneProjectilesModule.render(gl, view, projection)
+  
+  add: (position, targetVector) ->
+    StoneProjectilesModule.attributeBuffers.push([position, targetVector])
+    
 

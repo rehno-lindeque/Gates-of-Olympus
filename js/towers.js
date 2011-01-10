@@ -34,28 +34,35 @@ Towers = function() {
   return this;
 };
 Towers.prototype.update = function() {
-  var _result, c;
-  _result = [];
-  for (c = 0; (0 <= sqrGridSize * levels ? c < sqrGridSize * levels : c > sqrGridSize * levels); (0 <= sqrGridSize * levels ? c += 1 : c -= 1)) {
-    _result.push(this.targets[c] = null);
+  var c, cgrid, clevel;
+  for (clevel = 0; (0 <= levels ? clevel < levels : clevel > levels); (0 <= levels ? clevel += 1 : clevel -= 1)) {
+    for (cgrid = 0; (0 <= sqrGridSize ? cgrid < sqrGridSize : cgrid > sqrGridSize); (0 <= sqrGridSize ? cgrid += 1 : cgrid -= 1)) {
+      c = cgrid + clevel * sqrGridSize;
+      if (this.delays[c] > 0.0) {
+        this.delays[c] -= 1.0;
+      }
+      if (this.targets[c] !== null && (this.delays[c] <= 0.0)) {
+        level.projectiles[clevel][0].add([0.1, 0.1, 0.1], [0.1, 1.0, 0.1]);
+        this.targets[c].damage(10);
+        this.delays[c] = 50.0;
+      }
+      this.targets[c] = null;
+    }
   }
-  return _result;
+  return null;
 };
 Towers.prototype.present = function(creature) {
-  var _ref, _ref2, _ref3, _ref4, _result, _result2, cx, cy, gridPos, index;
+  var _ref, _ref2, _ref3, _ref4, cx, cy, gridPos, index;
   gridPos = positionToGrid(creature.pos[0], creature.pos[1]);
-  _result = []; _ref = max(gridPos[1] - 1, 0); _ref2 = min(gridPos[1] + 1, gridSize - 1);
+  _ref = max(gridPos[1] - 1, 0); _ref2 = min(gridPos[1] + 1, gridSize - 1);
   for (cy = _ref; (_ref <= _ref2 ? cy <= _ref2 : cy >= _ref2); (_ref <= _ref2 ? cy += 1 : cy -= 1)) {
-    _result.push((function() {
-      _result2 = []; _ref3 = max(gridPos[0] - 1, 0); _ref4 = min(gridPos[0] + 1, gridSize - 1);
-      for (cx = _ref3; (_ref3 <= _ref4 ? cx <= _ref4 : cx >= _ref4); (_ref3 <= _ref4 ? cx += 1 : cx -= 1)) {
-        _result2.push((function() {
-          index = creature.level * sqrGridSize + cy * gridSize + cx;
-          return this.targets[index] === null && (this.towers[index] >= 0) ? (this.targets[index] = creature) : null;
-        }).call(this));
+    _ref3 = max(gridPos[0] - 1, 0); _ref4 = min(gridPos[0] + 1, gridSize - 1);
+    for (cx = _ref3; (_ref3 <= _ref4 ? cx <= _ref4 : cx >= _ref4); (_ref3 <= _ref4 ? cx += 1 : cx -= 1)) {
+      index = creature.level * sqrGridSize + cy * gridSize + cx;
+      if (this.targets[index] === null && (this.towers[index] >= 0)) {
+        this.targets[index] = creature;
       }
-      return _result2;
-    }).call(this));
+    }
   }
-  return _result;
+  return null;
 };

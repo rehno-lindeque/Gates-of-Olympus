@@ -50,8 +50,19 @@ class Towers
       #switch @towers[c]
         #when 0 archerTowerUpdate(c)
         #when 1 catapultTowerUpdate(c)
-    for c in [0...sqrGridSize * levels]
-      @targets[c] = null
+    
+    # Fire projectiles at creatures and inflict damage
+    for clevel in [0...levels]
+      for cgrid in [0...sqrGridSize]
+        c = cgrid + clevel * sqrGridSize
+        if @delays[c] > 0.0
+          @delays[c] -= 1.0 # todo change this to the timeline dt
+        if @targets[c] != null && @delays[c] <= 0.0
+          level.projectiles[clevel][0].add([0.1,0.1,0.1],[0.1,1.0,0.1])
+          @targets[c].damage(10)
+          @delays[c] = 50.0
+        @targets[c] = null
+    null
   
   # Let a creature present itself to the surrounding towers as a target...
   # TODO: this should be replaced with a better method in the future (this is just temporary for the competition
@@ -62,4 +73,5 @@ class Towers
         index = creature.level * sqrGridSize + cy * gridSize + cx
         if @targets[index] == null && @towers[index] >= 0
           @targets[index] = creature
+    null
 
