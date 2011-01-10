@@ -120,7 +120,8 @@ class Level
     @creatures.update()
     # Let each creature present itself to the surrounding towers as a target
     for creature in @creatures.creatures
-      @towers.present(creature)
+      if creature.health > 0
+        @towers.present(creature)
     @towers.update()
   
   # Render all the projectiles

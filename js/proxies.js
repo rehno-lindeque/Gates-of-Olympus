@@ -181,7 +181,9 @@ Level.prototype.update = function() {
   _ref = this.creatures.creatures;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     creature = _ref[_i];
-    this.towers.present(creature);
+    if (creature.health > 0) {
+      this.towers.present(creature);
+    }
   }
   return this.towers.update();
 };
