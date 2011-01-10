@@ -68,14 +68,14 @@ StoneProjectilesModule =
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
     gl.useProgram(shaderProgram)
-
+    
+    buffers = @attributeBuffers[index]
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
-    gl.uniform1f(shaderProgram.currentT, @attributeBuffers.t)
-    gl.uniform1f(shaderProgram.lifeT, @attributeBuffers.lifeTime)
+    gl.uniform1f(shaderProgram.currentT, buffers.t)
+    gl.uniform1f(shaderProgram.lifeT, buffers.lifeTime)
     
     gl.disableVertexAttribArray(k) for k in [3..7]
-    buffers = @attributeBuffers[index]
     buffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t])
     
     # Draw geometry

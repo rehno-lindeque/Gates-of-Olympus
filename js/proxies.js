@@ -1310,14 +1310,14 @@ StoneProjectilesModule = {
     gl.depthMask(false);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
+    buffers = this.attributeBuffers[index];
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
-    gl.uniform1f(shaderProgram.currentT, this.attributeBuffers.t);
-    gl.uniform1f(shaderProgram.lifeT, this.attributeBuffers.lifeTime);
+    gl.uniform1f(shaderProgram.currentT, buffers.t);
+    gl.uniform1f(shaderProgram.lifeT, buffers.lifeTime);
     for (k = 3; k <= 7; k++) {
       gl.disableVertexAttribArray(k);
     }
-    buffers = this.attributeBuffers[index];
     buffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t]);
     gl.drawArrays(gl.POINTS, buffers.getOffset(), buffers.getCount());
     gl.enable(gl.DEPTH_TEST);
