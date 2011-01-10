@@ -21,7 +21,7 @@ creatureMaxHP[1] = 80
 creatureMaxHP[2] = 100
 */
 Creature = function() {};
-Creature.prototype.create = function() {
+Creature.prototype.create = function(id) {
   this.pos = [0.0, 0.0, platformHeights[0] + 10.0];
   this.rot = 0.0;
   this.level = 0;
@@ -31,9 +31,16 @@ Creature.prototype.create = function() {
   this.state = 0;
   this.speed = 0.1;
   this.fallVelocity = [0.0, 0.0, -this.speed];
+  this.id = "creature" + id;
   return null;
 };
 Creature.prototype.getId = function() {
+  return this.id;
+};
+Creature.prototype.withNode = function() {
+  return SceneJS.withNode(this.id);
+};
+Creature.prototype.getGeomId = function() {
   return creatureIds[this.index];
 };
 Creature.prototype.getTextureURI = function() {
@@ -187,6 +194,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
   return SceneJS.withNode("creatures").node(creature.index).add("nodes", [
     {
       type: "translate",
+      id: creature.getId(),
       x: creature.pos[0],
       y: creature.pos[1],
       z: creature.pos[2],
@@ -198,7 +206,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
           nodes: [
             {
               type: "instance",
-              target: creature.getId()
+              target: creature.getGeomId()
             }
           ]
         }

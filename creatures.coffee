@@ -18,7 +18,7 @@ creatureMaxHP[2] = 100
 # For now I'm just going to let each creature initialize itself.  This can later maybe be replaced by a spawn()
 # function which does the initialization.  But for now this will do.
 class Creature
-  create: () ->
+  create: (id) ->
     @pos = [0.0,0.0,platformHeights[0] + 10.0]
     @rot = 0.0
     @level = 0
@@ -29,9 +29,12 @@ class Creature
     @state = 0            # 0 = Fall, 1 = Roam, 2 = Done, 3 = Dead
     @speed = 0.1
     @fallVelocity = [0.0,0.0,-@speed]
+    @id = "creature" + id
     null
-    
-  getId: -> creatureIds[@index]
+  
+  getId: -> @id  
+  withNode: -> SceneJS.withNode(@id)
+  getGeomId: -> creatureIds[@index]
   getTextureURI: -> creatureTextureURI[@index]
   
   getGridIndex: ->
@@ -171,11 +174,12 @@ class Creatures
     @creatures[@creatures.length] = creature
     SceneJS.withNode("creatures").node(creature.index).add("nodes", [
       type: "translate"
+      id: creature.getId()
       x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]
       nodes: [
         type: "rotate"
         angle: 0.0, z: 1.0
-        nodes: [ type: "instance", target: creature.getId() ]
+        nodes: [ type: "instance", target: creature.getGeomId() ]
         #type: "billboard",
         #id: "hpBar",
         #nodes: [
