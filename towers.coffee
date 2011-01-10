@@ -33,6 +33,11 @@ class Towers
     @targets = new Array (sqrGridSize * levels)
     for c in [0...sqrGridSize * levels]
       @targets[c] = null
+
+    # Create a grid of delay time
+    @delays = new Array (sqrGridSize * levels)
+    for c in [0...sqrGridSize * levels]
+      @delays[c] = 0.0
       
     # For testing only: Place holes
     @towers[levelGoals[0]] = -2
@@ -52,9 +57,9 @@ class Towers
   # TODO: this should be replaced with a better method in the future (this is just temporary for the competition
   present: (creature) -> 
     gridPos = positionToGrid(creature.pos[0],creature.pos[1])
-    #for cy in [max(gridPos[1]-1,0)..min(gridPos[1]+1,gridSize-1)]
-    #  for cx in [max(gridPos[0]-1,0)..min(gridPos[0]+1,gridSize-1)]
-    #    index = creature.level * sqrGridSize + cy * gridSize + cx
-    #    if targets[index] == null && towers[index] >= 0
-    #      targets[index] = creature
+    for cy in [max(gridPos[1]-1,0)..min(gridPos[1]+1,gridSize-1)]
+      for cx in [max(gridPos[0]-1,0)..min(gridPos[0]+1,gridSize-1)]
+        index = creature.level * sqrGridSize + cy * gridSize + cx
+        if @targets[index] == null && @towers[index] >= 0
+          @targets[index] = creature
 
