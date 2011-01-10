@@ -12,7 +12,7 @@ Projectiles Module
 ###
 
 StoneProjectilesModule =
-  attributeBuffers: new CircularAttributeBuffers(200, 2.0)
+  attributeBuffers: new CircularAttributeBuffers(200, 10.0)
   shaderProgram: null
   
   createResources: (gl) ->
@@ -68,11 +68,7 @@ StoneProjectilesModule =
   
   render: (gl, view, projection) ->
     # Change gl state
-    #saveState =
-    #  blend:     gl.getParameter(gl.BLEND)
-    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
-    
-    #gl.disable(gl.BLEND)
+    gl.disable(gl.DEPTH_TEST)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
@@ -90,7 +86,7 @@ StoneProjectilesModule =
     gl.drawArrays(gl.POINTS, @attributeBuffers.getOffset(), @attributeBuffers.getCount())
     
     # Restore gl state
-    #if saveState.blend then gl.enable(gl.BLEND)
+    gl.enable(gl.DEPTH_TEST)
     null
 
 ###

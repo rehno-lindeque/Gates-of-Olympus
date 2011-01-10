@@ -34,8 +34,8 @@ Towers = function() {
   return this;
 };
 Towers.prototype.update = function() {
-  var c, clevel, cx, cy, origin, platformCenters;
-  platformCenters = [gridToPosition(gridSize / 2, gridSize / 2, 0), gridToPosition(gridSize / 2, gridSize / 2, 1), gridToPosition(gridSize / 2, gridSize / 2, 2)];
+  var c, clevel, cx, cy, origin, platformCenters, targetVec;
+  platformCenters = [[0.0, 0.0, platformHeights[0]], [0.0, 0.0, platformHeights[1]], [0.0, 0.0, platformHeights[2]]];
   for (clevel = 0; (0 <= levels ? clevel < levels : clevel > levels); (0 <= levels ? clevel += 1 : clevel -= 1)) {
     for (cy = 0; (0 <= gridSize ? cy < gridSize : cy > gridSize); (0 <= gridSize ? cy += 1 : cy -= 1)) {
       for (cx = 0; (0 <= gridSize ? cx < gridSize : cx > gridSize); (0 <= gridSize ? cx += 1 : cx -= 1)) {
@@ -43,9 +43,12 @@ Towers.prototype.update = function() {
         if (this.delays[c] > 0.0) {
           this.delays[c] -= 1.0;
         }
-        if (this.targets[c] !== null && (this.delays[c] <= 0.0) && this.targets[c].health > 0) {
+        if (this.targets[c] !== null && (this.delays[c] <= 0.0) && this.targets[c].health > 0 && Math.abs(this.targets[c].pos[2] - (platformHeights[clevel] - platformHeightOffset)) < 0.5) {
           origin = gridToPosition(cx, cy, clevel);
-          level.projectiles[clevel][0].add(subVec3(origin, platformCenters[clevel]), subVec3(this.targets[c].pos, origin));
+          targetVec = subVec3(this.targets[c].pos, origin);
+          targetVec[2] = 0.1;
+          origin[2] = 0.5;
+          level.projectiles[clevel][0].add(origin, targetVec);
           this.targets[c].damage(10);
           this.delays[c] = 50.0;
         }

@@ -12,7 +12,7 @@ uniform float lifeT;
 varying float expired;
 
 const float particleSize = 5.0;
-const float speedScale = 0.1;
+const float speedScale = 1.0;
 
 void main(void) {
   float lerpT = (currentT-t)/lifeT * speedScale;

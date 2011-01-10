@@ -1257,7 +1257,7 @@ A scenejs extension that renders projectiles as point sprites
 Projectiles Module
 */
 StoneProjectilesModule = {
-  attributeBuffers: new CircularAttributeBuffers(200, 2.0),
+  attributeBuffers: new CircularAttributeBuffers(200, 10.0),
   shaderProgram: null,
   createResources: function(gl) {
     var fragmentShader, vertexShader;
@@ -1297,6 +1297,7 @@ StoneProjectilesModule = {
   },
   render: function(gl, view, projection) {
     var k, shaderProgram;
+    gl.disable(gl.DEPTH_TEST);
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
     for (k = 1; k <= 7; k++) {
@@ -1308,6 +1309,7 @@ StoneProjectilesModule = {
     gl.uniform1f(shaderProgram.currentT, this.attributeBuffers.t);
     gl.uniform1f(shaderProgram.lifeT, this.attributeBuffers.lifeTime);
     gl.drawArrays(gl.POINTS, this.attributeBuffers.getOffset(), this.attributeBuffers.getCount());
+    gl.enable(gl.DEPTH_TEST);
     return null;
   }
 };
