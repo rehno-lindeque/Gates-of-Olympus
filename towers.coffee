@@ -52,16 +52,26 @@ class Towers
         #when 1 catapultTowerUpdate(c)
     
     # Fire projectiles at creatures and inflict damage
+    platformCenters = [ 
+      gridToPosition(gridSize / 2, gridSize / 2, 0)
+      gridToPosition(gridSize / 2, gridSize / 2, 1)
+      gridToPosition(gridSize / 2, gridSize / 2, 2)
+    ]
     for clevel in [0...levels]
-      for cgrid in [0...sqrGridSize]
-        c = cgrid + clevel * sqrGridSize
-        if @delays[c] > 0.0
-          @delays[c] -= 1.0 # todo change this to the timeline dt
-        if @targets[c] != null && @delays[c] <= 0.0
-          level.projectiles[clevel][0].add([0.1,0.1,0.1],[0.1,1.0,0.1])
-          @targets[c].damage(10)
-          @delays[c] = 50.0
-        @targets[c] = null
+      for cy in [0...gridSize]
+        for cx in [0...gridSize]
+          c = clevel * sqrGridSize + cy * gridSize + cx
+          if @delays[c] > 0.0
+            @delays[c] -= 1.0 # todo change this to the timeline dt
+          if @targets[c] != null && @delays[c] <= 0.0 && @targets[c].health > 0
+            origin = gridToPosition(cx,cy,clevel)
+            level.projectiles[clevel][0].add(
+              subVec3(origin, platformCenters[clevel])
+              subVec3(@targets[c].pos, origin)
+            )
+            @targets[c].damage(10)
+            @delays[c] = 50.0
+          @targets[c] = null
     null
   
   # Let a creature present itself to the surrounding towers as a target...

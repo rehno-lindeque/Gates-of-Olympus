@@ -31,6 +31,12 @@ indexToPosition = (x,y,level) -> # x y as indices, y in the range 0-35 (dont ask
 
 positionToGrid = (x,y) -> [ Math.floor((x/cellScale) + gridSize/2), Math.floor((y/cellScale) + gridSize/2) ]
 
+gridToPosition = (x,y,level) -> [ 
+    cellScale * (x - gridSize / 2) + cellScale * 0.5
+    cellScale * (y - gridSize / 2) + cellScale * 0.5
+    platformHeights[level]
+  ]
+
 ###
 Globals
 ###
