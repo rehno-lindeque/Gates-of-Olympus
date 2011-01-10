@@ -1,4 +1,4 @@
-var Towers, archerTowerUpdate, catapultTowerUpdate;
+var Tower, Towers, archerRadiusSQR, archerTowerUpdate, catapultTowerUpdate;
 /*
 Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -6,8 +6,25 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 /*
 Tower types
 */
+archerRadiusSQR = 1.0;
 archerTowerUpdate = function(index) {};
+/*
+towerX = index % gridSize
+towerY = index / gridSize
+towerLevel = index / sqrGridSize
+towerPos = indexToPosition(towerX, towerY, towerLevel)
+for c in level.creatures.creatures
+  distX = c.pos[0] - towerPos.x
+  distY = c.pos[1] - towerPos.y
+distSQR = distX*distX + distY*distY
+  if (distSQR < archerRadiusSQR)
+
+  */
 catapultTowerUpdate = function(index) {};
+/*
+Tower class
+*/
+Tower = function() {};
 /*
 Collection of all towers
 */

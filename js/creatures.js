@@ -192,43 +192,51 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
             {
               type: "instance",
               target: creature.getId()
+            }, {
+              type: "translate",
+              y: 1.0,
+              nodes: [
+                {
+                  type: "billboard",
+                  id: "hpBar",
+                  nodes: [
+                    {
+                      type: "texture"
+                      /*
+                      nodes: [
+                        type: "geometry",
+                        resource: "bill",
+                        primitive: "triangles",
+                        positions : [
+                          -0.5, 0.1, 0,
+                          -0.5, -0.1, 0,
+                          0.5,-0.1, 0,
+                          0.5,0.1, 0
+                        ],
+                        normals : [
+                          0, 1, 0,
+                          0, 1, 0,
+                          0, 1, 0,
+                          0, 1, 0
+                        ],
+                        uv : [
+                          0, 1,
+                          0, 0,
+                          1, 0,
+                          1, 1
+                        ],
+                        indices : [
+                          0, 1, 2,
+                          0, 2, 3
+                        ]
+                      ]
+                      */
+                    }
+                  ]
+                }
+              ]
             }
           ]
-          /*,
-             type: "billboard",
-             id: "hpBar",
-             nodes: [
-               type: "texture",
-               layers: [ { uri: "textures/moon.png" } ]
-               nodes: [
-                 type: "geometry",
-                 resource: "bill",
-                 primitive: "triangles",
-                 positions : [
-                   -0.5, 0.1, 0,
-                   -0.5, -0.1, 0,
-                   0.5,-0.1, 0,
-                   0.5,0.1, 0
-                 ],
-                 normals : [
-                   0, 1, 0,
-                   0, 1, 0,
-                   0, 1, 0,
-                   0, 1, 0
-                 ],
-                 uv : [
-                   0, 1,
-                   0, 0,
-                   1, 0,
-                   1, 1
-                 ],
-                 indices : [
-                   0, 1, 2,
-                   0, 2, 3
-                 ]
-               ]
-             ]
-             */
         }
       ]
     }
@@ -244,7 +252,7 @@ Creatures.prototype.update = function() {
     creature.update();
   }
   SceneJS.withNode("creatures").eachNode(function() {
-    return this.eachNode(function() {
+    this.eachNode(function() {
       this.set({
         x: creatures[c].pos[0],
         y: creatures[c].pos[1],
@@ -252,6 +260,9 @@ Creatures.prototype.update = function() {
       });
       return this.node(0).set("angle", creatures[c].rot);
     }, {});
+    return {
+      todo: c += 1
+    };
   }, {});
   return null;
 };

@@ -11,6 +11,7 @@ timeline = new Timeline
 
 spawnScorpions = (time) ->
   #alert "Spawn scorpions"
+  level.creatures.addCreature(Scorpion)
   null
 
-timeline.addEvent(1.0, spawnScorpions)
+timeline.addEvent(2.0, spawnScorpions)

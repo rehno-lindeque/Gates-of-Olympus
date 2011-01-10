@@ -215,7 +215,7 @@
     scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
     lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75);
     scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position));
-    timeline.update(1);
+    timeline.update(1.0 / 60.0);
     return renderScene();
   };
   interval = window.setInterval("window.render()", 10);

@@ -171,42 +171,49 @@ class Creatures
       nodes: [
         type: "rotate"
         angle: 0.0, z: 1.0
-        nodes: [ type: "instance", target: creature.getId() ]
-     ###,
-        type: "billboard",
-        id: "hpBar",
-        nodes: [
-          type: "texture",
-          layers: [ { uri: "textures/moon.png" } ]
+        nodes: [ 
+          type: "instance", target: creature.getId()
+        ,
+          type: "translate"
+          y: 1.0
           nodes: [
-            type: "geometry",
-            resource: "bill",
-            primitive: "triangles",
-            positions : [
-              -0.5, 0.1, 0,
-              -0.5, -0.1, 0,
-              0.5,-0.1, 0,
-              0.5,0.1, 0
-            ],
-            normals : [
-              0, 1, 0,
-              0, 1, 0,
-              0, 1, 0,
-              0, 1, 0
-            ],
-            uv : [
-              0, 1,
-              0, 0,
-              1, 0,
-              1, 1
-            ],
-            indices : [  
-              0, 1, 2,
-              0, 2, 3
+            type: "billboard",
+            id: "hpBar",
+            nodes: [
+              type: "texture",
+              #layers: [ { uri: "textures/moon.png" } ]
+              ###
+              nodes: [
+                type: "geometry",
+                resource: "bill",
+                primitive: "triangles",
+                positions : [
+                  -0.5, 0.1, 0,
+                  -0.5, -0.1, 0,
+                  0.5,-0.1, 0,
+                  0.5,0.1, 0
+                ],
+                normals : [
+                  0, 1, 0,
+                  0, 1, 0,
+                  0, 1, 0,
+                  0, 1, 0
+                ],
+                uv : [
+                  0, 1,
+                  0, 0,
+                  1, 0,
+                  1, 1
+                ],
+                indices : [  
+                  0, 1, 2,
+                  0, 2, 3
+                ]
+              ]
+              ###
             ]
           ]
         ]
-        ###
       ]
     ])
   
@@ -215,13 +222,14 @@ class Creatures
     creatures = @creatures
     for creature in creatures
       creature.update()
+      SceneJS.withNode(creature.getId)
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.eachNode(
           () ->        
             this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
             this.node(0).set("angle", creatures[c].rot)
-            #todo: c += 1
+            #c += 1 # this wont work as each of the creatures is in a list specific to its creature type
           {}
         )
       {}

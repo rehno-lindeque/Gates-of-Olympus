@@ -276,7 +276,7 @@ window.render = ->
   scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
   
   # Update game events
-  timeline.update(1);
+  timeline.update(1.0/60.0);
   
   # Render the scene
   renderScene()
