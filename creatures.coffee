@@ -18,7 +18,7 @@ creatureMaxHP[2] = 100
 # For now I'm just going to let each creature initialize itself.  This can later maybe be replaced by a spawn()
 # function which does the initialization.  But for now this will do.
 class Creature
-  create: (id) ->
+  create: () ->
     @pos = [0.0,0.0,platformHeights[0] + 10.0]
     @rot = 0.0
     @level = 0
@@ -29,7 +29,6 @@ class Creature
     @state = 0            # 0 = Fall, 1 = Roam, 2 = Done, 3 = Dead
     @speed = 0.1
     @fallVelocity = [0.0,0.0,-@speed]
-    @id = "creature" + id
     null
   
   getId: -> @id  
@@ -102,34 +101,37 @@ class Creature
     null
 
 class Scorpion extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
     @maxHealth = 100
     @health = @maxHealth
     @speed = 0.02
     @index = 0
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
 
 class Fish extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
     @maxHealth = 80
     @health = @maxHealth
     @speed = 0.04
     @index = 1
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
 
 class Snake extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
     @maxHealth = 120
     @health = @maxHealth
     @speed = 0.06
     @index = 2
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
@@ -167,10 +169,11 @@ class Creatures
         id:   creatureIds[2] + "tex"
         layers: [ uri: creatureTextureURI[2] ]
       ]
-      
+    @nextId = 0
 
   addCreature: (CreaturePrototype) ->
-    creature = new CreaturePrototype
+    creature = new CreaturePrototype(@nextId)
+    @nextId += 1
     @creatures[@creatures.length] = creature
     SceneJS.withNode("creatures").node(creature.index).add("nodes", [
       type: "translate"

@@ -21,7 +21,7 @@ creatureMaxHP[1] = 80
 creatureMaxHP[2] = 100
 */
 Creature = function() {};
-Creature.prototype.create = function(id) {
+Creature.prototype.create = function() {
   this.pos = [0.0, 0.0, platformHeights[0] + 10.0];
   this.rot = 0.0;
   this.level = 0;
@@ -31,7 +31,6 @@ Creature.prototype.create = function(id) {
   this.state = 0;
   this.speed = 0.1;
   this.fallVelocity = [0.0, 0.0, -this.speed];
-  this.id = "creature" + id;
   return null;
 };
 Creature.prototype.getId = function() {
@@ -98,36 +97,39 @@ Creature.prototype.damage = function(amount) {
   }
   return null;
 };
-Scorpion = function() {
+Scorpion = function(id) {
   this.create();
   this.maxHealth = 100;
   this.health = this.maxHealth;
   this.speed = 0.02;
   this.index = 0;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Scorpion, Creature);
 Scorpion.prototype.create = function() {
   return Scorpion.__super__.create.call(this);
 };
-Fish = function() {
+Fish = function(id) {
   this.create();
   this.maxHealth = 80;
   this.health = this.maxHealth;
   this.speed = 0.04;
   this.index = 1;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Fish, Creature);
 Fish.prototype.create = function() {
   return Fish.__super__.create.call(this);
 };
-Snake = function() {
+Snake = function(id) {
   this.create();
   this.maxHealth = 120;
   this.health = this.maxHealth;
   this.speed = 0.06;
   this.index = 2;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Snake, Creature);
@@ -185,11 +187,13 @@ Creatures = function() {
       }
     ]
   };
+  this.nextId = 0;
   return this;
 };
 Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
-  creature = new CreaturePrototype();
+  creature = new CreaturePrototype(this.nextId);
+  this.nextId += 1;
   this.creatures[this.creatures.length] = creature;
   return SceneJS.withNode("creatures").node(creature.index).add("nodes", [
     {
