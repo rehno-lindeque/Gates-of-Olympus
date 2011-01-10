@@ -194,7 +194,7 @@ towerIsBlocking = (index) ->
   startIndex[2] = levelGoals[1] + sqrGridSize
   
  
-  if (grid[startIndex[towerLevel]] == 0) #next[startIndex][levelGoals[0]
+  if (index == startIndex[towerLevel] || grid[startIndex[towerLevel]] == 0) #next[startIndex][levelGoals[0]
     return true
       
   for c in level.creatures.creatures

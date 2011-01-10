@@ -152,8 +152,8 @@ AtmosphereModule =
     
     # Create the grid 
     # We'll assume the user has a 4:3 aspect ratio, so we'll construct the grid using the same ratio of quads
-    nx = 4 * 15
-    ny = 3 * 15
+    nx = 4 * 30
+    ny = 3 * 30
     vertices = new Array((ny+1) * (nx+1) * 2)
     for cy in [0..ny]    
       for cx in [0..nx]
@@ -210,13 +210,11 @@ AtmosphereModule =
   
   renderLo: (gl, view, invProjection, nearZ, sun) ->
     # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
     #gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    #gl.enable(gl.BLEND)
     gl.disable(gl.BLEND)
-    #gl.disable(gl.DEPTH_TEST)
     gl.depthMask(false)
     
     # Bind shaders and parameters
@@ -238,7 +236,7 @@ AtmosphereModule =
     ESun = 20.0               # Sun brightness constant
     #g = -0.990               # The Mie phase asymmetry factor
     #exposure = 2.0    
-    cameraHeight = 10.05
+    cameraHeight = 10.01
     innerRadius = 10.0
     outerRadius = 10.25
     scale = 1.0 / (outerRadius - innerRadius)
@@ -266,14 +264,15 @@ AtmosphereModule =
     gl.uniform1f(@shaderProgram.gSqr, -0.990 * -0.990)
     
     # Draw geometry
-    nx = 4 * 15
-    ny = 3 * 15
+    nx = 4 * 30
+    ny = 3 * 30
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, @indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0)
     
     # Restore gl state
-    if saveState.blend then gl.enable(gl.BLEND)
+    #if saveState.blend then gl.enable(gl.BLEND)
     #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
+    gl.enable(gl.BLEND)
     gl.depthMask(true)
     null
   

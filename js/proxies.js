@@ -135,6 +135,7 @@ Level = function() {
       ballistaTowers: towerNode(2, "ballistaTowers2", [])
     }
   ];
+  this.projectiles = [[new CatapultProjectiles(0)], [new CatapultProjectiles(1)], [new CatapultProjectiles(2)]];
   this.node = this.createNode();
   return this;
 };
@@ -174,7 +175,30 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
   return null;
 };
 Level.prototype.update = function() {
-  return this.creatures.update();
+  var _a, _b, _c, creature;
+  this.creatures.update();
+  _b = this.creatures.creatures;
+  for (_a = 0, _c = _b.length; _a < _c; _a++) {
+    creature = _b[_a];
+    this.towers.present(creature);
+  }
+  return this.towers.update();
+};
+Level.prototype.renderProjectiles = function(gl, time) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, projectile, projectiles;
+  _a = []; _c = this.projectiles;
+  for (_b = 0, _d = _c.length; _b < _d; _b++) {
+    projectiles = _c[_b];
+    _a.push((function() {
+      _e = []; _g = projectiles;
+      for (_f = 0, _h = _g.length; _f < _h; _f++) {
+        projectile = _g[_f];
+        _e.push(projectile.render(gl, time));
+      }
+      return _e;
+    })());
+  }
+  return _a;
 };
 Level.prototype.createNode = function() {
   return {
@@ -204,7 +228,7 @@ Level.prototype.createPlatformNode = function(k) {
   return {
     type: "translate",
     z: platformHeights[k],
-    nodes: this.platformGeometry("level" + k, k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers])
+    nodes: this.platformGeometry("level" + k, k).concat([this.towerNodes[k].archerTowers, this.towerNodes[k].catapultTowers, this.towerNodes[k].ballistaTowers, this.projectiles[k][0].node])
   };
 };
 Level.prototype.platformGeometry = function(platformId, index) {
@@ -344,7 +368,8 @@ LevelCamera.prototype.withNode = function() {
 LevelCamera.prototype.reconfigure = function(canvasSize) {
   this.optics.left = -12.5 * (canvasSize[0] / canvasSize[1]);
   this.optics.right = 12.5 * (canvasSize[0] / canvasSize[1]);
-  return this.withNode().set("optics", this.optics);
+  this.withNode().set("optics", this.optics);
+  return null;
 };var LevelLookAt;
 /*
 The look-at proxy for the main game scene
@@ -494,13 +519,14 @@ GUIDais = function(index) {
   return this;
 };
 GUIDais.prototype.update = function() {
-  return SceneJS.withNode(this.id).node(0).node(0).set({
+  SceneJS.withNode(this.id).node(0).node(0).set({
     angle: guiDaisRotPosition[this.index * 2],
     z: 1.0
   }).node(0).set({
     angle: guiDaisRotPosition[this.index * 2 + 1],
     x: 1.0
   });
+  return null;
 };var GUI;
 /*
 Top level GUI container
@@ -704,11 +730,7 @@ MoonModule = {
     return null;
   },
   render: function(gl, view, projection, pos) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var k, shaderProgram;
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     shaderProgram = this.shaderProgram;
@@ -732,9 +754,7 @@ MoonModule = {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, null);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
-    }
+    gl.disable(gl.BLEND);
     return null;
   }
 };
@@ -875,7 +895,7 @@ Sun.prototype.render = function(gl, view, projection, time) {
   cosAzim = Math.cos(orbit[1]);
   sinAzim = Math.sin(orbit[1]);
   this.position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl];
-  return SunModule.render(gl, view, projection, this.position);
+  return null;
 };var DaisClouds, DaisCloudsModule, DaisCloudsNode;
 /*
 A scenejs extension that renders a cloud particles around the daises
@@ -925,11 +945,7 @@ DaisCloudsModule = {
     return null;
   },
   render: function(gl, view, projection) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var k, shaderProgram;
     gl.enable(gl.BLEND);
     gl.blendEquation(gl.FUNC_ADD);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -945,9 +961,7 @@ DaisCloudsModule = {
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
     gl.drawArrays(gl.POINTS, 0, this.numParticles);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
-    }
+    gl.disable(gl.BLEND);
     gl.depthMask(true);
     return null;
   }
@@ -1103,8 +1117,8 @@ AtmosphereModule = {
     var _a, _b, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
-    nx = 4 * 15;
-    ny = 3 * 15;
+    nx = 4 * 30;
+    ny = 3 * 30;
     vertices = new Array((ny + 1) * (nx + 1) * 2);
     for (cy = 0; (0 <= ny ? cy <= ny : cy >= ny); (0 <= ny ? cy += 1 : cy -= 1)) {
       for (cx = 0; (0 <= nx ? cx <= nx : cx >= nx); (0 <= nx ? cx += 1 : cx -= 1)) {
@@ -1160,11 +1174,7 @@ AtmosphereModule = {
     return null;
   },
   renderLo: function(gl, view, invProjection, nearZ, sun) {
-    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, saveState, scale, wavelength, wavelength4;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
+    var ESun, Km, Km4PI, Kr, Kr4PI, cameraHeight, innerRadius, nx, ny, outerRadius, rayleighScaleDepth, scale, wavelength, wavelength4;
     gl.disable(gl.BLEND);
     gl.depthMask(false);
     gl.useProgram(this.shaderProgram);
@@ -1178,7 +1188,7 @@ AtmosphereModule = {
     Km = 0.0010;
     Km4PI = Km * 4.0 * Math.PI;
     ESun = 20.0;
-    cameraHeight = 10.05;
+    cameraHeight = 10.01;
     innerRadius = 10.0;
     outerRadius = 10.25;
     scale = 1.0 / (outerRadius - innerRadius);
@@ -1200,13 +1210,11 @@ AtmosphereModule = {
     gl.uniform1f(this.shaderProgram.scaleDivScaleDepth, scale / rayleighScaleDepth);
     gl.uniform1f(this.shaderProgram.g, -0.990);
     gl.uniform1f(this.shaderProgram.gSqr, -0.990 * -0.990);
-    nx = 4 * 15;
-    ny = 3 * 15;
+    nx = 4 * 30;
+    ny = 3 * 30;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.drawElements(gl.TRIANGLES, ny * nx * 6, gl.UNSIGNED_SHORT, 0);
-    if (saveState.blend) {
-      gl.enable(gl.BLEND);
-    }
+    gl.enable(gl.BLEND);
     gl.depthMask(true);
     return null;
   },
@@ -1250,7 +1258,7 @@ StoneProjectilesModule = {
   shaderProgram: null,
   createResources: function(gl) {
     var fragmentShader, vertexShader;
-    attributeBuffers.create(gl);
+    this.attributeBuffers.create(gl);
     this.shaderProgram = gl.createProgram();
     vertexShader = compileShader(gl, "stoneprojectile-vs");
     fragmentShader = compileShader(gl, "stoneprojectile-fs");
@@ -1262,9 +1270,15 @@ StoneProjectilesModule = {
     }
     gl.useProgram(this.shaderProgram);
     this.shaderProgram.vertexPosition = gl.getAttribLocation(this.shaderProgram, "vertexPosition");
+    this.shaderProgram.targetVector = gl.getAttribLocation(this.shaderProgram, "targetVector");
+    this.shaderProgram.t = gl.getAttribLocation(this.shaderProgram, "t");
     gl.enableVertexAttribArray(this.shaderProgram.vertexPosition);
+    gl.enableVertexAttribArray(this.shaderProgram.targetVector);
+    gl.enableVertexAttribArray(this.shaderProgram.t);
     this.shaderProgram.view = gl.getUniformLocation(this.shaderProgram, "view");
     this.shaderProgram.projection = gl.getUniformLocation(this.shaderProgram, "projection");
+    this.shaderProgram.currentT = gl.getUniformLocation(this.shaderProgram, "currentT");
+    this.shaderProgram.lifeT = gl.getUniformLocation(this.shaderProgram, "lifeT");
     return null;
   },
   destroyResources: function() {
@@ -1272,37 +1286,25 @@ StoneProjectilesModule = {
       if (this.shaderProgram) {
         this.shaderProgram.destroy();
       }
-      if (this.vertexBuffer) {
-        this.vertexBuffer.destroy();
+      if (this.attributeBuffers) {
+        this.attributeBuffers.destroy();
       }
     }
     return null;
   },
   render: function(gl, view, projection) {
-    var k, saveState, shaderProgram;
-    saveState = {
-      blend: gl.getParameter(gl.BLEND),
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-    };
-    gl.enable(gl.BLEND);
-    gl.blendEquation(gl.FUNC_ADD);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.depthMask(false);
+    var k, shaderProgram;
     shaderProgram = this.shaderProgram;
     gl.useProgram(shaderProgram);
     for (k = 1; k <= 7; k++) {
       gl.disableVertexAttribArray(k);
     }
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.enableVertexAttribArray(shaderProgram.vertexPosition);
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    this.attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t]);
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view));
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection));
-    gl.drawArrays(gl.POINTS, 0, this.numParticles);
-    if (!saveState.blend) {
-      gl.disable(gl.BLEND);
-    }
-    gl.depthMask(true);
+    gl.uniform1f(shaderProgram.currentT, this.attributeBuffers.t);
+    gl.uniform1f(shaderProgram.lifeT, this.attributeBuffers.lifeTime);
+    gl.drawArrays(gl.POINTS, this.attributeBuffers.getOffset(), this.attributeBuffers.getCount());
     return null;
   }
 };
@@ -1336,7 +1338,7 @@ Catapult projectiles proxy
 CatapultProjectiles = function(index) {
   this.node = {
     type: "stone-projectiles",
-    id: "catapult-projectiles"
+    id: "catapult-projectiles" + index
   };
   return this;
 };
@@ -1348,8 +1350,12 @@ CatapultProjectiles.prototype.render = function(gl, time) {
   nodeRef = this.withNode();
   view = nodeRef.get("view");
   projection = nodeRef.get("projection");
-  if (!DaisCloudsModule.vertexBuffer) {
-    DaisCloudsModule.createResources(gl);
+  if (!StoneProjectilesModule.shaderProgram) {
+    StoneProjectilesModule.createResources(gl);
   }
-  return DaisCloudsModule.render(gl, view, projection);
+  StoneProjectilesModule.attributeBuffers.update(gl, time);
+  return StoneProjectilesModule.render(gl, view, projection);
+};
+CatapultProjectiles.prototype.add = function(position, targetVector) {
+  return StoneProjectilesModule.attributeBuffers.push([position, targetVector]);
 };

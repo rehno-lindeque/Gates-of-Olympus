@@ -61,5 +61,5 @@ class GUIDais
         angle: guiDaisRotPosition[@index*2+1]
         x: 1.0
       )
-
+    null
 

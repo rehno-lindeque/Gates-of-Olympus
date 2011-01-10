@@ -17,7 +17,7 @@ StoneProjectilesModule =
   
   createResources: (gl) ->
     # Create the attribute buffers
-    attributeBuffers.create(gl)
+    @attributeBuffers.create(gl)
     
     # Create shader program
     @shaderProgram = gl.createProgram()
@@ -35,53 +35,62 @@ StoneProjectilesModule =
     # Set shader parameters
     gl.useProgram(@shaderProgram)
     @shaderProgram.vertexPosition = gl.getAttribLocation(@shaderProgram, "vertexPosition")
+    @shaderProgram.targetVector = gl.getAttribLocation(@shaderProgram, "targetVector")
+    @shaderProgram.t = gl.getAttribLocation(@shaderProgram, "t")
     gl.enableVertexAttribArray(@shaderProgram.vertexPosition)
+    gl.enableVertexAttribArray(@shaderProgram.targetVector)
+    gl.enableVertexAttribArray(@shaderProgram.t)
     
     @shaderProgram.view = gl.getUniformLocation(@shaderProgram, "view")
     @shaderProgram.projection = gl.getUniformLocation(@shaderProgram, "projection")
+    @shaderProgram.currentT = gl.getUniformLocation(@shaderProgram, "currentT")
+    @shaderProgram.lifeT = gl.getUniformLocation(@shaderProgram, "lifeT")
+    
+    # TEMPORARY: Push some initial particles onto the attribute buffers, just to test with
+    #@attributeBuffers.push([
+    #  [0.1,0.1,0.1],[0.1,1.0,0.1]
+    #])
+    #@attributeBuffers.push([
+    #  [0.5,0.5,0.5],[0.1,1.0,0.1]
+    #])
+    #@attributeBuffers.push([
+    #  [2.5,2.5,2.5],[2.0,2.0,2.0]
+    #])
+    #@attributeBuffers.update(gl, 0.0)
     
     null
   
   destroyResources: ->
     if document.getElementById(canvas.canvasId) # According to geometryModule: Context won't exist if canvas has disappeared
       if @shaderProgram then @shaderProgram.destroy()
-      if @vertexBuffer then @vertexBuffer.destroy()
+      if @attributeBuffers then @attributeBuffers.destroy()
     null
   
   render: (gl, view, projection) ->
     # Change gl state
-    saveState =
-      blend:     gl.getParameter(gl.BLEND)
-      depthTest: gl.getParameter(gl.DEPTH_TEST)
-
-    gl.enable(gl.BLEND)    
-    gl.blendEquation(gl.FUNC_ADD)
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    #gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
-
-    #gl.disable(gl.DEPTH_TEST)
-    gl.depthMask(false)
+    #saveState =
+    #  blend:     gl.getParameter(gl.BLEND)
+    #  depthTest: gl.getParameter(gl.DEPTH_TEST)
+    
+    #gl.disable(gl.BLEND)
     
     # Bind shaders and parameters
     shaderProgram = @shaderProgram
     gl.useProgram(shaderProgram)
-
-    gl.disableVertexAttribArray(k) for k in [1..7]
     
-    gl.bindBuffer(gl.ARRAY_BUFFER, @vertexBuffer)
-    gl.enableVertexAttribArray(shaderProgram.vertexPosition)
-    gl.vertexAttribPointer(shaderProgram.vertexPosition, 3, gl.FLOAT, false, 0, 0)
+    gl.disableVertexAttribArray(k) for k in [1..7]
+    @attributeBuffers.bind(gl, [shaderProgram.vertexPosition, shaderProgram.targetVector, shaderProgram.t])
     
     gl.uniformMatrix4fv(shaderProgram.view, false, new Float32Array(view))
     gl.uniformMatrix4fv(shaderProgram.projection, false, new Float32Array(projection))
+    gl.uniform1f(shaderProgram.currentT, @attributeBuffers.t)
+    gl.uniform1f(shaderProgram.lifeT, @attributeBuffers.lifeTime)
     
     # Draw geometry
-    gl.drawArrays(gl.POINTS, 0, @numParticles)
+    gl.drawArrays(gl.POINTS, @attributeBuffers.getOffset(), @attributeBuffers.getCount())
     
     # Restore gl state
-    if not saveState.blend then gl.disable(gl.BLEND)
-    #if saveState.depthTest then gl.enable(gl.DEPTH_TEST)
-    gl.depthMask(true)
+    #if saveState.blend then gl.enable(gl.BLEND)
     null
 
 ###
@@ -117,7 +126,7 @@ class CatapultProjectiles
   constructor: (index) ->
     @node =
       type: "stone-projectiles"
-      id: "catapult-projectiles"
+      id: "catapult-projectiles" + index
   
   withNode: -> SceneJS.withNode @node.id
   
@@ -125,6 +134,11 @@ class CatapultProjectiles
     nodeRef = @withNode()
     view = nodeRef.get "view"
     projection = nodeRef.get "projection"
-    if not DaisCloudsModule.vertexBuffer then DaisCloudsModule.createResources(gl)
-    DaisCloudsModule.render(gl, view, projection)
+    if not StoneProjectilesModule.shaderProgram then StoneProjectilesModule.createResources(gl)
+    StoneProjectilesModule.attributeBuffers.update(gl, time)
+    StoneProjectilesModule.render(gl, view, projection)
+  
+  add: (position, targetVector) ->
+    StoneProjectilesModule.attributeBuffers.push([position, targetVector])
+    
 

@@ -9,10 +9,104 @@ CircularAttributeBuffers = function(size, lifeTime) {
   this.size = size;
   this.lifeTime = lifeTime;
   this.t = 0.0;
-  this.vertices = new Array(this.size);
+  this.bottomOffset = 0;
+  this.topOffset = 0;
+  this.attributeBuffers = [];
+  this.attributeQueues = [];
+  this.attributeInfos = [];
   return this;
 };
 CircularAttributeBuffers.prototype.create = function(gl) {
-  this.vertexBuffers = [gl.createBuffer()];
-  return gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffers[0]);
+  this.attributeBuffers.push(gl.createBuffer());
+  this.attributeInfos.push({
+    elements: 3,
+    glType: gl.FLOAT
+  });
+  this.attributeQueues.push([]);
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[0]);
+  gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[0].elements, gl.STREAM_DRAW);
+  this.attributeBuffers.push(gl.createBuffer());
+  this.attributeInfos.push({
+    elements: 3,
+    glType: gl.FLOAT
+  });
+  this.attributeQueues.push([]);
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[1]);
+  gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[1].elements, gl.STREAM_DRAW);
+  this.attributeBuffers.push(gl.createBuffer());
+  this.attributeInfos.push({
+    elements: 1,
+    glType: gl.FLOAT
+  });
+  this.attributeQueues.push([]);
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[2]);
+  gl.bufferData(gl.ARRAY_BUFFER, this.size * this.attributeInfos[2].elements, gl.STREAM_DRAW);
+  return null;
+};
+CircularAttributeBuffers.prototype.push = function(elements) {
+  var _a, k;
+  _a = elements.length;
+  for (k = 0; (0 <= _a ? k < _a : k > _a); (0 <= _a ? k += 1 : k -= 1)) {
+    this.attributeQueues[k] = this.attributeQueues[k].concat(elements[k]);
+  }
+  return null;
+};
+CircularAttributeBuffers.prototype.getRange = function() {
+  return [this.bottomOffset, this.topOffset];
+};
+CircularAttributeBuffers.prototype.getOffset = function() {
+  return this.bottomOffset;
+};
+CircularAttributeBuffers.prototype.getCount = function() {
+  return this.topOffset - this.bottomOffset;
+};
+CircularAttributeBuffers.prototype.update = function(gl, t) {
+  var _a, k, num, numVertices, queue;
+  this.t = t;
+  numVertices = this.attributeQueues[0].length / this.attributeInfos[0].elements;
+  if (numVertices === 0) {
+    return null;
+  }
+  for (k = 0; (0 <= numVertices ? k < numVertices : k > numVertices); (0 <= numVertices ? k += 1 : k -= 1)) {
+    this.attributeQueues[this.attributeQueues.length - 1].push(t);
+  }
+  _a = this.attributeQueues.length;
+  for (k = 0; (0 <= _a ? k < _a : k > _a); (0 <= _a ? k += 1 : k -= 1)) {
+    queue = this.attributeQueues[k];
+    if ((this.topOffset < this.bottomOffset && this.topOffset + queue.length < this.bottomOffset) || ((this.topOffset >= this.bottomOffset) && this.topOffset + queue.length < this.size)) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[k]);
+      gl.bufferSubData(gl.ARRAY_BUFFER, this.topOffset * this.attributeInfos[k].elements, new Float32Array(queue));
+    } else {
+      if (this.topOffset < this.bottomOffset) {
+        num = this.bottomOffset - this.topOffset;
+      } else {
+        num = this.size - this.topOffset;
+      }
+    }
+    this.attributeQueues[k] = [];
+  }
+  this.topOffset += numVertices;
+  return null;
+};
+CircularAttributeBuffers.prototype.bind = function(gl, shaderLocations) {
+  var _a, k;
+  _a = this.attributeBuffers.length;
+  for (k = 0; (0 <= _a ? k < _a : k > _a); (0 <= _a ? k += 1 : k -= 1)) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.attributeBuffers[k]);
+    gl.enableVertexAttribArray(shaderLocations[k]);
+    gl.vertexAttribPointer(shaderLocations[k], this.attributeInfos[k].elements, this.attributeInfos[k].glType, false, 0, 0);
+  }
+  return null;
+};
+CircularAttributeBuffers.prototype.destroy = function() {
+  var _a, _b, _c, buffer;
+  _b = this.attributeBuffers;
+  for (_a = 0, _c = _b.length; _a < _c; _a++) {
+    buffer = _b[_a];
+    buffer.destroy();
+  }
+  this.attributeBuffers = [];
+  this.attributeQueues = [[]];
+  this.attributeInfos = [];
+  return null;
 };

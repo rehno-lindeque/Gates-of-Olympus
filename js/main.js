@@ -177,12 +177,13 @@
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
-    view = lookAtMat4c(eye.x, eye.y, 0.0, look.x, look.y, 1.0, up.x, up.y, up.z);
+    view = lookAtMat4c(eye.x, eye.y, 0.0, look.x, look.y, 0.6, up.x, up.y, up.z);
     optics = backgroundCamera.optics;
     projection = perspectiveMatrix4(optics.fovy * Math.PI / 180.0, optics.aspect, optics.near, optics.far);
     atmosphere.render(customGL, mat4To3(view), inverseMat4(projection), optics.near, sun.position);
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
+    level.renderProjectiles(customGL, timeline.time);
     _a = [];
     for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
       _a.push(gui.daises[c].daisClouds.render(customGL, timeline.time));

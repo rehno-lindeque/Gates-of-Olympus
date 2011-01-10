@@ -137,5 +137,6 @@ class Sun
     sinAzim = Math.sin(orbit[1])
     @position = [cosIncl * sinAzim, cosIncl * cosAzim, sinIncl]
     
-    SunModule.render(gl, view, projection, @position)
-
+    # Render a debug visual for the sun in order to match it to the atmospheric scattering
+    #SunModule.render(gl, view, projection, @position)
+    null

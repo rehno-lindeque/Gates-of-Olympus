@@ -44,18 +44,23 @@ class Level
     @towers = new Towers
     @creatures = new Creatures
     @towerNodes = [
-        archerTowers:   towerNode(0, "archerTowers0", [])
-        catapultTowers: towerNode(1, "catapultTowers0", [])
-        ballistaTowers: towerNode(2, "ballistaTowers0", [])
-      ,
-        archerTowers:   towerNode(0, "archerTowers1", [])
-        catapultTowers: towerNode(1, "catapultTowers1", [])
-        ballistaTowers: towerNode(2, "ballistaTowers1", [])
-      ,
-        archerTowers:   towerNode(0, "archerTowers2", [])
-        catapultTowers: towerNode(1, "catapultTowers2", [])
-        ballistaTowers: towerNode(2, "ballistaTowers2", [])
-      ]
+      archerTowers:   towerNode(0, "archerTowers0", [])
+      catapultTowers: towerNode(1, "catapultTowers0", [])
+      ballistaTowers: towerNode(2, "ballistaTowers0", [])
+    ,
+      archerTowers:   towerNode(0, "archerTowers1", [])
+      catapultTowers: towerNode(1, "catapultTowers1", [])
+      ballistaTowers: towerNode(2, "ballistaTowers1", [])
+    ,
+      archerTowers:   towerNode(0, "archerTowers2", [])
+      catapultTowers: towerNode(1, "catapultTowers2", [])
+      ballistaTowers: towerNode(2, "ballistaTowers2", [])
+    ]
+    @projectiles = [
+      [new CatapultProjectiles(0)]
+      [new CatapultProjectiles(1)]
+      [new CatapultProjectiles(2)]
+    ]
     @node = @createNode()
   
   # Get the root node for placing towers
@@ -113,6 +118,16 @@ class Level
   # Update the game logic related to the level
   update: ->
     @creatures.update()
+    # Let each creature present itself to the surrounding towers as a target
+    for creature in @creatures.creatures
+      @towers.present(creature)
+    @towers.update()
+  
+  # Render all the projectiles
+  renderProjectiles: (gl, time) ->
+    for projectiles in @projectiles
+      for projectile in projectiles
+        projectile.render(gl,time)
   
   # Create the node hierarchy for the level
   createNode: ->
@@ -141,11 +156,13 @@ class Level
   createPlatformNode: (k) ->
     type: "translate"
     z: platformHeights[k]
-    nodes: @platformGeometry("level"+ k, k).concat([
-      @towerNodes[k].archerTowers
-      @towerNodes[k].catapultTowers
-      @towerNodes[k].ballistaTowers
-    ])
+    nodes: @platformGeometry("level"+ k, k)
+      .concat([
+        @towerNodes[k].archerTowers
+        @towerNodes[k].catapultTowers
+        @towerNodes[k].ballistaTowers
+        @projectiles[k][0].node
+      ])
   
   # Create the platform geometry
   platformGeometry: (platformId, index) ->

@@ -30,8 +30,10 @@ class Creature
     @speed = 0.1
     @fallVelocity = [0.0,0.0,-@speed]
     null
-    
-  getId: -> creatureIds[@index]
+  
+  getId: -> @id  
+  withNode: -> SceneJS.withNode(@id)
+  getGeomId: -> creatureIds[@index]
   getTextureURI: -> creatureTextureURI[@index]
   
   getGridIndex: ->
@@ -91,38 +93,45 @@ class Creature
             
     index = positionToIndex(@pos[0],@pos[1],@level) 
     @gridIndex = index
-   
-    
+
+  damage: (amount) ->
+    @health -= amount
+    if @health <= 0
+      level.creatures.removeCreature(this)
+    null
+
 class Scorpion extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
-    @maxHealth = 100
+    @maxHealth = 120
     @health = @maxHealth
     @speed = 0.02
     @index = 0
-    
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
 
 class Fish extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
-    @maxHealth = 80
+    @maxHealth = 100
     @health = @maxHealth
     @speed = 0.04
     @index = 1
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
 
 class Snake extends Creature
-  constructor: () ->
+  constructor: (id) ->
     @create()
-    @maxHealth = 120
+    @maxHealth = 60
     @health = @maxHealth
     @speed = 0.06
     @index = 2
+    @id = creatureIds[@index] + id
   
   create: () ->
     super()
@@ -160,69 +169,68 @@ class Creatures
         id:   creatureIds[2] + "tex"
         layers: [ uri: creatureTextureURI[2] ]
       ]
-      
+    @nextId = 0
 
   addCreature: (CreaturePrototype) ->
-    creature = new CreaturePrototype
+    creature = new CreaturePrototype(@nextId)
+    @nextId += 1
     @creatures[@creatures.length] = creature
     SceneJS.withNode("creatures").node(creature.index).add("nodes", [
       type: "translate"
+      id: creature.getId()
       x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]
       nodes: [
         type: "rotate"
         angle: 0.0, z: 1.0
-        nodes: [ 
-          type: "instance", target: creature.getId()
-        ,
-          type: "translate"
-          y: 1.0
-          nodes: [
-            type: "billboard",
-            id: "hpBar",
-            nodes: [
-              type: "texture",
-              #layers: [ { uri: "textures/moon.png" } ]
-              ###
-              nodes: [
-                type: "geometry",
-                resource: "bill",
-                primitive: "triangles",
-                positions : [
-                  -0.5, 0.1, 0,
-                  -0.5, -0.1, 0,
-                  0.5,-0.1, 0,
-                  0.5,0.1, 0
-                ],
-                normals : [
-                  0, 1, 0,
-                  0, 1, 0,
-                  0, 1, 0,
-                  0, 1, 0
-                ],
-                uv : [
-                  0, 1,
-                  0, 0,
-                  1, 0,
-                  1, 1
-                ],
-                indices : [  
-                  0, 1, 2,
-                  0, 2, 3
-                ]
-              ]
-              ###
-            ]
-          ]
-        ]
+        nodes: [ type: "instance", target: creature.getGeomId() ]
+        #type: "billboard",
+        #id: "hpBar",
+        #nodes: [
+        #  type: "texture",
+        #  layers: [ { uri: "textures/moon.png" } ]
+        #  nodes: [
+        #    type: "geometry",
+        #    resource: "bill",
+        #    primitive: "triangles",
+        #    positions : [
+        #      -0.5, 0.1, 0,
+        #      -0.5, -0.1, 0,
+        #      0.5,-0.1, 0,
+        #      0.5,0.1, 0
+        #    ],
+        #    normals : [
+        #      0, 1, 0,
+        #      0, 1, 0,
+        #      0, 1, 0,
+        #      0, 1, 0
+        #    ],
+        #    uv : [
+        #      0, 1,
+        #      0, 0,
+        #      1, 0,
+        #      1, 1
+        #    ],
+        #    indices : [  
+        #      0, 1, 2,
+        #      0, 2, 3
+        #    ]
+        #  ]
+        #]
       ]
     ])
+  
+  removeCreature: (creature) ->
+    
   
   update: ->
     c = 0
     creatures = @creatures
     for creature in creatures
       creature.update()
-      SceneJS.withNode(creature.getId)
+      creature.withNode().set({x: creature.pos[0], y: creature.pos[1], z: creature.pos[2]})
+      creature.withNode().node(0).set("angle", creature.rot)
+    
+###    
     SceneJS.withNode("creatures").eachNode(
       () -> 
         this.eachNode(
@@ -234,4 +242,5 @@ class Creatures
         )
       {}
     )
+    ###
     null

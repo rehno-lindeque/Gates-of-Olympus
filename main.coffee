@@ -223,7 +223,7 @@ renderExtras = ->
   up = levelLookAt.backgroundLookAtNode.up
   view = lookAtMat4c(
     eye.x, eye.y, 0.0,
-    look.x, look.y, 1.0,
+    look.x, look.y, 0.6,
     up.x, up.y, up.z
   )
 
@@ -245,6 +245,9 @@ renderExtras = ->
   moon.render(customGL, view, projection, timeline.time)
   sun.render(customGL, view, projection, timeline.time)
 
+  # Render all projectiles
+  level.renderProjectiles(customGL, timeline.time)
+
   # Render the gui additions
   for c in [0..numTowerTypes-1]
     gui.daises[c].daisClouds.render(customGL, timeline.time)
@@ -265,8 +268,10 @@ window.render = ->
     guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0)
   
   gui.update()
-  # ai must be updated before level, as creatures get updated there
+  
+  # AI must be updated before level, as creatures get updated there
   updateAI()
+  
   level.update()
 
   # Animate the sun / moon lighting

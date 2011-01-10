@@ -9,6 +9,7 @@ Setup game events
 timeline = new Timeline();
 spawnScorpions = function(time) {
   level.creatures.addCreature(Scorpion);
+  timeline.addEvent(time + 1.0, spawnScorpions);
   return null;
 };
-timeline.addEvent(2.0, spawnScorpions);
+timeline.addEvent(1.0, spawnScorpions);

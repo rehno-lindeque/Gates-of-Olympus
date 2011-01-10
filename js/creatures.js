@@ -34,6 +34,12 @@ Creature.prototype.create = function() {
   return null;
 };
 Creature.prototype.getId = function() {
+  return this.id;
+};
+Creature.prototype.withNode = function() {
+  return SceneJS.withNode(this.id);
+};
+Creature.prototype.getGeomId = function() {
   return creatureIds[this.index];
 };
 Creature.prototype.getTextureURI = function() {
@@ -84,36 +90,46 @@ Creature.prototype.update = function() {
   index = positionToIndex(this.pos[0], this.pos[1], this.level);
   return (this.gridIndex = index);
 };
-Scorpion = function() {
+Creature.prototype.damage = function(amount) {
+  this.health -= amount;
+  if (this.health <= 0) {
+    level.creatures.removeCreature(this);
+  }
+  return null;
+};
+Scorpion = function(id) {
   this.create();
-  this.maxHealth = 100;
+  this.maxHealth = 120;
   this.health = this.maxHealth;
   this.speed = 0.02;
   this.index = 0;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Scorpion, Creature);
 Scorpion.prototype.create = function() {
   return Scorpion.__super__.create.call(this);
 };
-Fish = function() {
+Fish = function(id) {
   this.create();
-  this.maxHealth = 80;
+  this.maxHealth = 100;
   this.health = this.maxHealth;
   this.speed = 0.04;
   this.index = 1;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Fish, Creature);
 Fish.prototype.create = function() {
   return Fish.__super__.create.call(this);
 };
-Snake = function() {
+Snake = function(id) {
   this.create();
-  this.maxHealth = 120;
+  this.maxHealth = 60;
   this.health = this.maxHealth;
   this.speed = 0.06;
   this.index = 2;
+  this.id = creatureIds[this.index] + id;
   return this;
 };
 __extends(Snake, Creature);
@@ -171,15 +187,18 @@ Creatures = function() {
       }
     ]
   };
+  this.nextId = 0;
   return this;
 };
 Creatures.prototype.addCreature = function(CreaturePrototype) {
   var creature;
-  creature = new CreaturePrototype();
+  creature = new CreaturePrototype(this.nextId);
+  this.nextId += 1;
   this.creatures[this.creatures.length] = creature;
   return SceneJS.withNode("creatures").node(creature.index).add("nodes", [
     {
       type: "translate",
+      id: creature.getId(),
       x: creature.pos[0],
       y: creature.pos[1],
       z: creature.pos[2],
@@ -191,50 +210,7 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
           nodes: [
             {
               type: "instance",
-              target: creature.getId()
-            }, {
-              type: "translate",
-              y: 1.0,
-              nodes: [
-                {
-                  type: "billboard",
-                  id: "hpBar",
-                  nodes: [
-                    {
-                      type: "texture"
-                      /*
-                      nodes: [
-                        type: "geometry",
-                        resource: "bill",
-                        primitive: "triangles",
-                        positions : [
-                          -0.5, 0.1, 0,
-                          -0.5, -0.1, 0,
-                          0.5,-0.1, 0,
-                          0.5,0.1, 0
-                        ],
-                        normals : [
-                          0, 1, 0,
-                          0, 1, 0,
-                          0, 1, 0,
-                          0, 1, 0
-                        ],
-                        uv : [
-                          0, 1,
-                          0, 0,
-                          1, 0,
-                          1, 1
-                        ],
-                        indices : [
-                          0, 1, 2,
-                          0, 2, 3
-                        ]
-                      ]
-                      */
-                    }
-                  ]
-                }
-              ]
+              target: creature.getGeomId()
             }
           ]
         }
@@ -242,27 +218,37 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
     }
   ]);
 };
+Creatures.prototype.removeCreature = function(creature) {};
 Creatures.prototype.update = function() {
-  var _a, _b, _c, c, creature, creatures;
+  var _a, _b, _c, _d, c, creature, creatures;
   c = 0;
   creatures = this.creatures;
-  _b = creatures;
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    creature = _b[_a];
-    creature.update();
-  }
-  SceneJS.withNode("creatures").eachNode(function() {
-    this.eachNode(function() {
-      this.set({
-        x: creatures[c].pos[0],
-        y: creatures[c].pos[1],
-        z: creatures[c].pos[2]
+  _a = []; _c = creatures;
+  for (_b = 0, _d = _c.length; _b < _d; _b++) {
+    creature = _c[_b];
+    _a.push((function() {
+      creature.update();
+      creature.withNode().set({
+        x: creature.pos[0],
+        y: creature.pos[1],
+        z: creature.pos[2]
       });
-      return this.node(0).set("angle", creatures[c].rot);
-    }, {});
-    return {
-      todo: c += 1
-    };
-  }, {});
-  return null;
+      creature.withNode().node(0).set("angle", creature.rot);
+      /*
+          SceneJS.withNode("creatures").eachNode(
+            () ->
+              this.eachNode(
+                () ->
+                  this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
+                  this.node(0).set("angle", creatures[c].rot)
+                  #c += 1 # this wont work as each of the creatures is in a list specific to its creature type
+                {}
+              )
+            {}
+          )
+          */
+      return null;
+    })());
+  }
+  return _a;
 };

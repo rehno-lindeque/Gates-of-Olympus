@@ -197,7 +197,7 @@ towerIsBlocking = function(index) {
   startIndex[0] = positionToIndex(0, 0, 0);
   startIndex[1] = levelGoals[0] + sqrGridSize;
   startIndex[2] = levelGoals[1] + sqrGridSize;
-  if (grid[startIndex[towerLevel]] === 0) {
+  if (index === startIndex[towerLevel] || grid[startIndex[towerLevel]] === 0) {
     return true;
   }
   _b = level.creatures.creatures;
