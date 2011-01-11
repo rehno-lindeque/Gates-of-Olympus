@@ -71,16 +71,33 @@ class Towers
   
   update: ->
     # Fire projectiles at creatures and inflict damage
+    platformCenters = [ 
+      #gridToPosition(gridSize / 2, gridSize / 2, 0)
+      #gridToPosition(gridSize / 2, gridSize / 2, 1)
+      #gridToPosition(gridSize / 2, gridSize / 2, 2)
+      [0.0, 0.0, platformHeights[0]]
+      [0.0, 0.0, platformHeights[1]]
+      [0.0, 0.0, platformHeights[2]]
+    ]
     for clevel in [0...levels]
-      for cgrid in [0...sqrGridSize]
-        c = cgrid + clevel * sqrGridSize
-        if @delays[c] > 0.0
-          @delays[c] -= 1.0 # todo change this to the timeline dt
-        if @targets[c] != null && @delays[c] <= 0.0
-          level.projectiles[clevel][0].add([0.1,0.1,0.1],[0.1,1.0,0.1])
-          @targets[c].damage(10)
-          @delays[c] = 50.0
-        @targets[c] = null
+      for cy in [0...gridSize]
+        for cx in [0...gridSize]
+          c = clevel * sqrGridSize + cy * gridSize + cx
+          if @delays[c] > 0.0
+            @delays[c] -= 1.0 # todo change this to the timeline dt
+          if @targets[c] != null && @delays[c] <= 0.0 && @targets[c].health > 0 && Math.abs(@targets[c].pos[2] - (platformHeights[clevel] - platformHeightOffset)) < 0.5
+            origin = gridToPosition(cx,cy,clevel)
+            targetVec = subVec3(@targets[c].pos, origin)
+            targetVec[2] = 0.1;
+            origin[2] = 0.5;
+            level.projectiles[clevel][0].add(
+              #subVec3(origin, platformCenters[clevel])
+              origin
+              targetVec
+            )
+            @targets[c].damage(10)
+            @delays[c] = 50.0
+          @targets[c] = null
     null
   
   # Let a creature present itself to the surrounding towers as a target...

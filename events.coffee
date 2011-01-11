@@ -33,7 +33,8 @@ spawnCreepsEvent = (time) ->
   wave++
   if (wave % 2 == 0)
     numCreeps++
-  timeline.addEvent(1.0+ 15.0*wave, spawnCreepsEvent)
+  if (wave<20)
+    timeline.addEvent(1.0+ 15.0*wave, spawnCreepsEvent)
   
 spawnCreeps = (time, num, type) ->
   #alert "Spawn scorpions"

@@ -218,7 +218,11 @@ Creatures.prototype.addCreature = function(CreaturePrototype) {
     }
   ]);
 };
-Creatures.prototype.removeCreature = function(creature) {};
+Creatures.prototype.removeCreature = function(creature) {
+  return SceneJS.withNode("creatures").node(creature.index).remove({
+    nodes: [creature.getId()]
+  });
+};
 Creatures.prototype.update = function() {
   var _a, _b, _c, _d, c, creature, creatures;
   c = 0;

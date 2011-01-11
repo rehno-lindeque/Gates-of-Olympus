@@ -6,6 +6,23 @@ Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 ###
 
+###
+Start the game
+###
+
+# Game state
+gamePaused = true
+
+startGame = () ->
+  #$('#menucontainer').hide()
+  $('.instruct').animate({marginLeft: '-=1000'}, 800)
+  $('#menu').animate({marginTop: '-=1000'}, 800, () -> 
+    $('#menucontainer').hide()
+    gamePaused = false
+    null)
+  null
+
+$('a#play').bind('click',startGame)
 
 ###
 Initialization and rendering loop
@@ -270,9 +287,9 @@ window.render = ->
   gui.update()
   
   # AI must be updated before level, as creatures get updated there
-  updateAI()
-  
-  level.update()
+  if not gamePaused
+    updateAI()
+    level.update()
 
   # Animate the sun / moon lighting
   lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5)
@@ -281,7 +298,9 @@ window.render = ->
   scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position))
   
   # Update game events
-  timeline.update(1.0/60.0);
+
+  timeline.update(1.0/60.0) if not gamePaused
+
   
   # Render the scene
   renderScene()

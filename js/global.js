@@ -1,4 +1,4 @@
-var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, indexToPosition, initializeLevelGoals, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levelGoals, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, positionToGrid, positionToIndex, sqrGridSize, square, towerPlacement;
+var canvasSize, cellScale, clamp, gameSceneOffset, gridHalfSize, gridSize, gridToPosition, guiDaisRotPosition, guiDaisRotVelocity, idealAspectRatio, indexToPosition, initializeLevelGoals, key0, key1, key2, key3, key4, key5, key6, key7, key8, key9, keyESC, lerp, levelGoals, levels, max, min, mouseSpeed, numTowerTypes, platformHeightOffset, platformHeights, platformScaleFactor, platformScaleHeights, platformScaleLengths, platformScales, positionToGrid, positionToIndex, sqrGridSize, square, towerPlacement;
 /*
 Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
 This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
@@ -41,6 +41,9 @@ indexToPosition = function(x, y, level) {
 };
 positionToGrid = function(x, y) {
   return [Math.floor((x / cellScale) + gridSize / 2), Math.floor((y / cellScale) + gridSize / 2)];
+};
+gridToPosition = function(x, y, level) {
+  return [cellScale * (x - gridSize / 2) + cellScale * 0.5, cellScale * (y - gridSize / 2) + cellScale * 0.5, platformHeights[level]];
 };
 /*
 Globals

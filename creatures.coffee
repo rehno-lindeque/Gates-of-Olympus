@@ -220,7 +220,8 @@ class Creatures
     ])
   
   removeCreature: (creature) ->
-    
+    # TODO: (nb!) properly remove the creature from the @creatures array.. for now we'll just not delete them!
+    SceneJS.withNode("creatures").node(creature.index).remove(nodes: [creature.getId()])
   
   update: ->
     c = 0

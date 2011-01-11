@@ -76,19 +76,32 @@ class CircularAttributeBuffers
     if numVertices == 0 then return
     for k in [0...numVertices]
       @attributeQueues[@attributeQueues.length-1].push(t)
+
+    # TODO: For now, a cheap hack:
+    if @topOffset + numVertices > @size
+      @topOffset = 0
+      @bottomOffset = 0
     
     # Push all the queues into the buffer objects
     for k in [0...@attributeQueues.length]
       queue = @attributeQueues[k]
-      if (@topOffset < @bottomOffset && @topOffset + queue.length < @bottomOffset) || (@topOffset >= @bottomOffset && @topOffset + queue.length < @size)
+      if (@topOffset < @bottomOffset && @topOffset + numVertices < @bottomOffset) || (@topOffset >= @bottomOffset && @topOffset + numVertices < @size)
         gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
         gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[k].elements, new Float32Array(queue))
-      else
-        if (@topOffset < @bottomOffset)
-          num = @bottomOffset - @topOffset
-        else
-          num = @size - @topOffset
-        #todo: more to do here....!!!
+      #else
+      #  if (@topOffset < @bottomOffset)
+      #    num = @bottomOffset - @topOffset
+      #  else
+      #    num = @size - @topOffset
+      #  
+      #  #TODO: more to do here....!!!
+      #  
+      #  # For now, a cheap hack:
+      #  @topOffset = 0
+      #  @bottomOffset = 0
+      #  gl.bindBuffer(gl.ARRAY_BUFFER, @attributeBuffers[k])
+      #  gl.bufferSubData(gl.ARRAY_BUFFER, @topOffset * @attributeInfos[k].elements, new Float32Array(queue))
+      
       # Clear the queue
       @attributeQueues[k] = []
     

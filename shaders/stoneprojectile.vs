@@ -11,8 +11,8 @@ uniform float lifeT;
 //varying vec2 vTextureCoord;
 varying float expired;
 
-const float particleSize = 5.0;
-const float speedScale = 0.1;
+const float particleSize = 8.0;
+const float speedScale = 1.0;
 
 void main(void) {
   float lerpT = (currentT-t)/lifeT * speedScale;
