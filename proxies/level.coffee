@@ -27,7 +27,7 @@ towerPlacementNode = ->
   nodes: [
     type: "selector"
     id: "placementTowerModel"
-    selection: [0]
+    selection: []
     nodes: [
       towerNode(0, "placementTower"+0, [{ type: "instance", target: towerIds[0] }])
       towerNode(1, "placementTower"+1, [{ type: "instance", target: towerIds[1] }])

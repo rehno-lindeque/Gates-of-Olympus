@@ -91,7 +91,7 @@ towerPlacementNode = function() {
       {
         type: "selector",
         id: "placementTowerModel",
-        selection: [0],
+        selection: [],
         nodes: [
           towerNode(0, "placementTower" + 0, [
             {
