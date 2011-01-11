@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, customGL, gamePaused, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, renderExtras, renderScene, startGame, updateTowerPlacement;
+  var backTrackListener, backTrackMusic, calcTowerPlacement, canvas, customGL, gamePaused, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, musicPaused, renderExtras, renderScene, startGame, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
@@ -11,6 +11,7 @@
   Start the game
   */
   gamePaused = true;
+  musicPaused = false;
   startGame = function() {
     $('.instruct').animate({
       marginLeft: '-=1000'
@@ -36,15 +37,13 @@
   /*
   Sound
   */
-  /*
-  marchSound = document.getElementById('march')
-  marchSoundListener = () ->
-  	this.pause()
-  	this.currentTime = 0
-  	this.play()
-
-  marchSound.addEventListener('ended', marchSoundListener, false)
-  */
+  backTrackMusic = document.getElementById('backtrack');
+  backTrackListener = function() {
+    this.pause();
+    this.currentTime = 0;
+    return this.play();
+  };
+  backTrackMusic.addEventListener('ended', backTrackListener, false);
   customGL = canvas.getContext("experimental-webgl", {
     antialias: false
   });
@@ -59,7 +58,6 @@
   /*
   Game logic
   */
-  level.creatures.addCreature(Fish);
   floodInit();
   /*
   User input
@@ -229,20 +227,24 @@
     }
     gui.update();
     if (!gamePaused) {
+      if (musicPaused) {
+        backTrackMusic.play();
+      }
       updateAI();
       level.update();
+    } else {
+      if (!musicPaused) {
+        backTrackMusic.pause();
+        musicPaused = true;
+      }
     }
     lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5);
     scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
     lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75);
     scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position));
-<<<<<<< HEAD
-    timeline.update(1.0 / 60.0);
-=======
     if (!gamePaused) {
-      timeline.update(1);
+      timeline.update(1.0 / 60.0);
     }
->>>>>>> f84dc943bf347d7795be064681ed55170ceeaa16
     return renderScene();
   };
   interval = window.setInterval("window.render()", 10);

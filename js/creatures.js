@@ -57,7 +57,10 @@ Creature.prototype.update = function() {
     this.pos[0] += this.fallVelocity[0];
     this.pos[1] += this.fallVelocity[1];
     this.pos[2] += this.fallVelocity[2];
-    if (this.pos[2] < (platformHeights[this.level] - platformHeightOffset + 0.1)) {
+    if (this.level === 3 && this.pos[2] < -20) {
+      this.state = 2;
+      removeCreature(this);
+    } else if (this.pos[2] < (platformHeights[this.level] - platformHeightOffset + 0.1)) {
       this.state = 1;
     }
   } else if (this.state === 1) {
@@ -68,23 +71,19 @@ Creature.prototype.update = function() {
       this.pos[1] = this.pos[1] + vel.y * this.speed;
       this.rot = 180 * Math.atan2(vel.y, vel.x) / Math.PI - 90;
     } else {
-      if (this.level === 2) {
-        this.state = 2;
-      } else {
-        this.state = 0;
-        this.level++;
-        /*
-        cellX = Math.floor(@gridIndex % gridSize)
-        cellY = Math.floor(@gridIndex / gridSize) % gridSize
-        g = indexToPosition(cellX, cellY, @level)
-        dist = (platformHeights[@level] - platformHeightOffset + 0.1) - (platformHeights[@level-1] - platformHeightOffset + 0.1)
-        dist = Math.abs(dist)
-        fallTime = dist/@speed
-        @fallVelocity.x = (g.x - @pos[0]) / fallTime
-        @fallVelocity.y = (g.y - @pos[1]) / fallTime
-        */
-        this.fallVelocity.z = -this.speed;
-      }
+      this.state = 0;
+      this.level++;
+      /*
+      cellX = Math.floor(@gridIndex % gridSize)
+      cellY = Math.floor(@gridIndex / gridSize) % gridSize
+      g = indexToPosition(cellX, cellY, @level)
+      dist = (platformHeights[@level] - platformHeightOffset + 0.1) - (platformHeights[@level-1] - platformHeightOffset + 0.1)
+      dist = Math.abs(dist)
+      fallTime = dist/@speed
+      @fallVelocity.x = (g.x - @pos[0]) / fallTime
+      @fallVelocity.y = (g.y - @pos[1]) / fallTime
+      */
+      this.fallVelocity.z = -this.speed;
     }
   }
   index = positionToIndex(this.pos[0], this.pos[1], this.level);
@@ -114,7 +113,7 @@ Fish = function(id) {
   this.create();
   this.maxHealth = 100;
   this.health = this.maxHealth;
-  this.speed = 0.04;
+  this.speed = 0.03;
   this.index = 1;
   this.id = creatureIds[this.index] + id;
   return this;
@@ -127,7 +126,7 @@ Snake = function(id) {
   this.create();
   this.maxHealth = 60;
   this.health = this.maxHealth;
-  this.speed = 0.06;
+  this.speed = 0.04;
   this.index = 2;
   this.id = creatureIds[this.index] + id;
   return this;

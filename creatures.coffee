@@ -53,7 +53,12 @@ class Creature
       @pos[0] += @fallVelocity[0]
       @pos[1] += @fallVelocity[1]
       @pos[2] += @fallVelocity[2]
-      if (@pos[2] < (platformHeights[@level] - platformHeightOffset + 0.1)) # stop falling
+      if (@level == 3 && @pos[2] < -20)
+        @state=2
+        removeCreature(this)
+      
+      
+      else if (@pos[2] < (platformHeights[@level] - platformHeightOffset + 0.1)) # stop falling
         @state = 1 # roam
         #goal = levelGoals[level]
       
@@ -73,9 +78,9 @@ class Creature
         @pos[1] = @pos[1] + vel.y*@speed
         @rot = 180*Math.atan2(vel.y,vel.x)/Math.PI - 90
       else   # if creature has reached goal on current level
-        if (@level == 2)
-          @state = 2 # done
-        else
+        #if (@level == 2)
+        #  @state = 0 # done
+        #else
           @state = 0 # falling
           @level++
           
@@ -117,7 +122,7 @@ class Fish extends Creature
     @create()
     @maxHealth = 100
     @health = @maxHealth
-    @speed = 0.04
+    @speed = 0.03
     @index = 1
     @id = creatureIds[@index] + id
   
@@ -129,7 +134,7 @@ class Snake extends Creature
     @create()
     @maxHealth = 60
     @health = @maxHealth
-    @speed = 0.06
+    @speed = 0.04
     @index = 2
     @id = creatureIds[@index] + id
   

@@ -31,12 +31,12 @@ spawnCreepsEvent = function(time) {
   if (wave % 2 === 0) {
     numCreeps++;
   }
-  return timeline.addEvent(1.0 + 15.0 * wave, spawnCreepsEvent);
+  return (wave < 20) ? timeline.addEvent(1.0 + 15.0 * wave, spawnCreepsEvent) : null;
 };
 spawnCreeps = function(time, num, type) {
   var i;
   for (i = 0; (0 <= num ? i <= num : i >= num); (0 <= num ? i += 1 : i -= 1)) {
-    timeline.addEvent(time + i * 0.25, type);
+    timeline.addEvent(time + i * 0.5, type);
   }
   return null;
 };

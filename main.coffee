@@ -12,14 +12,18 @@ Start the game
 
 # Game state
 gamePaused = true
+#temp, will do it better later
+musicPaused = false
 
 startGame = () ->
   #$('#menucontainer').hide()
   $('.instruct').animate({marginLeft: '-=1000'}, 800)
-  $('#menu').animate({marginTop: '-=1000'}, 800, () -> 
+  $('#menu').animate({marginTop: '-=1000'}, 800, 
+  () -> 
     $('#menucontainer').hide()
     gamePaused = false
-    null)
+    null
+  )
   null
 
 $('a#play').bind('click',startGame)
@@ -38,15 +42,15 @@ gui.initialize()
 ###
 Sound
 ###
-###
-marchSound = document.getElementById('march')
-marchSoundListener = () ->
+
+backTrackMusic = document.getElementById('backtrack')
+backTrackListener = () ->
 	this.pause()
 	this.currentTime = 0
 	this.play()
 	
-marchSound.addEventListener('ended', marchSoundListener, false)
-###
+backTrackMusic.addEventListener('ended', backTrackListener, false)
+
 
 # Manual webgl initialization (for rendering things stand-alone
 #customGL = canvas.getContext("experimental-webgl");
@@ -76,7 +80,7 @@ Game logic
 
 # Creatures
 #level.creatures.addCreature(Scorpion)
-level.creatures.addCreature(Fish)
+#level.creatures.addCreature(Fish)
 #level.creatures.addCreature(Snake)
 
 #floydInit()
@@ -288,8 +292,14 @@ window.render = ->
   
   # AI must be updated before level, as creatures get updated there
   if not gamePaused
+    if (musicPaused)
+      backTrackMusic.play()
     updateAI()
     level.update()
+  else 
+    if (!musicPaused)
+      backTrackMusic.pause()
+      musicPaused = true
 
   # Animate the sun / moon lighting
   lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5)

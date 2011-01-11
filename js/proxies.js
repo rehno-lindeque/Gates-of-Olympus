@@ -177,19 +177,12 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
 Level.prototype.update = function() {
   var _a, _b, _c, creature;
   this.creatures.update();
-<<<<<<< HEAD
   _b = this.creatures.creatures;
   for (_a = 0, _c = _b.length; _a < _c; _a++) {
     creature = _b[_a];
-    this.towers.present(creature);
-=======
-  _ref = this.creatures.creatures;
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    creature = _ref[_i];
     if (creature.health > 0) {
       this.towers.present(creature);
     }
->>>>>>> f84dc943bf347d7795be064681ed55170ceeaa16
   }
   return this.towers.update();
 };
@@ -1295,15 +1288,15 @@ StoneProjectilesModule = {
     return null;
   },
   destroyResources: function() {
-    var _i, _len, _ref, buffer;
+    var _a, _b, _c, buffer;
     if (document.getElementById(canvas.canvasId)) {
       if (this.shaderProgram) {
         this.shaderProgram.destroy();
       }
       if (this.attributeBuffers) {
-        _ref = this.attributeBuffers;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          buffer = _ref[_i];
+        _b = this.attributeBuffers;
+        for (_a = 0, _c = _b.length; _a < _c; _a++) {
+          buffer = _b[_a];
           buffer.destroy();
         }
       }
