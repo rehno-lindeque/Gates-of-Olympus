@@ -12,8 +12,17 @@
   */
   gamePaused = true;
   startGame = function() {
-    $('#menucontainer').hide();
-    return (gamePaused = false);
+    $('.instruct').animate({
+      marginLeft: '-=1000'
+    }, 800);
+    $('#menu').animate({
+      marginTop: '-=1000'
+    }, 800, function() {
+      $('#menucontainer').hide();
+      gamePaused = false;
+      return null;
+    });
+    return null;
   };
   $('a#play').bind('click', startGame);
   /*

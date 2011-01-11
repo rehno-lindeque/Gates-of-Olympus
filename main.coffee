@@ -14,8 +14,13 @@ Start the game
 gamePaused = true
 
 startGame = () ->
-  $('#menucontainer').hide()
-  gamePaused = false
+  #$('#menucontainer').hide()
+  $('.instruct').animate({marginLeft: '-=1000'}, 800)
+  $('#menu').animate({marginTop: '-=1000'}, 800, () -> 
+    $('#menucontainer').hide()
+    gamePaused = false
+    null)
+  null
 
 $('a#play').bind('click',startGame)
 
