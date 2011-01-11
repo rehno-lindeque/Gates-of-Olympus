@@ -1,5 +1,5 @@
 (function() {
-  var calcTowerPlacement, canvas, customGL, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, renderExtras, renderScene, updateTowerPlacement;
+  var calcTowerPlacement, canvas, customGL, gamePaused, intersectRayXYPlane, interval, keyDown, mouseDown, mouseDragging, mouseLastX, mouseLastY, mouseMove, mouseUp, renderExtras, renderScene, startGame, updateTowerPlacement;
   /*
   Gates of Olympus (A multi-layer Tower Defense game...)
   Copyright 2010-2011, Rehno Lindeque, Theunis Kotze.
@@ -7,6 +7,15 @@
   * Please visit http://gatesofolympus.com/.
   * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
   */
+  /*
+  Start the game
+  */
+  gamePaused = true;
+  startGame = function() {
+    $('#menucontainer').hide();
+    return (gamePaused = false);
+  };
+  $('a#play').bind('click', startGame);
   /*
   Initialization and rendering loop
   */
@@ -214,13 +223,17 @@
       guiDaisRotPosition[c] = clamp(guiDaisRotPosition[c], -30.0, 30.0);
     }
     gui.update();
-    updateAI();
-    level.update();
+    if (!gamePaused) {
+      updateAI();
+      level.update();
+    }
     lightAmount = clamp((sun.position[2] + 0.7) * 1.2, 0.2, 1.5);
     scene.updateSunLight([lightAmount, lightAmount, lightAmount], negateVector3(sun.position));
     lightAmount = clamp((moon.position[2] + 0.5) * 0.5, 0.2, 0.75);
     scene.updateMoonLight([lightAmount, lightAmount, lightAmount], negateVector3(moon.position));
-    timeline.update(1);
+    if (!gamePaused) {
+      timeline.update(1);
+    }
     return renderScene();
   };
   interval = window.setInterval("window.render()", 10);
