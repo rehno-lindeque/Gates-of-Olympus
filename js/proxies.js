@@ -140,14 +140,15 @@ Level = function() {
   return this;
 };
 Level.prototype.getTowerRoot = function(level, towerType) {
-  if (towerType === 0) {
-    return this.towerNodes[level].archerTowers;
-  } else if (towerType === 1) {
-    return this.towerNodes[level].catapultTowers;
-  } else if (towerType === 2) {
-    return this.towerNodes[level].ballistaTowers;
-  } else {
-    return null;
+  switch (towerType) {
+    case 0:
+      return this.towerNodes[level].archerTowers;
+    case 1:
+      return this.towerNodes[level].catapultTowers;
+    case 2:
+      return this.towerNodes[level].ballistaTowers;
+    default:
+      return null;
   }
 };
 Level.prototype.addTower = function(towerPlacement, towerType) {
@@ -175,11 +176,11 @@ Level.prototype.addTower = function(towerPlacement, towerType) {
   return null;
 };
 Level.prototype.update = function() {
-  var _a, _b, _c, creature;
+  var _i, _len, _ref, creature;
   this.creatures.update();
-  _b = this.creatures.creatures;
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    creature = _b[_a];
+  _ref = this.creatures.creatures;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    creature = _ref[_i];
     if (creature.health > 0) {
       this.towers.present(creature);
     }
@@ -187,20 +188,20 @@ Level.prototype.update = function() {
   return this.towers.update();
 };
 Level.prototype.renderProjectiles = function(gl, time) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, projectile, projectiles;
-  _a = []; _c = this.projectiles;
-  for (_b = 0, _d = _c.length; _b < _d; _b++) {
-    projectiles = _c[_b];
-    _a.push((function() {
-      _e = []; _g = projectiles;
-      for (_f = 0, _h = _g.length; _f < _h; _f++) {
-        projectile = _g[_f];
-        _e.push(projectile.render(gl, time));
+  var _i, _j, _len, _len2, _ref, _ref2, _result, _result2, projectile, projectiles;
+  _result = []; _ref = this.projectiles;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    projectiles = _ref[_i];
+    _result.push((function() {
+      _result2 = []; _ref2 = projectiles;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        projectile = _ref2[_j];
+        _result2.push(projectile.render(gl, time));
       }
-      return _e;
+      return _result2;
     })());
   }
-  return _a;
+  return _result;
 };
 Level.prototype.createNode = function() {
   return {
@@ -589,25 +590,25 @@ GUI = function() {
   return this;
 };
 GUI.prototype.initialize = function() {
-  var _a, _b, c;
-  _a = [];
-  for (_b = 0; (0 <= numTowerTypes - 1 ? _b <= numTowerTypes - 1 : _b >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _b += 1 : _b -= 1)) {
+  var _i, _result, c;
+  _result = [];
+  for (_i = 0; (0 <= numTowerTypes - 1 ? _i <= numTowerTypes - 1 : _i >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? _i += 1 : _i -= 1)) {
     (function() {
-      var c = _b;
-      return _a.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
+      var c = _i;
+      return _result.push(SceneJS.withNode(this.daises[c].id).bind("picked", function(event) {
         return gui.selectDais(c);
       }));
     }).call(this);
   }
-  return _a;
+  return _result;
 };
 GUI.prototype.update = function() {
-  var _a, c;
-  _a = [];
+  var _result, c;
+  _result = [];
   for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
-    _a.push(this.daises[c].update());
+    _result.push(this.daises[c].update());
   }
-  return _a;
+  return _result;
 };
 GUI.prototype.selectDais = function(daisNumber) {
   if (this.selectedDais >= 0) {
@@ -910,12 +911,12 @@ DaisCloudsModule = {
   shaderProgram: null,
   numParticles: 200,
   createResources: function(gl) {
-    var _a, fragmentShader, k, vertexShader, vertices;
+    var _ref, fragmentShader, k, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     vertices = [];
-    _a = (this.numParticles * 3 - 1);
-    for (k = 0; (0 <= _a ? k <= _a : k >= _a); (0 <= _a ? k += 1 : k -= 1)) {
+    _ref = (this.numParticles * 3 - 1);
+    for (k = 0; (0 <= _ref ? k <= _ref : k >= _ref); (0 <= _ref ? k += 1 : k -= 1)) {
       vertices[k] = ((Math.random() - 0.5) * 2.0) * ((Math.random() - 0.5) * 2.0);
     }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -1116,7 +1117,7 @@ AtmosphereModule = {
     return null;
   },
   createResourcesLo: function(gl) {
-    var _a, _b, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
+    var _ref, _ref2, cx, cy, fragmentShader, indices, nx, ny, vertexShader, vertices;
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     nx = 4 * 30;
@@ -1131,10 +1132,10 @@ AtmosphereModule = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     indices = new Array(ny * nx * 6);
-    _a = (ny - 1);
-    for (cy = 0; (0 <= _a ? cy <= _a : cy >= _a); (0 <= _a ? cy += 1 : cy -= 1)) {
-      _b = (nx - 1);
-      for (cx = 0; (0 <= _b ? cx <= _b : cx >= _b); (0 <= _b ? cx += 1 : cx -= 1)) {
+    _ref = (ny - 1);
+    for (cy = 0; (0 <= _ref ? cy <= _ref : cy >= _ref); (0 <= _ref ? cy += 1 : cy -= 1)) {
+      _ref2 = (nx - 1);
+      for (cx = 0; (0 <= _ref2 ? cx <= _ref2 : cx >= _ref2); (0 <= _ref2 ? cx += 1 : cx -= 1)) {
         indices[(cy * nx + cx) * 6 + 0] = ((cy + 0) * (nx + 1) + cx + 0);
         indices[(cy * nx + cx) * 6 + 1] = ((cy + 0) * (nx + 1) + cx + 1);
         indices[(cy * nx + cx) * 6 + 2] = ((cy + 1) * (nx + 1) + cx + 0);
@@ -1288,15 +1289,15 @@ StoneProjectilesModule = {
     return null;
   },
   destroyResources: function() {
-    var _a, _b, _c, buffer;
+    var _i, _len, _ref, buffer;
     if (document.getElementById(canvas.canvasId)) {
       if (this.shaderProgram) {
         this.shaderProgram.destroy();
       }
       if (this.attributeBuffers) {
-        _b = this.attributeBuffers;
-        for (_a = 0, _c = _b.length; _a < _c; _a++) {
-          buffer = _b[_a];
+        _ref = this.attributeBuffers;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          buffer = _ref[_i];
           buffer.destroy();
         }
       }

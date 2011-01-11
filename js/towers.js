@@ -7,19 +7,20 @@ This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE
 Tower types
 */
 archerRadiusSQR = 1.0;
-archerTowerUpdate = function(index) {};
-/*
-towerX = index % gridSize
-towerY = index / gridSize
-towerLevel = index / sqrGridSize
-towerPos = indexToPosition(towerX, towerY, towerLevel)
-for c in level.creatures.creatures
-  distX = c.pos[0] - towerPos.x
-  distY = c.pos[1] - towerPos.y
-distSQR = distX*distX + distY*distY
-  if (distSQR < archerRadiusSQR)
+archerTowerUpdate = function(index) {
+  /*
+  towerX = index % gridSize
+  towerY = index / gridSize
+  towerLevel = index / sqrGridSize
+  towerPos = indexToPosition(towerX, towerY, towerLevel)
+  for c in level.creatures.creatures
+    distX = c.pos[0] - towerPos.x
+    distY = c.pos[1] - towerPos.y
+  distSQR = distX*distX + distY*distY
+    if (distSQR < archerRadiusSQR)
 
-  */
+    */
+};
 catapultTowerUpdate = function(index) {};
 /*
 Tower class
@@ -76,12 +77,12 @@ Towers.prototype.update = function() {
   return null;
 };
 Towers.prototype.present = function(creature) {
-  var _a, _b, _c, _d, cx, cy, gridPos, index;
+  var _ref, _ref2, _ref3, _ref4, cx, cy, gridPos, index;
   gridPos = positionToGrid(creature.pos[0], creature.pos[1]);
-  _a = max(gridPos[1] - 1, 0); _b = min(gridPos[1] + 1, gridSize - 1);
-  for (cy = _a; (_a <= _b ? cy <= _b : cy >= _b); (_a <= _b ? cy += 1 : cy -= 1)) {
-    _c = max(gridPos[0] - 1, 0); _d = min(gridPos[0] + 1, gridSize - 1);
-    for (cx = _c; (_c <= _d ? cx <= _d : cx >= _d); (_c <= _d ? cx += 1 : cx -= 1)) {
+  _ref = max(gridPos[1] - 1, 0); _ref2 = min(gridPos[1] + 1, gridSize - 1);
+  for (cy = _ref; (_ref <= _ref2 ? cy <= _ref2 : cy >= _ref2); (_ref <= _ref2 ? cy += 1 : cy -= 1)) {
+    _ref3 = max(gridPos[0] - 1, 0); _ref4 = min(gridPos[0] + 1, gridSize - 1);
+    for (cx = _ref3; (_ref3 <= _ref4 ? cx <= _ref4 : cx >= _ref4); (_ref3 <= _ref4 ? cx += 1 : cx -= 1)) {
       index = creature.level * sqrGridSize + cy * gridSize + cx;
       if (this.targets[index] === null && (this.towers[index] >= 0)) {
         this.targets[index] = creature;

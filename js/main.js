@@ -140,15 +140,19 @@
     return null;
   };
   keyDown = function(event) {
-    var _a;
-    if ((_a = event.keyCode) === key1) {
-      gui.selectDais(0);
-    } else if (_a === key2) {
-      gui.selectDais(1);
-    } else if (_a === key3) {
-      gui.selectDais(2);
-    } else if (_a === keyESC) {
-      gui.deselectDais();
+    switch (event.keyCode) {
+      case key1:
+        gui.selectDais(0);
+        break;
+      case key2:
+        gui.selectDais(1);
+        break;
+      case key3:
+        gui.selectDais(2);
+        break;
+      case keyESC:
+        gui.deselectDais();
+        break;
     }
     return updateTowerPlacement();
   };
@@ -189,7 +193,7 @@
     return guiCamera.reconfigure();
   };
   renderExtras = function() {
-    var _a, c, eye, look, optics, projection, up, view;
+    var _result, c, eye, look, optics, projection, up, view;
     eye = levelLookAt.backgroundLookAtNode.eye;
     look = levelLookAt.backgroundLookAtNode.look;
     up = levelLookAt.backgroundLookAtNode.up;
@@ -200,20 +204,20 @@
     moon.render(customGL, view, projection, timeline.time);
     sun.render(customGL, view, projection, timeline.time);
     level.renderProjectiles(customGL, timeline.time);
-    _a = [];
+    _result = [];
     for (c = 0; (0 <= numTowerTypes - 1 ? c <= numTowerTypes - 1 : c >= numTowerTypes - 1); (0 <= numTowerTypes - 1 ? c += 1 : c -= 1)) {
-      _a.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
+      _result.push(gui.daises[c].daisClouds.render(customGL, timeline.time));
     }
-    return _a;
+    return _result;
   };
   renderScene = function() {
     scene.withNode().render();
     return renderExtras();
   };
   window.render = function() {
-    var _a, c, lightAmount;
-    _a = (2 * numTowerTypes - 1);
-    for (c = 0; (0 <= _a ? c <= _a : c >= _a); (0 <= _a ? c += 1 : c -= 1)) {
+    var _ref, c, lightAmount;
+    _ref = (2 * numTowerTypes - 1);
+    for (c = 0; (0 <= _ref ? c <= _ref : c >= _ref); (0 <= _ref ? c += 1 : c -= 1)) {
       guiDaisRotVelocity[c] += (Math.random() - 0.5) * 0.005;
       if (guiDaisRotPosition[c] > 0) {
         guiDaisRotVelocity[c] -= 0.0003;
@@ -248,4 +252,4 @@
     return renderScene();
   };
   interval = window.setInterval("window.render()", 10);
-})();
+}).call(this);

@@ -223,35 +223,35 @@ Creatures.prototype.removeCreature = function(creature) {
   });
 };
 Creatures.prototype.update = function() {
-  var _a, _b, _c, _d, c, creature, creatures;
+  var _i, _len, _ref, _result, c, creature, creatures;
   c = 0;
   creatures = this.creatures;
-  _a = []; _c = creatures;
-  for (_b = 0, _d = _c.length; _b < _d; _b++) {
-    creature = _c[_b];
-    _a.push((function() {
+  _result = []; _ref = creatures;
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    creature = _ref[_i];
+    _result.push((function() {
       creature.update();
       creature.withNode().set({
         x: creature.pos[0],
         y: creature.pos[1],
         z: creature.pos[2]
       });
-      creature.withNode().node(0).set("angle", creature.rot);
-      /*
-          SceneJS.withNode("creatures").eachNode(
-            () ->
-              this.eachNode(
-                () ->
-                  this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
-                  this.node(0).set("angle", creatures[c].rot)
-                  #c += 1 # this wont work as each of the creatures is in a list specific to its creature type
-                {}
-              )
-            {}
-          )
-          */
-      return null;
+      return creature.withNode().node(0).set("angle", creature.rot);
     })());
   }
-  return _a;
+  return _result;
 };
+/*
+    SceneJS.withNode("creatures").eachNode(
+      () ->
+        this.eachNode(
+          () ->
+            this.set({x: creatures[c].pos[0], y: creatures[c].pos[1], z: creatures[c].pos[2]})
+            this.node(0).set("angle", creatures[c].rot)
+            #c += 1 # this wont work as each of the creatures is in a list specific to its creature type
+          {}
+        )
+      {}
+    )
+    */
+null;
