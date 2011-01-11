@@ -73,7 +73,7 @@
     div#menu {
       -moz-border-radius: 0px 0px 13px 13px;
       border-radius: 0px 0px 13px 13px;
-      background: rgba(25, 20, 10, 0.8);
+      background: rgba(20, 17, 8, 0.8);
       color: #cca;
       font-size: smaller;
       font-family: "Arial", Sans-serif;
@@ -83,6 +83,9 @@
       text-align: center;
       margin: auto auto;
     }
+    div#menu h1 {
+      margin: 40px 0px;
+    }
     div#menu p {
       margin-top: 20px;
     }
@@ -90,31 +93,35 @@
       margin: 50px 0px 30px 0px;
       font-size: large;
       font-weight: bold;
-      color: #f00;
+      color: #f11;
       display: inline-block;
     }
-    div#hints {
+    div#instructcontainer {
+      position: absolute;
+      bottom: 0;
+    }
+    .instruct {
       -moz-border-radius: 13px;
       border-radius: 13px;
-      background: rgba(25, 20, 10, 0.8);
+      border: solid 1px;
+      background: rgba(45, 35, 30, 0.3);
       color: #cca;
       font-size: smaller;
       font-family: "Arial", Sans-serif;
       padding: 10px;
-      position: absolute;
-      bottom: 0;
       margin: 5px;
     }
-    div#hints ul {
+    .instruct ul {
       padding: 10px 0px 10px 20px;
+      width: 90%;
     }
-    div#hints ol {
+    .instruct ol {
       padding: 0px 0px 0px 20px;
     }
-    div#hints a {
+    .instruct a {
       color: #cca;
     }
-    div#daisStats .disabled {
+    .instruct .disabled {
       display: none;
     }
     div#daisStats .enabled {
@@ -131,6 +138,8 @@
       margin: 5px;
       font-size: 10px;
       font-family: "Arial", Sans-serif;
+      border: solid 1px;
+      background: rgba(45, 35, 30, 0.3);
     }
     div#copyright {
       font-size: x-small;
@@ -227,23 +236,31 @@
       <p><em>As one of the wardens of Zeus's cloudy gates it is your sacred duty to protect Gaia from the heavenly beasts that roam the skies...</em></p>
       <a id="play" href="#">Play!</a>
     </div>
-    <div id="hints">
 
-    <h2>Hints</h2>
-    <ul>
-      <li>Use a WebGL enabled browser such as <a href="http://www.mozilla.com/en-US/firefox/beta/">Firefox 4</a>!</li>
-      <li>Press <strong>F11</strong> to go fullscreen.</li>
-      <li>Drag the screen left and right to change the view.</li>
-      <li>Select towers using the number keys:
-        <ol>
-          <li>Archer Tower</li>
-          <li>Catapult Tower</li>
-          <li>Ballista Tower</li>
-        </ol>
-      </li>
-    </ul>
-    <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
-  </div>
+    <div id="instructcontainer">
+      <div class="instruct">
+        <h2>Hints</h2>
+        <ul>
+          <li>Use a WebGL enabled browser such as <a href="http://www.mozilla.com/en-US/firefox/beta/">Firefox 4</a>!</li>
+          <li>Press <strong>F11</strong> to go fullscreen.</li>
+        </ul>
+      </div>
+      <div class="instruct">
+        <h2>Game Play</h2>
+        <ul>
+          <li>Drag the screen left and right to change the view.</li>
+          <li>Select towers using the number keys:
+            <ol>
+              <li>Archer Tower</li>
+              <li>Catapult Tower</li>
+              <li>Ballista Tower</li>
+            </ol>
+          </li>
+          <li>Place your towers strategically in order to defend each platform.</ul>
+        </ul>
+      <div id="copyright">Copyright &copy; 2010, Rehno Lindeque.</div>
+      </div>
+    </div>
   <div>
   <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fgatesofolympus.com%2F&amp;layout=button_count&amp;show_faces=true&amp;width=420&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;" allowTransparency="true"></iframe>
   <audio id="march" preload controls>
