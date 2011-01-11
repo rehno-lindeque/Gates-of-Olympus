@@ -771,7 +771,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Moon proxy
 */
 Moon = function() {
-  this.velocity = [-0.0006, 0.0];
+  this.velocity = [-0.003, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
@@ -883,7 +883,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.0005, 0.0];
+  this.velocity = [0.0025, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };

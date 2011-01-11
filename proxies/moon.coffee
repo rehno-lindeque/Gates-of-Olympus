@@ -163,7 +163,7 @@ class Moon
     
     # Control the moon position using spherical coordinates, but leaving out radius since it is fixed 
     # (inclination, azimuth)
-    @velocity = [-0.0006, 0.0]
+    @velocity = [-0.003, 0.0]
     @position = [0.0, 0.0, 0.0]
   
   render: (gl, view, projection, time) ->
