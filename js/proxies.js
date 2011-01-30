@@ -883,7 +883,7 @@ SceneJS._eventModule.addListener(SceneJS._eventModule.RESET, function() {
 Sun proxy
 */
 Sun = function() {
-  this.velocity = [0.0025, 0.0];
+  this.velocity = [0.025, 0.0];
   this.position = [0.0, 0.0, 0.0];
   return this;
 };
@@ -1260,7 +1260,7 @@ StoneProjectilesModule = {
   attributeBuffers: [],
   shaderProgram: null,
   addAttributes: function(gl, index) {
-    this.attributeBuffers[index] = new CircularAttributeBuffers(200, 15.0);
+    this.attributeBuffers[index] = new CircularAttributeBuffers(200, 0.8);
     this.attributeBuffers[index].create(gl);
     return null;
   },
