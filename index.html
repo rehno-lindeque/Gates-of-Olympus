@@ -9,6 +9,7 @@
       * This game is licensed under GPL Version 2. See http://gatesofolympus.com/LICENSE for more information.
 -->
   <meta charset="utf-8" />
+  <link href='http://fonts.googleapis.com/css?family=Tangerine:regular,bold' rel='stylesheet' type='text/css' />
   <title>Gates of Olympus - A 3D Tower Defense game</title>
 
   <!-- Framework -->
@@ -60,8 +61,10 @@
       overflow:hidden;
     }
     div#container {
+      overflow: hidden;
     }
     div#menucontainer {
+      overflow: hidden;
       position: absolute;
       top: 0;
       width: 100%;
@@ -87,6 +90,8 @@
     }
     div#menu p {
       margin-top: 20px;
+      font-family: "Tangerine";
+      font-size: 32px;
     }
     div#menu #play {
       margin: 50px 0px 30px 0px;
@@ -139,6 +144,9 @@
       font-family: "Arial", Sans-serif;
       border: solid 1px;
       background: rgba(45, 35, 30, 0.3);
+    }
+    div#daisStats .disabled {
+      display: none;
     }
     div#copyright {
       font-size: x-small;
